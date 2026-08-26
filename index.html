@@ -2,140 +2,405 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>?? Yogesh Streamer v1.0 — Live Web Player</title>
-    <!-- HLS.js Video Engine -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Yogesh Streamer</title>
+
+    <!-- PWA & Apple iOS Standalone Web App Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Yogesh Streamer">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="theme-color" content="#0A0E17">
+
+    <!-- HLS Video Engine -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #0A0E17; color: #FFFFFF; min-height: 100vh; display: flex; flex-direction: column; }
-        
-        /* Header */
-        header { background: #121824; border-bottom: 1px solid #1A2234; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
-        .logo-container { display: flex; align-items: center; gap: 12px; }
-        .logo-crest { width: 44px; height: 44px; border-radius: 10px; border: 2px solid #FFD700; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
-        .logo-title { font-size: 20px; font-weight: 800; color: #FFD700; letter-spacing: 1px; }
-        .logo-subtitle { font-size: 11px; color: #00E5FF; font-weight: 600; }
-        .live-badge { background: #FF2E56; color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #0A0E17; color: #FFFFFF; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; padding-bottom: 75px; user-select: none; }
 
-        /* Main Container */
-        .container { display: flex; flex: 1; padding: 20px; gap: 20px; max-width: 1400px; margin: 0 auto; width: 100%; }
-        
-        /* Video Player Area */
-        .player-section { flex: 2.5; background: #121824; border-radius: 16px; border: 1px solid #1E283C; overflow: hidden; display: flex; flex-direction: column; }
-        .video-wrapper { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; }
-        video { width: 100%; height: 100%; object-fit: contain; }
-        
-        .player-info { padding: 18px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #1A2234; }
-        .match-title { font-size: 18px; font-weight: 700; color: #FFFFFF; }
-        .match-meta { font-size: 12px; color: #00E5FF; margin-top: 4px; }
+        /* iOS Safe Area & Header */
+        header { 
+            background: rgba(18, 24, 36, 0.9); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid #1E283C; 
+            padding: env(safe-area-inset-top, 16px) 16px 12px 16px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+        }
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        .logo-crest { width: 36px; height: 36px; border-radius: 9px; border: 1.5px solid #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+        .logo-title { font-size: 17px; font-weight: 800; color: #FFD700; letter-spacing: 0.8px; }
+        .logo-sub { font-size: 10px; color: #00E5FF; font-weight: 600; }
+        .live-pill { background: #FF2E56; color: #FFF; font-size: 10px; font-weight: 800; padding: 4px 9px; border-radius: 12px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-        /* Channels & Server Switcher Sidebar */
-        .sidebar { flex: 1; display: flex; flex-direction: column; gap: 14px; }
-        .sidebar-card { background: #121824; border-radius: 14px; border: 1px solid #1E283C; padding: 16px; }
-        .sidebar-title { font-size: 14px; font-weight: 700; color: #FFD700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        /* Navigation Views */
+        .tab-view { display: none; padding: 14px 16px; animation: fadeIn 0.25s ease-in-out; }
+        .tab-view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Hero Banner */
+        .hero-banner { 
+            position: relative; 
+            width: 100%; 
+            height: 240px; 
+            border-radius: 16px; 
+            overflow: hidden; 
+            margin-bottom: 22px; 
+            background: #121824; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6); 
+            border: 1px solid #1E283C; 
+        }
+        .hero-img { width: 100%; height: 100%; object-fit: cover; }
+        .hero-gradient { 
+            position: absolute; 
+            inset: 0; 
+            background: linear-gradient(180deg, transparent 20%, rgba(10, 14, 23, 0.7) 60%, #0A0E17 100%); 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: flex-end; 
+            padding: 16px; 
+        }
+        .hero-tag { align-self: flex-start; background: rgba(255, 215, 0, 0.2); color: #FFD700; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 4px; margin-bottom: 6px; }
+        .hero-title { font-size: 22px; font-weight: 800; color: #FFF; line-height: 1.2; }
+        .hero-desc { font-size: 12px; color: #B0B8C4; margin: 4px 0 10px 0; max-width: 90%; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .hero-buttons { display: flex; gap: 10px; }
+        .btn-gold { background: #FFD700; color: #0A0E17; border: none; padding: 8px 18px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .btn-outline { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); color: #FFF; border: 1px solid #00E5FF; padding: 8px 14px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; }
+
+        /* Section Rows */
+        .section-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; margin-top: 18px; }
+        .section-title { font-size: 16px; font-weight: 800; color: #FFF; }
+        .section-sub { font-size: 11px; color: #717D96; }
         
-        .channel-btn { width: 100%; background: #1A2234; border: 1px solid #2A364F; color: #FFF; padding: 12px; border-radius: 10px; margin-bottom: 8px; cursor: pointer; text-align: left; transition: all 0.2s; display: flex; justify-content: space-between; align-items: center; }
-        .channel-btn:hover, .channel-btn.active { background: rgba(255, 215, 0, 0.12); border-color: #FFD700; color: #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
-        .channel-name { font-weight: 600; font-size: 13px; }
-        .channel-tag { font-size: 10px; background: #00E5FF; color: #000; padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+        .carousel-row { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding-bottom: 6px; }
+        .carousel-row::-webkit-scrollbar { display: none; }
 
-        .server-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
-        .server-btn { background: #1E283C; border: 1px solid #2A364F; color: #B0B8C4; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 600; text-align: center; transition: all 0.2s; }
-        .server-btn:hover, .server-btn.active { background: #00E5FF; color: #000; border-color: #00E5FF; }
+        .media-card { flex: 0 0 125px; cursor: pointer; transition: transform 0.2s; }
+        .media-card:active { transform: scale(0.96); }
+        .poster-wrap { position: relative; width: 125px; height: 180px; border-radius: 10px; overflow: hidden; background: #121824; border: 1px solid #1E283C; }
+        .poster-img { width: 100%; height: 100%; object-fit: cover; }
+        .card-rating { position: absolute; top: 6px; right: 6px; background: rgba(0, 0, 0, 0.75); color: #FFD700; font-size: 10px; font-weight: 700; padding: 2px 5px; border-radius: 4px; display: flex; align-items: center; gap: 2px; }
+        .card-title { font-size: 12px; font-weight: 600; color: #FFF; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-year { font-size: 10px; color: #717D96; }
 
-        /* Spiritual Audio Banner */
-        .audio-banner { background: linear-gradient(90deg, #1A2234, #121824); border-radius: 12px; border: 1px solid rgba(255, 215, 0, 0.3); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
-        .audio-text { font-size: 12px; color: #FFD700; font-weight: 600; }
-        .audio-btn { background: #FFD700; color: #000; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 11px; cursor: pointer; }
+        /* Live Cricket Card */
+        .cricket-card { background: #121824; border: 1px solid #1E283C; border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+        .cricket-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .cricket-tour { font-size: 11px; font-weight: 700; color: #00E5FF; }
+        .cricket-title { font-size: 15px; font-weight: 700; color: #FFF; margin-bottom: 12px; }
+        .server-pills { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .server-pill { background: #1A2234; border: 1px solid #2A364F; color: #FFD700; padding: 9px; border-radius: 8px; font-size: 11px; font-weight: 700; text-align: center; cursor: pointer; }
+        .server-pill:active { background: #FFD700; color: #000; }
+
+        /* Video Player Modal (Full Screen iOS) */
+        .player-modal { position: fixed; inset: 0; background: #000; z-index: 9999; display: none; flex-direction: column; }
+        .player-modal.open { display: flex; }
+        .player-header { padding: env(safe-area-inset-top, 14px) 14px 10px 14px; display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.8); }
+        .close-player { background: rgba(255,255,255,0.15); border: none; color: #FFF; font-size: 14px; font-weight: 700; padding: 6px 14px; border-radius: 20px; cursor: pointer; }
+        .player-content { flex: 1; display: flex; align-items: center; justify-content: center; background: #000; }
+        video { width: 100%; max-height: 85vh; object-fit: contain; }
+
+        /* iOS Bottom Navigation Bar */
+        .bottom-nav { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            height: calc(60px + env(safe-area-inset-bottom, 0px)); 
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            background: rgba(18, 24, 36, 0.95); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid #1E283C; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-around; 
+            z-index: 90; 
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; color: #717D96; font-size: 10px; font-weight: 600; cursor: pointer; border: none; background: transparent; padding: 6px 16px; }
+        .nav-item.active { color: #FFD700; }
+        .nav-icon { font-size: 18px; }
+
+        /* Search input */
+        .search-box { width: 100%; background: #121824; border: 1px solid #1E283C; color: #FFF; padding: 12px 16px; border-radius: 12px; font-size: 14px; outline: none; margin-bottom: 14px; }
+        .search-box:focus { border-color: #FFD700; }
     </style>
 </head>
 <body>
 
+    <!-- Header -->
     <header>
-        <div class="logo-container">
-            <img src="app/src/main/res/drawable/splash_logo.png" alt="Y+M Logo" class="logo-crest">
+        <div class="header-left">
+            <img src="apple-touch-icon.png" alt="Y+M Logo" class="logo-crest">
             <div>
                 <div class="logo-title">YOGESH STREAMER</div>
-                <div class="logo-subtitle">Live Multi-Platform Stream Player v1.0</div>
+                <div class="logo-sub">iOS Multi-Platform Edition</div>
             </div>
         </div>
-        <div class="live-badge">? LIVE BROADCAST</div>
+        <div class="live-pill">? LIVE</div>
     </header>
 
-    <div class="container">
-        <!-- Live Video Area -->
-        <div class="player-section">
-            <div class="video-wrapper">
-                <video id="liveVideo" controls autoplay playsinline></video>
-            </div>
-            <div class="player-info">
-                <div>
-                    <div class="match-title" id="currentTitle">Star Sports 1 Hindi HD — Live Cricket Stream</div>
-                    <div class="match-meta" id="currentMeta">Powered by Cricify & Sktech Engine • 1080p 60fps • 0% Ads</div>
+    <!-- TAB 1: HOME -->
+    <div id="tabHome" class="tab-view active">
+        <!-- Hero Banner -->
+        <div class="hero-banner">
+            <img src="https://image.tmdb.org/t/p/original/8kOWDBK6XlPUzckuHDo3wwVRFwt.jpg" class="hero-img" alt="Stree 2">
+            <div class="hero-gradient">
+                <span class="hero-tag">?? TRENDING #1 IN INDIA</span>
+                <div class="hero-title">Stree 2: Sarkate Ka Aatank</div>
+                <div class="hero-desc">The town of Chanderi is haunted once again by a terrifying headless entity. Vicky and friends team up with Stree to save everyone.</div>
+                <div class="hero-buttons">
+                    <button class="btn-gold" onclick="playVideo('Stree 2 (2024)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">? Play Now</button>
+                    <button class="btn-outline" onclick="playVideo('Stree 2 (2024)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">? Details</button>
                 </div>
             </div>
         </div>
 
-        <!-- Channel & Server Selector Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-card">
-                <div class="sidebar-title">?? LIVE CRICKET CHANNELS</div>
-                
-                <button class="channel-btn active" onclick="loadChannel('Star Sports 1 Hindi HD', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', '1080p', this)">
-                    <span class="channel-name">???? Star Sports 1 Hindi HD</span>
-                    <span class="channel-tag">LIVE</span>
-                </button>
-
-                <button class="channel-btn" onclick="loadChannel('Willow Cricket HD', 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8', '1080p', this)">
-                    <span class="channel-name">?? Willow Cricket HD</span>
-                    <span class="channel-tag">1080P</span>
-                </button>
-
-                <button class="channel-btn" onclick="loadChannel('Astro Cricket 1080p 60fps', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', '60FPS', this)">
-                    <span class="channel-name">?? Astro Cricket HD</span>
-                    <span class="channel-tag">60FPS</span>
-                </button>
-
-                <button class="channel-btn" onclick="loadChannel('Sony Sports Ten 3 (Hindi)', 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8', '1080p', this)">
-                    <span class="channel-name">?? Sony Sports Ten 3 HD</span>
-                    <span class="channel-tag">HINDI</span>
-                </button>
+        <!-- ?? Gujarati Blockbusters -->
+        <div class="section-header">
+            <div>
+                <div class="section-title">?? Gujarati Blockbusters</div>
+                <div class="section-sub">Pure Regional Masterpieces</div>
             </div>
-
-            <div class="sidebar-card">
-                <div class="sidebar-title">? CRICIFY / SKTECH SERVERS</div>
-                <div class="server-grid">
-                    <button class="server-btn active" onclick="switchServer('Cricify Primary 1080p', this)">Server 1 (Cricify)</button>
-                    <button class="server-btn" onclick="switchServer('Sktech Fast CDN', this)">Server 2 (Sktech)</button>
-                    <button class="server-btn" onclick="switchServer('Sportzx Backup', this)">Server 3 (Sportzx)</button>
-                    <button class="server-btn" onclick="switchServer('CastleTV Direct', this)">Server 4 (CastleTV)</button>
+        </div>
+        <div class="carousel-row">
+            <div class="media-card" onclick="playVideo('Chhello Show (Last Film Show)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
+                <div class="poster-wrap">
+                    <img src="https://image.tmdb.org/t/p/w500/6yQY3vYjY4K6r8g2w4t1x.jpg" class="poster-img">
+                    <div class="card-rating">? 8.6</div>
                 </div>
+                <div class="card-title">Chhello Show</div>
+                <div class="card-year">2022 • Gujarati</div>
             </div>
+            <div class="media-card" onclick="playVideo('Hellaro', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
+                <div class="poster-wrap">
+                    <img src="https://image.tmdb.org/t/p/w500/hellaro_gujarati_poster.jpg" class="poster-img">
+                    <div class="card-rating">? 8.7</div>
+                </div>
+                <div class="card-title">Hellaro</div>
+                <div class="card-year">2019 • Gujarati</div>
+            </div>
+            <div class="media-card" onclick="playVideo('Naadi Dosh', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
+                <div class="poster-wrap">
+                    <img src="https://image.tmdb.org/t/p/w500/naadi_dosh_poster.jpg" class="poster-img">
+                    <div class="card-rating">? 8.3</div>
+                </div>
+                <div class="card-title">Naadi Dosh</div>
+                <div class="card-year">2022 • Gujarati</div>
+            </div>
+            <div class="media-card" onclick="playVideo('Fakt Mahilao Maate', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
+                <div class="poster-wrap">
+                    <img src="https://image.tmdb.org/t/p/w500/fakt_mahilao_poster.jpg" class="poster-img">
+                    <div class="card-rating">? 8.2</div>
+                </div>
+                <div class="card-title">Fakt Mahilao Maate</div>
+                <div class="card-year">2022 • Gujarati</div>
+            </div>
+            <div class="media-card" onclick="playVideo('Chaal Jeevi Laiye!', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
+                <div class="poster-wrap">
+                    <img src="https://image.tmdb.org/t/p/w500/chaal_jeevi_laiye.jpg" class="poster-img">
+                    <div class="card-rating">? 9.1</div>
+                </div>
+                <div class="card-title">Chaal Jeevi Laiye!</div>
+                <div class="card-year">2019 • Gujarati</div>
+            </div>
+        </div>
 
-            <div class="audio-banner">
-                <div class="audio-text">??? Sacred Om Namah Shivaya Sound</div>
-                <button class="audio-btn" onclick="toggleSpiritualSound()">? Play</button>
-                <audio id="spiritualAudio" src="app/src/main/res/raw/om_namah_shivaya.mp3"></audio>
+        <!-- ?? Bollywood Blockbusters -->
+        <div class="section-header">
+            <div>
+                <div class="section-title">?? Bollywood Blockbusters</div>
+                <div class="section-sub">Latest Hindi Theatrical Releases</div>
+            </div>
+        </div>
+        <div class="carousel-row">
+            <div class="media-card" onclick="playVideo('Jawan (2023)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
+                <div class="poster-wrap">
+                    <img src="https://image.tmdb.org/t/p/w500/jawan_shahrukh_khan.jpg" class="poster-img">
+                    <div class="card-rating">? 8.2</div>
+                </div>
+                <div class="card-title">Jawan</div>
+                <div class="card-year">2023 • Hindi</div>
+            </div>
+            <div class="media-card" onclick="playVideo('Animal (2023)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
+                <div class="poster-wrap">
+                    <img src="https://image.tmdb.org/t/p/w500/animal_ranbir_kapoor.jpg" class="poster-img">
+                    <div class="card-rating">? 7.7</div>
+                </div>
+                <div class="card-title">Animal</div>
+                <div class="card-year">2023 • Hindi</div>
+            </div>
+            <div class="media-card" onclick="playVideo('Dunki (2023)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
+                <div class="poster-wrap">
+                    <img src="https://image.tmdb.org/t/p/w500/dunki_shahrukh_khan.jpg" class="poster-img">
+                    <div class="card-rating">? 7.9</div>
+                </div>
+                <div class="card-title">Dunki</div>
+                <div class="card-year">2023 • Hindi</div>
+            </div>
+            <div class="media-card" onclick="playVideo('Fighter (2024)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
+                <div class="poster-wrap">
+                    <img src="https://image.tmdb.org/t/p/w500/fighter_hrithik_roshan.jpg" class="poster-img">
+                    <div class="card-rating">? 7.8</div>
+                </div>
+                <div class="card-title">Fighter</div>
+                <div class="card-year">2024 • Hindi</div>
             </div>
         </div>
     </div>
 
+    <!-- TAB 2: LIVE CRICKET -->
+    <div id="tabCricket" class="tab-view">
+        <div class="section-header" style="margin-top:0;">
+            <div>
+                <div class="section-title">?? Live Cricket & Sports Hub</div>
+                <div class="section-sub">Powered by Cricify, Sktech & Sportzx</div>
+            </div>
+        </div>
+
+        <div class="cricket-card">
+            <div class="cricket-top">
+                <span class="cricket-tour">???? INTERNATIONAL CRICKET</span>
+                <span class="live-pill">? LIVE 1080P</span>
+            </div>
+            <div class="cricket-title">Star Sports 1 Hindi HD — Live Match</div>
+            <div class="server-pills">
+                <div class="server-pill" onclick="playVideo('Star Sports 1 Hindi (Server 1)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">Server 1 (Cricify)</div>
+                <div class="server-pill" onclick="playVideo('Star Sports 1 Hindi (Server 2)', 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8')">Server 2 (Sktech)</div>
+            </div>
+        </div>
+
+        <div class="cricket-card">
+            <div class="cricket-top">
+                <span class="cricket-tour">?? WORLD CRICKET & LEAGUES</span>
+                <span class="live-pill">? LIVE HD</span>
+            </div>
+            <div class="cricket-title">Willow Cricket HD (English)</div>
+            <div class="server-pills">
+                <div class="server-pill" onclick="playVideo('Willow Cricket HD (Server 1)', 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8')">Server 1 (Cricify)</div>
+                <div class="server-pill" onclick="playVideo('Willow Cricket HD (Server 2)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">Server 2 (Sportzx)</div>
+            </div>
+        </div>
+
+        <div class="cricket-card">
+            <div class="cricket-top">
+                <span class="cricket-tour">? ULTRA HD 60FPS</span>
+                <span class="live-pill">? 60 FPS</span>
+            </div>
+            <div class="cricket-title">Astro Cricket HD — Live Stream</div>
+            <div class="server-pills">
+                <div class="server-pill" onclick="playVideo('Astro Cricket 60fps', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">Server 1 (Astro 1080p)</div>
+                <div class="server-pill" onclick="playVideo('Astro Cricket Backup', 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8')">Server 2 (Fast CDN)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: SEARCH -->
+    <div id="tabSearch" class="tab-view">
+        <input type="text" class="search-box" placeholder="?? Search Movies, Gujarati, Cricket..." id="searchInput" oninput="handleSearch()">
+        <div id="searchResults" class="carousel-row" style="flex-wrap: wrap;">
+            <!-- Populated on search -->
+        </div>
+    </div>
+
+    <!-- TAB 4: SETTINGS -->
+    <div id="tabSettings" class="tab-view">
+        <div class="cricket-card" style="text-align: center; padding: 20px;">
+            <img src="apple-touch-icon.png" style="width: 64px; height: 64px; border-radius: 14px; border: 2px solid #FFD700; margin-bottom: 8px;">
+            <div style="font-size: 18px; font-weight: 800; color: #FFD700;">YOGESH STREAMER</div>
+            <div style="font-size: 12px; color: #00E5FF;">v1.0.0 iOS Standalone PWA</div>
+        </div>
+
+        <div class="cricket-card">
+            <div class="cricket-title" style="margin-bottom: 4px;">??? Om Namah Shivaya Audio</div>
+            <div style="font-size: 11px; color: #717D96; margin-bottom: 10px;">Play sacred startup chant</div>
+            <button class="btn-gold" style="width: 100%; justify-content: center;" onclick="toggleAudio()">? Test Audio</button>
+            <audio id="bgAudio" src="app/src/main/res/raw/om_namah_shivaya.mp3"></audio>
+        </div>
+
+        <div class="cricket-card">
+            <div class="cricket-title" style="margin-bottom: 4px;">?? Add to iPhone Home Screen</div>
+            <div style="font-size: 11px; color: #B0B8C4; line-height: 1.5;">
+                1. Tap the <b>Share button</b> (square with up arrow) in Safari.<br>
+                2. Tap <b>"Add to Home Screen"</b>.<br>
+                3. The official <b>Y+M Gold Crest</b> will appear on your iPhone screen and run in full-screen standalone mode!
+            </div>
+        </div>
+    </div>
+
+    <!-- Native Video Player Modal -->
+    <div id="playerModal" class="player-modal">
+        <div class="player-header">
+            <div id="playerTitle" style="font-size: 14px; font-weight: 700; color: #FFD700;">Now Playing</div>
+            <button class="close-player" onclick="closePlayer()">? Close</button>
+        </div>
+        <div class="player-content">
+            <video id="hlsPlayer" controls playsinline></video>
+        </div>
+    </div>
+
+    <!-- iOS Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('tabHome', this)">
+            <span class="nav-icon">??</span>
+            <span>Home</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('tabCricket', this)">
+            <span class="nav-icon">??</span>
+            <span>Cricket</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('tabSearch', this)">
+            <span class="nav-icon">??</span>
+            <span>Search</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('tabSettings', this)">
+            <span class="nav-icon">??</span>
+            <span>Settings</span>
+        </button>
+    </nav>
+
     <script>
-        const video = document.getElementById('liveVideo');
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+
+        // Tab Switching
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // Video Player Logic with HLS.js and iOS AVPlayer fallback
+        const playerModal = document.getElementById('playerModal');
+        const video = document.getElementById('hlsPlayer');
         let hls = null;
 
-        function loadStream(url) {
+        function playVideo(title, url) {
+            document.getElementById('playerTitle').innerText = title;
+            playerModal.classList.add('open');
+
             if (Hls.isSupported()) {
                 if (hls) { hls.destroy(); }
-                hls = new Hls({ enableWorker: true, lowLatencyMode: true });
+                hls = new Hls({ enableWorker: true });
                 hls.loadSource(url);
                 hls.attachMedia(video);
                 hls.on(Hls.Events.MANIFEST_PARSED, function () {
                     video.play().catch(() => {});
                 });
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // Native iOS Safari video engine
                 video.src = url;
                 video.addEventListener('loadedmetadata', function () {
                     video.play().catch(() => {});
@@ -143,34 +408,16 @@
             }
         }
 
-        function loadChannel(title, streamUrl, quality, btn) {
-            document.querySelectorAll('.channel-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('currentTitle').innerText = title;
-            document.getElementById('currentMeta').innerText = 'Powered by Cricify & Sktech Engine • ' + quality + ' • 0% Ads';
-            loadStream(streamUrl);
+        function closePlayer() {
+            playerModal.classList.remove('open');
+            video.pause();
+            if (hls) { hls.destroy(); hls = null; }
         }
 
-        function switchServer(serverName, btn) {
-            document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            // Re-loads current stream with server priority
-            const activeChannel = document.querySelector('.channel-btn.active');
-            if (activeChannel) { activeChannel.click(); }
+        function toggleAudio() {
+            const audio = document.getElementById('bgAudio');
+            if (audio.paused) { audio.play(); } else { audio.pause(); audio.currentTime = 0; }
         }
-
-        function toggleSpiritualSound() {
-            const audio = document.getElementById('spiritualAudio');
-            if (audio.paused) {
-                audio.play();
-            } else {
-                audio.pause();
-                audio.currentTime = 0;
-            }
-        }
-
-        // Initialize default channel
-        loadStream('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8');
     </script>
 </body>
 </html>
