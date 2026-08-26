@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="gold_primary">#FFD700</color>
+    <color name="gold_variant">#E6C200</color>
+    <color name="cyan_accent">#00E5FF</color>
+    <color name="bg_dark">#0A0E17</color>
+    <color name="surface_dark">#121824</color>
+    <color name="surface_variant">#1A2234</color>
+</resources>

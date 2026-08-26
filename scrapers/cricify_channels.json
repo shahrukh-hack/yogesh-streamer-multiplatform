@@ -1,0 +1,22 @@
+{
+  "channels": [
+    {
+      "id": "star1hindi",
+      "name": "Star Sports 1 Hindi HD",
+      "category": "Cricket",
+      "quality": "1080p"
+    },
+    {
+      "id": "willowhd",
+      "name": "Willow Cricket HD",
+      "category": "Cricket",
+      "quality": "1080p"
+    },
+    {
+      "id": "astrocricket",
+      "name": "Astro Cricket HD",
+      "category": "Cricket",
+      "quality": "1080p"
+    }
+  ]
+}

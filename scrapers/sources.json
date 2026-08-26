@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "last_updated": "2026-08-26",
+  "cricket_scrapers": [
+    {
+      "id": "cricify",
+      "name": "Cricify Live Engine",
+      "enabled": true,
+      "base_url": "https://cricify.live"
+    },
+    {
+      "id": "sktech",
+      "name": "Sktech HD Sports",
+      "enabled": true,
+      "base_url": "https://sktech.stream"
+    },
+    {
+      "id": "sportzx",
+      "name": "Sportzx Fallback",
+      "enabled": true,
+      "base_url": "https://sportzx.live"
+    }
+  ],
+  "movie_scrapers": [
+    {
+      "id": "castletv",
+      "name": "CastleTV Hindi & Bollywood",
+      "enabled": true
+    },
+    {
+      "id": "vidsrc",
+      "name": "VidSrc 4K Engine",
+      "enabled": true
+    },
+    {
+      "id": "autoembed",
+      "name": "AutoEmbed Direct",
+      "enabled": true
+    }
+  ]
+}
