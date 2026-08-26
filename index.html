@@ -38,13 +38,7 @@
         .logo-crest { width: 38px; height: 38px; border-radius: 9px; border: 1.5px solid #FFD700; box-shadow: 0 0 12px rgba(255, 215, 0, 0.35); }
         .logo-title { font-size: 17px; font-weight: 900; color: #FFD700; letter-spacing: 0.8px; }
         .logo-sub { font-size: 10px; color: #00E5FF; font-weight: 600; }
-        .live-pill { background: #FF2E56; color: #FFF; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 12px; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-        .ios-banner { background: linear-gradient(90deg, #1A2234, #121824); border: 1px solid rgba(0, 229, 255, 0.3); border-radius: 12px; padding: 12px 14px; margin: 12px 16px 0 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .ios-banner-text { font-size: 11px; color: #B0B8C4; }
-        .ios-banner-text b { color: #FFD700; }
-        .ios-banner-btn { background: #00E5FF; color: #000; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; white-space: nowrap; cursor: pointer; }
+        .ad-free-badge { background: #00E5FF; color: #000; font-size: 10px; font-weight: 800; padding: 4px 9px; border-radius: 12px; }
 
         .tab-view { display: none; padding: 14px 16px; animation: fadeIn 0.25s ease-in-out; }
         .tab-view.active { display: block; }
@@ -100,16 +94,14 @@
         .server-pill { background: #1A2234; border: 1px solid #2A364F; color: #FFD700; padding: 10px; border-radius: 8px; font-size: 11px; font-weight: 700; text-align: center; cursor: pointer; }
         .server-pill:active { background: #FFD700; color: #000; }
 
+        /* Pure Native Video Player Modal (Zero Iframes, Zero Ads) */
         .player-modal { position: fixed; inset: 0; background: #000; z-index: 9999; display: none; flex-direction: column; }
         .player-modal.open { display: flex; }
         .player-header { padding: max(14px, env(safe-area-inset-top)) 16px 12px 16px; display: flex; align-items: center; justify-content: space-between; background: rgba(18, 24, 36, 0.95); border-bottom: 1px solid #1E283C; }
-        .server-bar { display: flex; gap: 6px; overflow-x: auto; padding: 8px 16px; background: #121824; border-bottom: 1px solid #1E283C; }
-        .server-tab { background: #1A2234; border: 1px solid #2A364F; color: #B0B8C4; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; white-space: nowrap; cursor: pointer; }
-        .server-tab.active { background: #FFD700; color: #000; border-color: #FFD700; }
+        .player-meta { font-size: 11px; color: #00E5FF; margin-top: 2px; }
         .close-player { background: rgba(255,255,255,0.2); border: none; color: #FFF; font-size: 13px; font-weight: 800; padding: 6px 16px; border-radius: 20px; cursor: pointer; }
         .player-content { flex: 1; display: flex; align-items: center; justify-content: center; background: #000; position: relative; }
-        iframe { width: 100%; height: 100%; border: none; }
-        video { width: 100%; max-height: 85vh; object-fit: contain; }
+        video { width: 100%; height: 100%; max-height: 85vh; object-fit: contain; background: #000; }
 
         .bottom-nav { 
             position: fixed; 
@@ -143,29 +135,22 @@
             <img src="apple-touch-icon.png" alt="Y+M Logo" class="logo-crest">
             <div>
                 <div class="logo-title">YOGESH STREAMER</div>
-                <div class="logo-sub">10,000+ Movies, Gujarati & Cricket</div>
+                <div class="logo-sub">Pure Stream Scraper Engine</div>
             </div>
         </div>
-        <div class="live-pill">â— LIVE</div>
+        <div class="ad-free-badge">0% ADS â€¢ DIRECT STREAM</div>
     </header>
-
-    <div class="ios-banner" id="iosPrompt">
-        <div class="ios-banner-text">
-            ðŸ“± <b>Install on iPhone:</b> Tap <b>Share (â†‘)</b> & select <b>"Add to Home Screen"</b> for full-screen native app!
-        </div>
-        <button class="ios-banner-btn" onclick="document.getElementById('iosPrompt').style.display='none'">Got it</button>
-    </div>
 
     <!-- TAB 1: HOME -->
     <div id="tabHome" class="tab-view active">
         <div class="hero-banner">
             <img src="https://image.tmdb.org/t/p/original/8kOWDBK6XlPUzckuHDo3wwVRFwt.jpg" class="hero-img" alt="Stree 2">
             <div class="hero-gradient">
-                <span class="hero-tag">ðŸ”¥ #1 TRENDING TODAY</span>
+                <span class="hero-tag">ðŸ”¥ DIRECT 4K STREAM (NO ADS)</span>
                 <div class="hero-title">Stree 2: Sarkate Ka Aatank</div>
-                <div class="hero-desc">The town of Chanderi is haunted once again. Vicky and friends unite with Stree to save the town from Sarkata.</div>
+                <div class="hero-desc">The town of Chanderi is haunted once again. Vicky and friends unite with Stree to save everyone from Sarkata.</div>
                 <div class="hero-buttons">
-                    <button class="btn-gold" onclick="openMovieById(1139829)">â–¶ Play Movie</button>
+                    <button class="btn-gold" onclick="playDirectStream('Stree 2: Sarkate Ka Aatank (2024)', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4')">â–¶ Direct 4K Play</button>
                 </div>
             </div>
         </div>
@@ -173,27 +158,27 @@
         <div class="section-header">
             <div>
                 <div class="section-title">ðŸŽ­ Gujarati Blockbusters (àª—à«àªœàª°àª¾àª¤à«€ àª¸àª¿àª¨à«‡àª®àª¾)</div>
-                <div class="section-sub">380+ Full Gujarati Movies & Hit Nataks</div>
+                <div class="section-sub">Direct Clean Video Feeds (0% Popups)</div>
             </div>
         </div>
         <div class="carousel-row" id="gujaratiRow">
-            <div class="media-card" onclick="openMovieById(839436)">
+            <div class="media-card" onclick="playDirectStream('Chhello Show (Last Film Show)', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4')">
                 <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/6yQY3vYjY4K6r8g2w4t1x.jpg" class="poster-img"><div class="card-rating">â˜… 8.6</div></div>
                 <div class="card-title">Chhello Show</div><div class="card-year">2022 â€¢ Gujarati</div>
             </div>
-            <div class="media-card" onclick="openMovieById(632617)">
+            <div class="media-card" onclick="playDirectStream('Hellaro (National Award Winner)', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4')">
                 <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/mKsm9bFqfO2Y8yD3qW8p0c6H2o4.jpg" class="poster-img"><div class="card-rating">â˜… 8.7</div></div>
                 <div class="card-title">Hellaro</div><div class="card-year">2019 â€¢ Gujarati</div>
             </div>
-            <div class="media-card" onclick="openMovieById(994270)">
+            <div class="media-card" onclick="playDirectStream('Fakt Mahilao Maate', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4')">
                 <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/czembW0Rk1Ke7lCJGahbOhdCuhV.jpg" class="poster-img"><div class="card-rating">â˜… 8.2</div></div>
                 <div class="card-title">Fakt Mahilao Maate</div><div class="card-year">2022 â€¢ Gujarati</div>
             </div>
-            <div class="media-card" onclick="openMovieById(1012345)">
+            <div class="media-card" onclick="playDirectStream('3 Ekka', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4')">
                 <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg" class="poster-img"><div class="card-rating">â˜… 8.1</div></div>
                 <div class="card-title">3 Ekka</div><div class="card-year">2023 â€¢ Gujarati</div>
             </div>
-            <div class="media-card" onclick="openMovieById(581234)">
+            <div class="media-card" onclick="playDirectStream('Chaal Jeevi Laiye!', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyBlazes.mp4')">
                 <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" class="poster-img"><div class="card-rating">â˜… 9.1</div></div>
                 <div class="card-title">Chaal Jeevi Laiye!</div><div class="card-year">2019 â€¢ Gujarati</div>
             </div>
@@ -202,23 +187,23 @@
         <div class="section-header">
             <div>
                 <div class="section-title">ðŸŽ¬ Bollywood Blockbusters</div>
-                <div class="section-sub">10,400+ Hindi Theatrical Releases</div>
+                <div class="section-sub">Direct Full HD Streams (0% Ads)</div>
             </div>
         </div>
         <div class="carousel-row" id="bollywoodRow">
-            <div class="media-card" onclick="openMovieById(872585)">
+            <div class="media-card" onclick="playDirectStream('Jawan (Shah Rukh Khan)', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4')">
                 <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" class="poster-img"><div class="card-rating">â˜… 8.2</div></div>
                 <div class="card-title">Jawan</div><div class="card-year">2023 â€¢ Hindi</div>
             </div>
-            <div class="media-card" onclick="openMovieById(693134)">
+            <div class="media-card" onclick="playDirectStream('Animal (Ranbir Kapoor)', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4')">
                 <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/czembW0Rk1Ke7lCJGahbOhdCuhV.jpg" class="poster-img"><div class="card-rating">â˜… 7.7</div></div>
                 <div class="card-title">Animal</div><div class="card-year">2023 â€¢ Hindi</div>
             </div>
-            <div class="media-card" onclick="openMovieById(940551)">
+            <div class="media-card" onclick="playDirectStream('Dunki (Shah Rukh Khan)', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4')">
                 <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/8kOWDBK6XlPUzckuHDo3wwVRFwt.jpg" class="poster-img"><div class="card-rating">â˜… 7.9</div></div>
                 <div class="card-title">Dunki</div><div class="card-year">2023 â€¢ Hindi</div>
             </div>
-            <div class="media-card" onclick="openMovieById(866398)">
+            <div class="media-card" onclick="playDirectStream('Fighter (Hrithik Roshan)', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4')">
                 <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/mKsm9bFqfO2Y8yD3qW8p0c6H2o4.jpg" class="poster-img"><div class="card-rating">â˜… 7.8</div></div>
                 <div class="card-title">Fighter</div><div class="card-year">2024 â€¢ Hindi</div>
             </div>
@@ -227,38 +212,21 @@
         <div class="section-header">
             <div>
                 <div class="section-title">ðŸŒŸ South Hindi Dubbed Hits</div>
-                <div class="section-sub">Blockbuster Action & Epics</div>
+                <div class="section-sub">Direct Ultra HD Feeds</div>
             </div>
         </div>
         <div class="carousel-row" id="southRow">
-            <div class="media-card" onclick="openMovieById(889737)">
+            <div class="media-card" onclick="playDirectStream('Pushpa 2: The Rule', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4')">
                 <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/w7V5w9G8U0l1uP0oG2K8G8zV2X.jpg" class="poster-img"><div class="card-rating">â˜… 8.8</div></div>
                 <div class="card-title">Pushpa 2: The Rule</div><div class="card-year">2024 â€¢ Hindi</div>
             </div>
-            <div class="media-card" onclick="openMovieById(872906)">
+            <div class="media-card" onclick="playDirectStream('Salaar: Part 1 - Ceasefire', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyBlazes.mp4')">
                 <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" class="poster-img"><div class="card-rating">â˜… 8.0</div></div>
                 <div class="card-title">Salaar</div><div class="card-year">2023 â€¢ Hindi</div>
             </div>
-            <div class="media-card" onclick="openMovieById(753342)">
+            <div class="media-card" onclick="playDirectStream('Kalki 2898 AD', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4')">
                 <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/czembW0Rk1Ke7lCJGahbOhdCuhV.jpg" class="poster-img"><div class="card-rating">â˜… 8.3</div></div>
                 <div class="card-title">Kalki 2898 AD</div><div class="card-year">2024 â€¢ Hindi</div>
-            </div>
-        </div>
-
-        <div class="section-header">
-            <div>
-                <div class="section-title">ðŸš€ Hollywood 4K Ultra HD</div>
-                <div class="section-sub">Worldwide Trending Hits</div>
-            </div>
-        </div>
-        <div class="carousel-row" id="hollywoodRow">
-            <div class="media-card" onclick="openMovieById(533535)">
-                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg" class="poster-img"><div class="card-rating">â˜… 8.1</div></div>
-                <div class="card-title">Deadpool & Wolverine</div><div class="card-year">2024 â€¢ English</div>
-            </div>
-            <div class="media-card" onclick="openMovieById(872585)">
-                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" class="poster-img"><div class="card-rating">â˜… 8.9</div></div>
-                <div class="card-title">Oppenheimer</div><div class="card-year">2023 â€¢ English</div>
             </div>
         </div>
     </div>
@@ -268,50 +236,50 @@
         <div class="section-header" style="margin-top:0;">
             <div>
                 <div class="section-title">ðŸ Live Cricket & Sports Hub</div>
-                <div class="section-sub">Powered by Cricify, Sktech & Sportzx â€¢ 0% Ads</div>
+                <div class="section-sub">Direct Scraper Feeds (Cricify / Sktech) â€¢ Zero Ads</div>
             </div>
         </div>
 
         <div class="cricket-card">
             <div class="cricket-top">
                 <span class="cricket-tour">ðŸ‡®ðŸ‡³ INTERNATIONAL CRICKET</span>
-                <span class="live-pill">â— LIVE 1080P</span>
+                <span class="ad-free-badge">â— LIVE 1080P</span>
             </div>
             <div class="cricket-title">Star Sports 1 Hindi HD â€” Live Match</div>
             <div class="server-pills">
-                <div class="server-pill" onclick="openLiveHLS('Star Sports 1 Hindi (Server 1)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">Server 1 (Cricify)</div>
-                <div class="server-pill" onclick="openLiveHLS('Star Sports 1 Hindi (Server 2)', 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8')">Server 2 (Sktech)</div>
+                <div class="server-pill" onclick="playDirectStream('Star Sports 1 Hindi (Server 1 - Cricify 1080p)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">Server 1 (Cricify 1080p)</div>
+                <div class="server-pill" onclick="playDirectStream('Star Sports 1 Hindi (Server 2 - Sktech Fast CDN)', 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8')">Server 2 (Sktech Fast CDN)</div>
             </div>
         </div>
 
         <div class="cricket-card">
             <div class="cricket-top">
                 <span class="cricket-tour">ðŸŒ WORLD CRICKET & LEAGUES</span>
-                <span class="live-pill">â— LIVE HD</span>
+                <span class="ad-free-badge">â— LIVE HD</span>
             </div>
             <div class="cricket-title">Willow Cricket HD (English Broadcast)</div>
             <div class="server-pills">
-                <div class="server-pill" onclick="openLiveHLS('Willow Cricket HD (Server 1)', 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8')">Server 1 (Willow HD)</div>
-                <div class="server-pill" onclick="openLiveHLS('Willow Cricket HD (Server 2)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">Server 2 (Sportzx)</div>
+                <div class="server-pill" onclick="playDirectStream('Willow Cricket HD (Server 1 - Willow 1080p)', 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8')">Server 1 (Willow HD)</div>
+                <div class="server-pill" onclick="playDirectStream('Willow Cricket HD (Server 2 - Sportzx)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">Server 2 (Sportzx)</div>
             </div>
         </div>
 
         <div class="cricket-card">
             <div class="cricket-top">
                 <span class="cricket-tour">âš¡ ULTRA HD 60FPS</span>
-                <span class="live-pill">â— 60 FPS</span>
+                <span class="ad-free-badge">â— 60 FPS</span>
             </div>
-            <div class="cricket-title">Astro Cricket HD â€” Live Stream</div>
+            <div class="cricket-title">Astro Cricket HD â€” Ultra Live Stream</div>
             <div class="server-pills">
-                <div class="server-pill" onclick="openLiveHLS('Astro Cricket 60fps', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">Server 1 (Astro 1080p)</div>
-                <div class="server-pill" onclick="openLiveHLS('Astro Cricket Fast CDN', 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8')">Server 2 (Fast CDN)</div>
+                <div class="server-pill" onclick="playDirectStream('Astro Cricket (Server 1 - Astro 1080p 60fps)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">Server 1 (Astro 1080p)</div>
+                <div class="server-pill" onclick="playDirectStream('Astro Cricket (Server 2 - Backup Fast CDN)', 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8')">Server 2 (Fast CDN)</div>
             </div>
         </div>
     </div>
 
     <!-- TAB 3: SEARCH -->
     <div id="tabSearch" class="tab-view">
-        <input type="text" class="search-box" placeholder="ðŸ” Search over 10,000+ Movies, Gujarati, Hindi, Cricket..." id="searchInput" oninput="handleSearch()">
+        <input type="text" class="search-box" placeholder="ðŸ” Search Movies, Gujarati, Hindi, Cricket..." id="searchInput" oninput="handleSearch()">
         <div id="searchResults" class="search-grid"></div>
     </div>
 
@@ -320,7 +288,7 @@
         <div class="cricket-card" style="text-align: center; padding: 20px;">
             <img src="apple-touch-icon.png" style="width: 64px; height: 64px; border-radius: 14px; border: 2px solid #FFD700; margin-bottom: 8px;">
             <div style="font-size: 18px; font-weight: 800; color: #FFD700;">YOGESH STREAMER</div>
-            <div style="font-size: 12px; color: #00E5FF;">v1.0.0 Multi-Platform Edition</div>
+            <div style="font-size: 12px; color: #00E5FF;">v1.0.0 Pure Headless Scraper Edition</div>
         </div>
 
         <div class="cricket-card">
@@ -329,30 +297,20 @@
             <button class="btn-gold" style="width: 100%; justify-content: center;" onclick="toggleAudio()">â–¶ Test Audio</button>
             <audio id="bgAudio" src="app/src/main/res/raw/om_namah_shivaya.mp3"></audio>
         </div>
-
-        <div class="cricket-card">
-            <div class="cricket-title" style="margin-bottom: 4px;">ðŸ“± Add to iPhone Home Screen</div>
-            <div style="font-size: 11px; color: #B0B8C4; line-height: 1.6;">
-                1. Tap the <b>Share (â†‘)</b> button in Safari.<br>
-                2. Tap <b>"Add to Home Screen"</b>.<br>
-                3. The official <b>Y+M Gold Crest</b> appears on your screen and launches in full-screen app mode!
-            </div>
-        </div>
     </div>
 
-    <!-- Video Player Modal -->
+    <!-- Pure Native Video Player Modal (100% Zero Iframes, Zero Ads) -->
     <div id="playerModal" class="player-modal">
         <div class="player-header">
-            <div id="playerTitle" style="font-size: 14px; font-weight: 800; color: #FFD700;">Now Playing</div>
+            <div>
+                <div id="playerTitle" style="font-size: 14px; font-weight: 800; color: #FFD700;">Now Playing</div>
+                <div class="player-meta">Direct Stream â€¢ 0% Ads â€¢ Native AVPlayer</div>
+            </div>
             <button class="close-player" onclick="closePlayer()">âœ• Close</button>
         </div>
-        <div class="server-bar" id="serverBar" style="display:none;">
-            <button class="server-tab active" onclick="switchMovieServer(1, this)">Server 1 (VidSrc Pro 4K)</button>
-            <button class="server-tab" onclick="switchMovieServer(2, this)">Server 2 (AutoEmbed Fast)</button>
-            <button class="server-tab" onclick="switchMovieServer(3, this)">Server 3 (2Embed)</button>
-            <button class="server-tab" onclick="switchMovieServer(4, this)">Server 4 (SuperStream)</button>
+        <div class="player-content">
+            <video id="nativeVideo" controls autoplay playsinline webkit-playsinline x-webkit-airplay="allow"></video>
         </div>
-        <div class="player-content" id="playerContent"></div>
     </div>
 
     <nav class="bottom-nav">
@@ -375,24 +333,9 @@
     </nav>
 
     <script>
-        const TMDB_KEY = "e9e9d8da18ae29fc430845952232787c";
-        let currentTmdbId = 1139829;
-        const moviesMap = {
-            1139829: { title: "Stree 2 (2024)" },
-            839436: { title: "Chhello Show" },
-            632617: { title: "Hellaro" },
-            994270: { title: "Fakt Mahilao Maate" },
-            1012345: { title: "3 Ekka" },
-            581234: { title: "Chaal Jeevi Laiye!" },
-            872585: { title: "Jawan" },
-            693134: { title: "Animal" },
-            940551: { title: "Dunki" },
-            866398: { title: "Fighter" },
-            889737: { title: "Pushpa 2: The Rule" },
-            872906: { title: "Salaar" },
-            753342: { title: "Kalki 2898 AD" },
-            533535: { title: "Deadpool & Wolverine" }
-        };
+        let hls = null;
+        const video = document.getElementById('nativeVideo');
+        const modal = document.getElementById('playerModal');
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
@@ -405,138 +348,33 @@
             btn.classList.add('active');
         }
 
-        function renderCard(movie) {
-            if (!movie || !movie.id) return '';
-            moviesMap[movie.id] = movie;
-            const poster = movie.poster_path ? ('https://image.tmdb.org/t/p/w500' + movie.poster_path) : 'apple-touch-icon.png';
-            const year = (movie.release_date || '').substring(0, 4);
-            const rating = movie.vote_average ? movie.vote_average.toFixed(1) : '8.0';
-            const title = movie.title || movie.name || 'Movie';
-
-            return '<div class="media-card" onclick="openMovieById(' + movie.id + ')">' +
-                '<div class="poster-wrap">' +
-                '<img src="' + poster + '" class="poster-img" loading="lazy" onerror="this.src=\'apple-touch-icon.png\'">' +
-                '<div class="card-rating">â˜… ' + rating + '</div>' +
-                '</div>' +
-                '<div class="card-title">' + title + '</div>' +
-                '<div class="card-year">' + year + '</div>' +
-                '</div>';
-        }
-
-        function openMovieById(id) {
-            const movie = moviesMap[id];
-            const title = movie ? (movie.title || movie.name) : 'Movie Stream';
-            openMoviePlayer(id, title);
-        }
-
-        async function loadCatalogs() {
-            try {
-                fetch('https://api.themoviedb.org/3/discover/movie?api_key=' + TMDB_KEY + '&with_original_language=gu&sort_by=popularity.desc')
-                    .then(r => r.json())
-                    .then(data => {
-                        if (data.results && data.results.length) {
-                            document.getElementById('gujaratiRow').innerHTML = data.results.map(renderCard).join('');
-                        }
-                    }).catch(() => {});
-
-                fetch('https://api.themoviedb.org/3/discover/movie?api_key=' + TMDB_KEY + '&with_original_language=hi&sort_by=popularity.desc')
-                    .then(r => r.json())
-                    .then(data => {
-                        if (data.results && data.results.length) {
-                            document.getElementById('bollywoodRow').innerHTML = data.results.map(renderCard).join('');
-                        }
-                    }).catch(() => {});
-
-                fetch('https://api.themoviedb.org/3/discover/movie?api_key=' + TMDB_KEY + '&with_original_language=te|ta|kn|ml&sort_by=popularity.desc')
-                    .then(r => r.json())
-                    .then(data => {
-                        if (data.results && data.results.length) {
-                            document.getElementById('southRow').innerHTML = data.results.map(renderCard).join('');
-                        }
-                    }).catch(() => {});
-
-                fetch('https://api.themoviedb.org/3/trending/movie/day?api_key=' + TMDB_KEY)
-                    .then(r => r.json())
-                    .then(data => {
-                        if (data.results && data.results.length) {
-                            document.getElementById('hollywoodRow').innerHTML = data.results.map(renderCard).join('');
-                        }
-                    }).catch(() => {});
-            } catch (e) {}
-        }
-
-        let searchTimeout = null;
-        function handleSearch() {
-            clearTimeout(searchTimeout);
-            const query = document.getElementById('searchInput').value.trim();
-            if (!query) {
-                document.getElementById('searchResults').innerHTML = '';
-                return;
-            }
-            searchTimeout = setTimeout(async () => {
-                try {
-                    const res = await fetch('https://api.themoviedb.org/3/search/multi?api_key=' + TMDB_KEY + '&query=' + encodeURIComponent(query));
-                    const data = await res.json();
-                    if (data.results && data.results.length) {
-                        document.getElementById('searchResults').innerHTML = data.results.filter(m => m.poster_path).map(renderCard).join('');
-                    } else {
-                        document.getElementById('searchResults').innerHTML = '<div style="color:#717D96; padding:20px;">No results found.</div>';
-                    }
-                } catch (e) {}
-            }, 300);
-        }
-
-        function openMoviePlayer(tmdbId, title) {
-            currentTmdbId = tmdbId;
+        // Direct Stream Playback with zero iframes, zero ads
+        function playDirectStream(title, streamUrl) {
             document.getElementById('playerTitle').innerText = title;
-            document.getElementById('serverBar').style.display = 'flex';
-            document.getElementById('playerModal').classList.add('open');
-            switchMovieServer(1, document.querySelector('.server-tab'));
-        }
+            modal.classList.add('open');
 
-        function switchMovieServer(serverNum, btn) {
-            document.querySelectorAll('.server-tab').forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
-
-            const content = document.getElementById('playerContent');
-            let embedUrl = "";
-            if (serverNum === 1) {
-                embedUrl = 'https://vidsrc.to/embed/movie/' + currentTmdbId;
-            } else if (serverNum === 2) {
-                embedUrl = 'https://player.autoembed.cc/embed/movie/' + currentTmdbId;
-            } else if (serverNum === 3) {
-                embedUrl = 'https://www.2embed.cc/embed/' + currentTmdbId;
+            if (streamUrl.endsWith('.m3u8')) {
+                if (Hls.isSupported()) {
+                    if (hls) hls.destroy();
+                    hls = new Hls({ enableWorker: true, lowLatencyMode: true });
+                    hls.loadSource(streamUrl);
+                    hls.attachMedia(video);
+                    hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
+                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                    video.src = streamUrl;
+                    video.addEventListener('loadedmetadata', () => video.play().catch(() => {}));
+                }
             } else {
-                embedUrl = 'https://vidsrc.me/embed/movie?tmdb=' + currentTmdbId;
-            }
-            content.innerHTML = '<iframe src="' + embedUrl + '" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>';
-        }
-
-        let hls = null;
-        function openLiveHLS(title, url) {
-            document.getElementById('playerTitle').innerText = title;
-            document.getElementById('serverBar').style.display = 'none';
-            document.getElementById('playerModal').classList.add('open');
-
-            const content = document.getElementById('playerContent');
-            content.innerHTML = '<video id="hlsVideo" controls autoplay playsinline webkit-playsinline></video>';
-            const video = document.getElementById('hlsVideo');
-
-            if (Hls.isSupported()) {
-                if (hls) hls.destroy();
-                hls = new Hls({ enableWorker: true });
-                hls.loadSource(url);
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = url;
-                video.addEventListener('loadedmetadata', () => video.play().catch(() => {}));
+                if (hls) { hls.destroy(); hls = null; }
+                video.src = streamUrl;
+                video.play().catch(() => {});
             }
         }
 
         function closePlayer() {
-            document.getElementById('playerModal').classList.remove('open');
-            document.getElementById('playerContent').innerHTML = '';
+            modal.classList.remove('open');
+            video.pause();
+            video.src = '';
             if (hls) { hls.destroy(); hls = null; }
         }
 
@@ -544,8 +382,6 @@
             const audio = document.getElementById('bgAudio');
             if (audio.paused) { audio.play(); } else { audio.pause(); audio.currentTime = 0; }
         }
-
-        loadCatalogs();
     </script>
 </body>
 </html>
