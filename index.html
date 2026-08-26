@@ -19,9 +19,8 @@
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #0A0E17; color: #FFFFFF; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; padding-bottom: 80px; user-select: none; }
+        body { background-color: #0A0E17; color: #FFFFFF; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; padding-bottom: 85px; user-select: none; }
 
-        /* Header */
         header { 
             background: rgba(18, 24, 36, 0.95); 
             backdrop-filter: blur(20px);
@@ -42,12 +41,15 @@
         .live-pill { background: #FF2E56; color: #FFF; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 12px; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-        /* Views */
+        .ios-banner { background: linear-gradient(90deg, #1A2234, #121824); border: 1px solid rgba(0, 229, 255, 0.3); border-radius: 12px; padding: 12px 14px; margin: 12px 16px 0 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .ios-banner-text { font-size: 11px; color: #B0B8C4; }
+        .ios-banner-text b { color: #FFD700; }
+        .ios-banner-btn { background: #00E5FF; color: #000; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; white-space: nowrap; cursor: pointer; }
+
         .tab-view { display: none; padding: 14px 16px; animation: fadeIn 0.25s ease-in-out; }
         .tab-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Hero Banner */
         .hero-banner { 
             position: relative; 
             width: 100%; 
@@ -74,9 +76,7 @@
         .hero-desc { font-size: 12px; color: #B0B8C4; margin: 4px 0 10px 0; max-width: 90%; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .hero-buttons { display: flex; gap: 10px; }
         .btn-gold { background: #FFD700; color: #0A0E17; border: none; padding: 9px 20px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-        .btn-outline { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); color: #FFF; border: 1px solid #00E5FF; padding: 9px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; }
 
-        /* Sections */
         .section-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; margin-top: 18px; }
         .section-title { font-size: 16px; font-weight: 800; color: #FFF; }
         .section-sub { font-size: 11px; color: #717D96; }
@@ -92,7 +92,6 @@
         .card-title { font-size: 12px; font-weight: 700; color: #FFF; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .card-year { font-size: 10px; color: #717D96; }
 
-        /* Cricket Cards */
         .cricket-card { background: #121824; border: 1px solid #1E283C; border-radius: 14px; padding: 16px; margin-bottom: 14px; }
         .cricket-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .cricket-tour { font-size: 11px; font-weight: 800; color: #00E5FF; }
@@ -101,7 +100,6 @@
         .server-pill { background: #1A2234; border: 1px solid #2A364F; color: #FFD700; padding: 10px; border-radius: 8px; font-size: 11px; font-weight: 700; text-align: center; cursor: pointer; }
         .server-pill:active { background: #FFD700; color: #000; }
 
-        /* Full Screen Video / Stream Modal */
         .player-modal { position: fixed; inset: 0; background: #000; z-index: 9999; display: none; flex-direction: column; }
         .player-modal.open { display: flex; }
         .player-header { padding: max(14px, env(safe-area-inset-top)) 16px 12px 16px; display: flex; align-items: center; justify-content: space-between; background: rgba(18, 24, 36, 0.95); border-bottom: 1px solid #1E283C; }
@@ -113,7 +111,6 @@
         iframe { width: 100%; height: 100%; border: none; }
         video { width: 100%; max-height: 85vh; object-fit: contain; }
 
-        /* Bottom Nav */
         .bottom-nav { 
             position: fixed; 
             bottom: 0; 
@@ -141,7 +138,6 @@
 </head>
 <body>
 
-    <!-- Header -->
     <header>
         <div class="header-left">
             <img src="apple-touch-icon.png" alt="Y+M Logo" class="logo-crest">
@@ -150,94 +146,148 @@
                 <div class="logo-sub">10,000+ Movies, Gujarati & Cricket</div>
             </div>
         </div>
-        <div class="live-pill">? LIVE</div>
+        <div class="live-pill">â— LIVE</div>
     </header>
+
+    <div class="ios-banner" id="iosPrompt">
+        <div class="ios-banner-text">
+            ðŸ“± <b>Install on iPhone:</b> Tap <b>Share (â†‘)</b> & select <b>"Add to Home Screen"</b> for full-screen native app!
+        </div>
+        <button class="ios-banner-btn" onclick="document.getElementById('iosPrompt').style.display='none'">Got it</button>
+    </div>
 
     <!-- TAB 1: HOME -->
     <div id="tabHome" class="tab-view active">
-        <!-- Dynamic Hero Billboard -->
-        <div class="hero-banner" id="heroBanner">
-            <img src="https://image.tmdb.org/t/p/original/8kOWDBK6XlPUzckuHDo3wwVRFwt.jpg" class="hero-img" id="heroImg" alt="Hero Banner">
+        <div class="hero-banner">
+            <img src="https://image.tmdb.org/t/p/original/8kOWDBK6XlPUzckuHDo3wwVRFwt.jpg" class="hero-img" alt="Stree 2">
             <div class="hero-gradient">
-                <span class="hero-tag" id="heroTag">?? #1 TRENDING TODAY</span>
-                <div class="hero-title" id="heroTitle">Stree 2: Sarkate Ka Aatank</div>
-                <div class="hero-desc" id="heroDesc">The town of Chanderi is haunted once again. Vicky and his friends team up with Stree to save the town.</div>
+                <span class="hero-tag">ðŸ”¥ #1 TRENDING TODAY</span>
+                <div class="hero-title">Stree 2: Sarkate Ka Aatank</div>
+                <div class="hero-desc">The town of Chanderi is haunted once again. Vicky and friends unite with Stree to save the town from Sarkata.</div>
                 <div class="hero-buttons">
-                    <button class="btn-gold" id="heroPlayBtn" onclick="openMoviePlayer(1139829, 'Stree 2 (2024)')">? Play Movie</button>
+                    <button class="btn-gold" onclick="openMovieById(1139829)">â–¶ Play Movie</button>
                 </div>
             </div>
         </div>
 
-        <!-- ?? Gujarati Blockbusters (Live 380+ Gujarati Films) -->
         <div class="section-header">
             <div>
-                <div class="section-title">?? Gujarati Blockbusters (??????? ??????)</div>
+                <div class="section-title">ðŸŽ­ Gujarati Blockbusters (àª—à«àªœàª°àª¾àª¤à«€ àª¸àª¿àª¨à«‡àª®àª¾)</div>
                 <div class="section-sub">380+ Full Gujarati Movies & Hit Nataks</div>
             </div>
         </div>
         <div class="carousel-row" id="gujaratiRow">
-            <div style="color:#717D96; padding:10px;">Loading Gujarati Cinema...</div>
+            <div class="media-card" onclick="openMovieById(839436)">
+                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/6yQY3vYjY4K6r8g2w4t1x.jpg" class="poster-img"><div class="card-rating">â˜… 8.6</div></div>
+                <div class="card-title">Chhello Show</div><div class="card-year">2022 â€¢ Gujarati</div>
+            </div>
+            <div class="media-card" onclick="openMovieById(632617)">
+                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/mKsm9bFqfO2Y8yD3qW8p0c6H2o4.jpg" class="poster-img"><div class="card-rating">â˜… 8.7</div></div>
+                <div class="card-title">Hellaro</div><div class="card-year">2019 â€¢ Gujarati</div>
+            </div>
+            <div class="media-card" onclick="openMovieById(994270)">
+                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/czembW0Rk1Ke7lCJGahbOhdCuhV.jpg" class="poster-img"><div class="card-rating">â˜… 8.2</div></div>
+                <div class="card-title">Fakt Mahilao Maate</div><div class="card-year">2022 â€¢ Gujarati</div>
+            </div>
+            <div class="media-card" onclick="openMovieById(1012345)">
+                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg" class="poster-img"><div class="card-rating">â˜… 8.1</div></div>
+                <div class="card-title">3 Ekka</div><div class="card-year">2023 â€¢ Gujarati</div>
+            </div>
+            <div class="media-card" onclick="openMovieById(581234)">
+                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" class="poster-img"><div class="card-rating">â˜… 9.1</div></div>
+                <div class="card-title">Chaal Jeevi Laiye!</div><div class="card-year">2019 â€¢ Gujarati</div>
+            </div>
         </div>
 
-        <!-- ?? Bollywood Blockbusters (Live 10,400+ Hindi Hits) -->
         <div class="section-header">
             <div>
-                <div class="section-title">?? Bollywood Blockbusters</div>
+                <div class="section-title">ðŸŽ¬ Bollywood Blockbusters</div>
                 <div class="section-sub">10,400+ Hindi Theatrical Releases</div>
             </div>
         </div>
         <div class="carousel-row" id="bollywoodRow">
-            <div style="color:#717D96; padding:10px;">Loading Bollywood Hits...</div>
+            <div class="media-card" onclick="openMovieById(872585)">
+                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" class="poster-img"><div class="card-rating">â˜… 8.2</div></div>
+                <div class="card-title">Jawan</div><div class="card-year">2023 â€¢ Hindi</div>
+            </div>
+            <div class="media-card" onclick="openMovieById(693134)">
+                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/czembW0Rk1Ke7lCJGahbOhdCuhV.jpg" class="poster-img"><div class="card-rating">â˜… 7.7</div></div>
+                <div class="card-title">Animal</div><div class="card-year">2023 â€¢ Hindi</div>
+            </div>
+            <div class="media-card" onclick="openMovieById(940551)">
+                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/8kOWDBK6XlPUzckuHDo3wwVRFwt.jpg" class="poster-img"><div class="card-rating">â˜… 7.9</div></div>
+                <div class="card-title">Dunki</div><div class="card-year">2023 â€¢ Hindi</div>
+            </div>
+            <div class="media-card" onclick="openMovieById(866398)">
+                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/mKsm9bFqfO2Y8yD3qW8p0c6H2o4.jpg" class="poster-img"><div class="card-rating">â˜… 7.8</div></div>
+                <div class="card-title">Fighter</div><div class="card-year">2024 â€¢ Hindi</div>
+            </div>
         </div>
 
-        <!-- ?? South Hindi Dubbed Hits -->
         <div class="section-header">
             <div>
-                <div class="section-title">?? South Hindi Dubbed Hits</div>
+                <div class="section-title">ðŸŒŸ South Hindi Dubbed Hits</div>
                 <div class="section-sub">Blockbuster Action & Epics</div>
             </div>
         </div>
         <div class="carousel-row" id="southRow">
-            <div style="color:#717D96; padding:10px;">Loading South Hindi Hits...</div>
+            <div class="media-card" onclick="openMovieById(889737)">
+                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/w7V5w9G8U0l1uP0oG2K8G8zV2X.jpg" class="poster-img"><div class="card-rating">â˜… 8.8</div></div>
+                <div class="card-title">Pushpa 2: The Rule</div><div class="card-year">2024 â€¢ Hindi</div>
+            </div>
+            <div class="media-card" onclick="openMovieById(872906)">
+                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" class="poster-img"><div class="card-rating">â˜… 8.0</div></div>
+                <div class="card-title">Salaar</div><div class="card-year">2023 â€¢ Hindi</div>
+            </div>
+            <div class="media-card" onclick="openMovieById(753342)">
+                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/czembW0Rk1Ke7lCJGahbOhdCuhV.jpg" class="poster-img"><div class="card-rating">â˜… 8.3</div></div>
+                <div class="card-title">Kalki 2898 AD</div><div class="card-year">2024 â€¢ Hindi</div>
+            </div>
         </div>
 
-        <!-- ?? Hollywood 4K Ultra HD -->
         <div class="section-header">
             <div>
-                <div class="section-title">?? Hollywood 4K Ultra HD</div>
+                <div class="section-title">ðŸš€ Hollywood 4K Ultra HD</div>
                 <div class="section-sub">Worldwide Trending Hits</div>
             </div>
         </div>
         <div class="carousel-row" id="hollywoodRow">
-            <div style="color:#717D96; padding:10px;">Loading Hollywood 4K...</div>
+            <div class="media-card" onclick="openMovieById(533535)">
+                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg" class="poster-img"><div class="card-rating">â˜… 8.1</div></div>
+                <div class="card-title">Deadpool & Wolverine</div><div class="card-year">2024 â€¢ English</div>
+            </div>
+            <div class="media-card" onclick="openMovieById(872585)">
+                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" class="poster-img"><div class="card-rating">â˜… 8.9</div></div>
+                <div class="card-title">Oppenheimer</div><div class="card-year">2023 â€¢ English</div>
+            </div>
         </div>
     </div>
 
-    <!-- TAB 2: LIVE CRICKET & SPORTS HUB -->
+    <!-- TAB 2: LIVE CRICKET -->
     <div id="tabCricket" class="tab-view">
         <div class="section-header" style="margin-top:0;">
             <div>
-                <div class="section-title">?? Live Cricket & Sports Hub</div>
-                <div class="section-sub">Powered by Cricify, Sktech & Sportzx � 0% Ads</div>
+                <div class="section-title">ðŸ Live Cricket & Sports Hub</div>
+                <div class="section-sub">Powered by Cricify, Sktech & Sportzx â€¢ 0% Ads</div>
             </div>
         </div>
 
         <div class="cricket-card">
             <div class="cricket-top">
-                <span class="cricket-tour">???? INTERNATIONAL CRICKET</span>
-                <span class="live-pill">? LIVE 1080P</span>
+                <span class="cricket-tour">ðŸ‡®ðŸ‡³ INTERNATIONAL CRICKET</span>
+                <span class="live-pill">â— LIVE 1080P</span>
             </div>
-            <div class="cricket-title">Star Sports 1 Hindi HD � Live Match</div>
+            <div class="cricket-title">Star Sports 1 Hindi HD â€” Live Match</div>
             <div class="server-pills">
-                <div class="server-pill" onclick="openLiveHLS('Star Sports 1 Hindi HD (Server 1)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">Server 1 (Cricify 1080p)</div>
-                <div class="server-pill" onclick="openLiveHLS('Star Sports 1 Hindi HD (Server 2)', 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8')">Server 2 (Sktech Fast CDN)</div>
+                <div class="server-pill" onclick="openLiveHLS('Star Sports 1 Hindi (Server 1)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">Server 1 (Cricify)</div>
+                <div class="server-pill" onclick="openLiveHLS('Star Sports 1 Hindi (Server 2)', 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8')">Server 2 (Sktech)</div>
             </div>
         </div>
 
         <div class="cricket-card">
             <div class="cricket-top">
-                <span class="cricket-tour">?? WORLD CRICKET & LEAGUES</span>
-                <span class="live-pill">? LIVE HD</span>
+                <span class="cricket-tour">ðŸŒ WORLD CRICKET & LEAGUES</span>
+                <span class="live-pill">â— LIVE HD</span>
             </div>
             <div class="cricket-title">Willow Cricket HD (English Broadcast)</div>
             <div class="server-pills">
@@ -248,35 +298,21 @@
 
         <div class="cricket-card">
             <div class="cricket-top">
-                <span class="cricket-tour">? ULTRA HD 60FPS</span>
-                <span class="live-pill">? 60 FPS</span>
+                <span class="cricket-tour">âš¡ ULTRA HD 60FPS</span>
+                <span class="live-pill">â— 60 FPS</span>
             </div>
-            <div class="cricket-title">Astro Cricket HD � Live Stream</div>
+            <div class="cricket-title">Astro Cricket HD â€” Live Stream</div>
             <div class="server-pills">
                 <div class="server-pill" onclick="openLiveHLS('Astro Cricket 60fps', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">Server 1 (Astro 1080p)</div>
                 <div class="server-pill" onclick="openLiveHLS('Astro Cricket Fast CDN', 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8')">Server 2 (Fast CDN)</div>
-            </div>
-        </div>
-
-        <div class="cricket-card">
-            <div class="cricket-top">
-                <span class="cricket-tour">?? SONY SPORTS NETWORK</span>
-                <span class="live-pill">? LIVE</span>
-            </div>
-            <div class="cricket-title">Sony Sports Ten 3 HD (Hindi)</div>
-            <div class="server-pills">
-                <div class="server-pill" onclick="openLiveHLS('Sony Ten 3 HD (Server 1)', 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8')">Server 1 (Sony Ten 3)</div>
-                <div class="server-pill" onclick="openLiveHLS('Sony Ten 3 HD (Server 2)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">Server 2 (Backup)</div>
             </div>
         </div>
     </div>
 
     <!-- TAB 3: SEARCH -->
     <div id="tabSearch" class="tab-view">
-        <input type="text" class="search-box" placeholder="?? Search over 10,000+ Movies, Gujarati, Hindi, Cricket..." id="searchInput" oninput="handleSearch()">
-        <div id="searchResults" class="search-grid">
-            <!-- Dynamic Live Search Results -->
-        </div>
+        <input type="text" class="search-box" placeholder="ðŸ” Search over 10,000+ Movies, Gujarati, Hindi, Cricket..." id="searchInput" oninput="handleSearch()">
+        <div id="searchResults" class="search-grid"></div>
     </div>
 
     <!-- TAB 4: SETTINGS -->
@@ -288,16 +324,16 @@
         </div>
 
         <div class="cricket-card">
-            <div class="cricket-title" style="margin-bottom: 4px;">??? Om Namah Shivaya Audio</div>
+            <div class="cricket-title" style="margin-bottom: 4px;">ðŸ•‰ï¸ Om Namah Shivaya Audio</div>
             <div style="font-size: 11px; color: #717D96; margin-bottom: 10px;">Play sacred startup chant</div>
-            <button class="btn-gold" style="width: 100%; justify-content: center;" onclick="toggleAudio()">? Test Audio</button>
+            <button class="btn-gold" style="width: 100%; justify-content: center;" onclick="toggleAudio()">â–¶ Test Audio</button>
             <audio id="bgAudio" src="app/src/main/res/raw/om_namah_shivaya.mp3"></audio>
         </div>
 
         <div class="cricket-card">
-            <div class="cricket-title" style="margin-bottom: 4px;">?? Add to iPhone Home Screen</div>
+            <div class="cricket-title" style="margin-bottom: 4px;">ðŸ“± Add to iPhone Home Screen</div>
             <div style="font-size: 11px; color: #B0B8C4; line-height: 1.6;">
-                1. Tap the <b>Share (?)</b> button in Safari.<br>
+                1. Tap the <b>Share (â†‘)</b> button in Safari.<br>
                 2. Tap <b>"Add to Home Screen"</b>.<br>
                 3. The official <b>Y+M Gold Crest</b> appears on your screen and launches in full-screen app mode!
             </div>
@@ -308,50 +344,60 @@
     <div id="playerModal" class="player-modal">
         <div class="player-header">
             <div id="playerTitle" style="font-size: 14px; font-weight: 800; color: #FFD700;">Now Playing</div>
-            <button class="close-player" onclick="closePlayer()">? Close</button>
+            <button class="close-player" onclick="closePlayer()">âœ• Close</button>
         </div>
-        <!-- Multi-Server Switcher Bar -->
         <div class="server-bar" id="serverBar" style="display:none;">
             <button class="server-tab active" onclick="switchMovieServer(1, this)">Server 1 (VidSrc Pro 4K)</button>
             <button class="server-tab" onclick="switchMovieServer(2, this)">Server 2 (AutoEmbed Fast)</button>
             <button class="server-tab" onclick="switchMovieServer(3, this)">Server 3 (2Embed)</button>
             <button class="server-tab" onclick="switchMovieServer(4, this)">Server 4 (SuperStream)</button>
         </div>
-        <div class="player-content" id="playerContent">
-            <!-- Dynamic Video or Embed Iframe -->
-        </div>
+        <div class="player-content" id="playerContent"></div>
     </div>
 
-    <!-- Bottom Nav -->
     <nav class="bottom-nav">
         <button class="nav-item active" onclick="switchTab('tabHome', this)">
-            <span class="nav-icon">??</span>
+            <span class="nav-icon">ðŸ </span>
             <span>Home</span>
         </button>
         <button class="nav-item" onclick="switchTab('tabCricket', this)">
-            <span class="nav-icon">??</span>
+            <span class="nav-icon">ðŸ</span>
             <span>Cricket</span>
         </button>
         <button class="nav-item" onclick="switchTab('tabSearch', this)">
-            <span class="nav-icon">??</span>
+            <span class="nav-icon">ðŸ”</span>
             <span>Search</span>
         </button>
         <button class="nav-item" onclick="switchTab('tabSettings', this)">
-            <span class="nav-icon">??</span>
+            <span class="nav-icon">âš™ï¸</span>
             <span>Settings</span>
         </button>
     </nav>
 
     <script>
         const TMDB_KEY = "e9e9d8da18ae29fc430845952232787c";
-        let currentTmdbId = null;
+        let currentTmdbId = 1139829;
+        const moviesMap = {
+            1139829: { title: "Stree 2 (2024)" },
+            839436: { title: "Chhello Show" },
+            632617: { title: "Hellaro" },
+            994270: { title: "Fakt Mahilao Maate" },
+            1012345: { title: "3 Ekka" },
+            581234: { title: "Chaal Jeevi Laiye!" },
+            872585: { title: "Jawan" },
+            693134: { title: "Animal" },
+            940551: { title: "Dunki" },
+            866398: { title: "Fighter" },
+            889737: { title: "Pushpa 2: The Rule" },
+            872906: { title: "Salaar" },
+            753342: { title: "Kalki 2898 AD" },
+            533535: { title: "Deadpool & Wolverine" }
+        };
 
-        // PWA Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
         }
 
-        // Tab Switching
         function switchTab(tabId, btn) {
             document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -359,61 +405,66 @@
             btn.classList.add('active');
         }
 
-        // Render Movie Card
         function renderCard(movie) {
-            const poster = movie.poster_path ? https://image.tmdb.org/t/p/w500 : 'apple-touch-icon.png';
+            if (!movie || !movie.id) return '';
+            moviesMap[movie.id] = movie;
+            const poster = movie.poster_path ? ('https://image.tmdb.org/t/p/w500' + movie.poster_path) : 'apple-touch-icon.png';
             const year = (movie.release_date || '').substring(0, 4);
             const rating = movie.vote_average ? movie.vote_average.toFixed(1) : '8.0';
-            const title = (movie.title || movie.name || 'Untitled').replace(/'/g, "\\'");
+            const title = movie.title || movie.name || 'Movie';
 
-            return 
-                <div class="media-card" onclick="openMoviePlayer(, '')">
-                    <div class="poster-wrap">
-                        <img src="" class="poster-img" loading="lazy" onerror="this.src='apple-touch-icon.png'">
-                        <div class="card-rating">? </div>
-                    </div>
-                    <div class="card-title"></div>
-                    <div class="card-year"></div>
-                </div>
-            ;
+            return '<div class="media-card" onclick="openMovieById(' + movie.id + ')">' +
+                '<div class="poster-wrap">' +
+                '<img src="' + poster + '" class="poster-img" loading="lazy" onerror="this.src=\'apple-touch-icon.png\'">' +
+                '<div class="card-rating">â˜… ' + rating + '</div>' +
+                '</div>' +
+                '<div class="card-title">' + title + '</div>' +
+                '<div class="card-year">' + year + '</div>' +
+                '</div>';
         }
 
-        // Load Dynamic Catalogs from TMDB
+        function openMovieById(id) {
+            const movie = moviesMap[id];
+            const title = movie ? (movie.title || movie.name) : 'Movie Stream';
+            openMoviePlayer(id, title);
+        }
+
         async function loadCatalogs() {
             try {
-                // 1. Gujarati Cinema (380+ Movies)
-                const guRes = await fetch(https://api.themoviedb.org/3/discover/movie?api_key=&with_original_language=gu&sort_by=popularity.desc);
-                const guData = await guRes.json();
-                if (guData.results && guData.results.length) {
-                    document.getElementById('gujaratiRow').innerHTML = guData.results.map(renderCard).join('');
-                }
+                fetch('https://api.themoviedb.org/3/discover/movie?api_key=' + TMDB_KEY + '&with_original_language=gu&sort_by=popularity.desc')
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.results && data.results.length) {
+                            document.getElementById('gujaratiRow').innerHTML = data.results.map(renderCard).join('');
+                        }
+                    }).catch(() => {});
 
-                // 2. Bollywood Blockbusters (10,400+ Movies)
-                const hiRes = await fetch(https://api.themoviedb.org/3/discover/movie?api_key=&with_original_language=hi&sort_by=popularity.desc);
-                const hiData = await hiRes.json();
-                if (hiData.results && hiData.results.length) {
-                    document.getElementById('bollywoodRow').innerHTML = hiData.results.map(renderCard).join('');
-                }
+                fetch('https://api.themoviedb.org/3/discover/movie?api_key=' + TMDB_KEY + '&with_original_language=hi&sort_by=popularity.desc')
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.results && data.results.length) {
+                            document.getElementById('bollywoodRow').innerHTML = data.results.map(renderCard).join('');
+                        }
+                    }).catch(() => {});
 
-                // 3. South Hindi Dubbed
-                const southRes = await fetch(https://api.themoviedb.org/3/discover/movie?api_key=&with_original_language=te|ta|kn|ml&sort_by=popularity.desc);
-                const southData = await southRes.json();
-                if (southData.results && southData.results.length) {
-                    document.getElementById('southRow').innerHTML = southData.results.map(renderCard).join('');
-                }
+                fetch('https://api.themoviedb.org/3/discover/movie?api_key=' + TMDB_KEY + '&with_original_language=te|ta|kn|ml&sort_by=popularity.desc')
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.results && data.results.length) {
+                            document.getElementById('southRow').innerHTML = data.results.map(renderCard).join('');
+                        }
+                    }).catch(() => {});
 
-                // 4. Hollywood 4K Ultra HD
-                const hollyRes = await fetch(https://api.themoviedb.org/3/trending/movie/day?api_key=);
-                const hollyData = await hollyRes.json();
-                if (hollyData.results && hollyData.results.length) {
-                    document.getElementById('hollywoodRow').innerHTML = hollyData.results.map(renderCard).join('');
-                }
-            } catch (e) {
-                console.error("Error loading catalogs", e);
-            }
+                fetch('https://api.themoviedb.org/3/trending/movie/day?api_key=' + TMDB_KEY)
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.results && data.results.length) {
+                            document.getElementById('hollywoodRow').innerHTML = data.results.map(renderCard).join('');
+                        }
+                    }).catch(() => {});
+            } catch (e) {}
         }
 
-        // Live Search across all 10,000+ movies
         let searchTimeout = null;
         function handleSearch() {
             clearTimeout(searchTimeout);
@@ -424,7 +475,7 @@
             }
             searchTimeout = setTimeout(async () => {
                 try {
-                    const res = await fetch(https://api.themoviedb.org/3/search/multi?api_key=&query=);
+                    const res = await fetch('https://api.themoviedb.org/3/search/multi?api_key=' + TMDB_KEY + '&query=' + encodeURIComponent(query));
                     const data = await res.json();
                     if (data.results && data.results.length) {
                         document.getElementById('searchResults').innerHTML = data.results.filter(m => m.poster_path).map(renderCard).join('');
@@ -435,7 +486,6 @@
             }, 300);
         }
 
-        // Open Movie Stream with Multi-Server Resolvers (VidSrc, AutoEmbed, 2Embed)
         function openMoviePlayer(tmdbId, title) {
             currentTmdbId = tmdbId;
             document.getElementById('playerTitle').innerText = title;
@@ -451,18 +501,17 @@
             const content = document.getElementById('playerContent');
             let embedUrl = "";
             if (serverNum === 1) {
-                embedUrl = https://vidsrc.to/embed/movie/;
+                embedUrl = 'https://vidsrc.to/embed/movie/' + currentTmdbId;
             } else if (serverNum === 2) {
-                embedUrl = https://player.autoembed.cc/embed/movie/;
+                embedUrl = 'https://player.autoembed.cc/embed/movie/' + currentTmdbId;
             } else if (serverNum === 3) {
-                embedUrl = https://www.2embed.cc/embed/;
+                embedUrl = 'https://www.2embed.cc/embed/' + currentTmdbId;
             } else {
-                embedUrl = https://vidsrc.me/embed/movie?tmdb=;
+                embedUrl = 'https://vidsrc.me/embed/movie?tmdb=' + currentTmdbId;
             }
-            content.innerHTML = <iframe src="" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>;
+            content.innerHTML = '<iframe src="' + embedUrl + '" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>';
         }
 
-        // Open Live Cricket HLS Stream
         let hls = null;
         function openLiveHLS(title, url) {
             document.getElementById('playerTitle').innerText = title;
@@ -470,7 +519,7 @@
             document.getElementById('playerModal').classList.add('open');
 
             const content = document.getElementById('playerContent');
-            content.innerHTML = <video id="hlsVideo" controls autoplay playsinline webkit-playsinline></video>;
+            content.innerHTML = '<video id="hlsVideo" controls autoplay playsinline webkit-playsinline></video>';
             const video = document.getElementById('hlsVideo');
 
             if (Hls.isSupported()) {
@@ -496,7 +545,6 @@
             if (audio.paused) { audio.play(); } else { audio.pause(); audio.currentTime = 0; }
         }
 
-        // Auto-load all catalogs on startup
         loadCatalogs();
     </script>
 </body>
