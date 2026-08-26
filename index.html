@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Yogesh Streamer</title>
 
-    <!-- PWA & Apple iOS Standalone Web App Meta Tags -->
+    <!-- PWA & iOS Standalone Web App Meta Tags -->
     <link rel="manifest" href="manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -18,16 +18,16 @@
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #0A0E17; color: #FFFFFF; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; padding-bottom: 75px; user-select: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #0A0E17; color: #FFFFFF; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; padding-bottom: 80px; user-select: none; }
 
-        /* iOS Safe Area & Header */
+        /* Header */
         header { 
-            background: rgba(18, 24, 36, 0.9); 
+            background: rgba(18, 24, 36, 0.95); 
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid #1E283C; 
-            padding: env(safe-area-inset-top, 16px) 16px 12px 16px; 
+            padding: max(16px, env(safe-area-inset-top)) 16px 12px 16px; 
             display: flex; 
             align-items: center; 
             justify-content: space-between; 
@@ -36,13 +36,19 @@
             z-index: 100; 
         }
         .header-left { display: flex; align-items: center; gap: 10px; }
-        .logo-crest { width: 36px; height: 36px; border-radius: 9px; border: 1.5px solid #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
-        .logo-title { font-size: 17px; font-weight: 800; color: #FFD700; letter-spacing: 0.8px; }
+        .logo-crest { width: 38px; height: 38px; border-radius: 9px; border: 1.5px solid #FFD700; box-shadow: 0 0 12px rgba(255, 215, 0, 0.35); }
+        .logo-title { font-size: 17px; font-weight: 900; color: #FFD700; letter-spacing: 0.8px; }
         .logo-sub { font-size: 10px; color: #00E5FF; font-weight: 600; }
-        .live-pill { background: #FF2E56; color: #FFF; font-size: 10px; font-weight: 800; padding: 4px 9px; border-radius: 12px; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .live-pill { background: #FF2E56; color: #FFF; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 12px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-        /* Navigation Views */
+        /* iOS Install Guide Banner */
+        .ios-banner { background: linear-gradient(90deg, #1A2234, #121824); border: 1px solid rgba(0, 229, 255, 0.3); border-radius: 12px; padding: 12px 14px; margin: 12px 16px 0 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .ios-banner-text { font-size: 11px; color: #B0B8C4; }
+        .ios-banner-text b { color: #FFD700; }
+        .ios-banner-btn { background: #00E5FF; color: #000; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; white-space: nowrap; cursor: pointer; }
+
+        /* Views */
         .tab-view { display: none; padding: 14px 16px; animation: fadeIn 0.25s ease-in-out; }
         .tab-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
@@ -51,65 +57,65 @@
         .hero-banner { 
             position: relative; 
             width: 100%; 
-            height: 240px; 
+            height: 250px; 
             border-radius: 16px; 
             overflow: hidden; 
             margin-bottom: 22px; 
             background: #121824; 
-            box-shadow: 0 8px 24px rgba(0,0,0,0.6); 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.7); 
             border: 1px solid #1E283C; 
         }
         .hero-img { width: 100%; height: 100%; object-fit: cover; }
         .hero-gradient { 
             position: absolute; 
             inset: 0; 
-            background: linear-gradient(180deg, transparent 20%, rgba(10, 14, 23, 0.7) 60%, #0A0E17 100%); 
+            background: linear-gradient(180deg, transparent 15%, rgba(10, 14, 23, 0.7) 60%, #0A0E17 100%); 
             display: flex; 
             flex-direction: column; 
             justify-content: flex-end; 
             padding: 16px; 
         }
-        .hero-tag { align-self: flex-start; background: rgba(255, 215, 0, 0.2); color: #FFD700; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 4px; margin-bottom: 6px; }
+        .hero-tag { align-self: flex-start; background: rgba(255, 215, 0, 0.25); color: #FFD700; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 4px; margin-bottom: 6px; }
         .hero-title { font-size: 22px; font-weight: 800; color: #FFF; line-height: 1.2; }
         .hero-desc { font-size: 12px; color: #B0B8C4; margin: 4px 0 10px 0; max-width: 90%; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .hero-buttons { display: flex; gap: 10px; }
-        .btn-gold { background: #FFD700; color: #0A0E17; border: none; padding: 8px 18px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-        .btn-outline { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); color: #FFF; border: 1px solid #00E5FF; padding: 8px 14px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; }
+        .btn-gold { background: #FFD700; color: #0A0E17; border: none; padding: 9px 20px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .btn-outline { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); color: #FFF; border: 1px solid #00E5FF; padding: 9px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; }
 
-        /* Section Rows */
+        /* Sections */
         .section-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; margin-top: 18px; }
         .section-title { font-size: 16px; font-weight: 800; color: #FFF; }
         .section-sub { font-size: 11px; color: #717D96; }
         
-        .carousel-row { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding-bottom: 6px; }
+        .carousel-row { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding-bottom: 8px; }
         .carousel-row::-webkit-scrollbar { display: none; }
 
-        .media-card { flex: 0 0 125px; cursor: pointer; transition: transform 0.2s; }
+        .media-card { flex: 0 0 130px; cursor: pointer; transition: transform 0.2s; }
         .media-card:active { transform: scale(0.96); }
-        .poster-wrap { position: relative; width: 125px; height: 180px; border-radius: 10px; overflow: hidden; background: #121824; border: 1px solid #1E283C; }
+        .poster-wrap { position: relative; width: 130px; height: 190px; border-radius: 10px; overflow: hidden; background: #1A2234; border: 1px solid #1E283C; display: flex; align-items: center; justify-content: center; }
         .poster-img { width: 100%; height: 100%; object-fit: cover; }
-        .card-rating { position: absolute; top: 6px; right: 6px; background: rgba(0, 0, 0, 0.75); color: #FFD700; font-size: 10px; font-weight: 700; padding: 2px 5px; border-radius: 4px; display: flex; align-items: center; gap: 2px; }
-        .card-title { font-size: 12px; font-weight: 600; color: #FFF; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-rating { position: absolute; top: 6px; right: 6px; background: rgba(0, 0, 0, 0.8); color: #FFD700; font-size: 10px; font-weight: 700; padding: 2px 5px; border-radius: 4px; }
+        .card-title { font-size: 12px; font-weight: 700; color: #FFF; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .card-year { font-size: 10px; color: #717D96; }
 
-        /* Live Cricket Card */
-        .cricket-card { background: #121824; border: 1px solid #1E283C; border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+        /* Cricket Cards */
+        .cricket-card { background: #121824; border: 1px solid #1E283C; border-radius: 14px; padding: 16px; margin-bottom: 14px; }
         .cricket-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .cricket-tour { font-size: 11px; font-weight: 700; color: #00E5FF; }
-        .cricket-title { font-size: 15px; font-weight: 700; color: #FFF; margin-bottom: 12px; }
+        .cricket-tour { font-size: 11px; font-weight: 800; color: #00E5FF; }
+        .cricket-title { font-size: 16px; font-weight: 800; color: #FFF; margin-bottom: 14px; }
         .server-pills { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .server-pill { background: #1A2234; border: 1px solid #2A364F; color: #FFD700; padding: 9px; border-radius: 8px; font-size: 11px; font-weight: 700; text-align: center; cursor: pointer; }
+        .server-pill { background: #1A2234; border: 1px solid #2A364F; color: #FFD700; padding: 10px; border-radius: 8px; font-size: 11px; font-weight: 700; text-align: center; cursor: pointer; }
         .server-pill:active { background: #FFD700; color: #000; }
 
-        /* Video Player Modal (Full Screen iOS) */
+        /* Video Player Modal */
         .player-modal { position: fixed; inset: 0; background: #000; z-index: 9999; display: none; flex-direction: column; }
         .player-modal.open { display: flex; }
-        .player-header { padding: env(safe-area-inset-top, 14px) 14px 10px 14px; display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.8); }
-        .close-player { background: rgba(255,255,255,0.15); border: none; color: #FFF; font-size: 14px; font-weight: 700; padding: 6px 14px; border-radius: 20px; cursor: pointer; }
+        .player-header { padding: max(14px, env(safe-area-inset-top)) 16px 12px 16px; display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.85); }
+        .close-player { background: rgba(255,255,255,0.2); border: none; color: #FFF; font-size: 13px; font-weight: 800; padding: 6px 16px; border-radius: 20px; cursor: pointer; }
         .player-content { flex: 1; display: flex; align-items: center; justify-content: center; background: #000; }
         video { width: 100%; max-height: 85vh; object-fit: contain; }
 
-        /* iOS Bottom Navigation Bar */
+        /* Bottom Nav */
         .bottom-nav { 
             position: fixed; 
             bottom: 0; 
@@ -117,7 +123,7 @@
             right: 0; 
             height: calc(60px + env(safe-area-inset-bottom, 0px)); 
             padding-bottom: env(safe-area-inset-bottom, 0px);
-            background: rgba(18, 24, 36, 0.95); 
+            background: rgba(18, 24, 36, 0.98); 
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-top: 1px solid #1E283C; 
@@ -126,12 +132,11 @@
             justify-content: space-around; 
             z-index: 90; 
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; color: #717D96; font-size: 10px; font-weight: 600; cursor: pointer; border: none; background: transparent; padding: 6px 16px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; color: #717D96; font-size: 10px; font-weight: 700; cursor: pointer; border: none; background: transparent; padding: 6px 16px; }
         .nav-item.active { color: #FFD700; }
-        .nav-icon { font-size: 18px; }
+        .nav-icon { font-size: 20px; }
 
-        /* Search input */
-        .search-box { width: 100%; background: #121824; border: 1px solid #1E283C; color: #FFF; padding: 12px 16px; border-radius: 12px; font-size: 14px; outline: none; margin-bottom: 14px; }
+        .search-box { width: 100%; background: #121824; border: 1px solid #1E283C; color: #FFF; padding: 14px 16px; border-radius: 12px; font-size: 14px; outline: none; margin-bottom: 14px; }
         .search-box:focus { border-color: #FFD700; }
     </style>
 </head>
@@ -143,11 +148,19 @@
             <img src="apple-touch-icon.png" alt="Y+M Logo" class="logo-crest">
             <div>
                 <div class="logo-title">YOGESH STREAMER</div>
-                <div class="logo-sub">iOS Multi-Platform Edition</div>
+                <div class="logo-sub">iOS Standalone Edition v1.0</div>
             </div>
         </div>
         <div class="live-pill">? LIVE</div>
     </header>
+
+    <!-- iOS Add to Home Screen Banner -->
+    <div class="ios-banner" id="iosPrompt">
+        <div class="ios-banner-text">
+            ?? <b>Install on iPhone:</b> Tap <b>Share (?)</b> & select <b>"Add to Home Screen"</b> for full-screen native app!
+        </div>
+        <button class="ios-banner-btn" onclick="document.getElementById('iosPrompt').style.display='none'">Got it</button>
+    </div>
 
     <!-- TAB 1: HOME -->
     <div id="tabHome" class="tab-view active">
@@ -155,9 +168,9 @@
         <div class="hero-banner">
             <img src="https://image.tmdb.org/t/p/original/8kOWDBK6XlPUzckuHDo3wwVRFwt.jpg" class="hero-img" alt="Stree 2">
             <div class="hero-gradient">
-                <span class="hero-tag">?? TRENDING #1 IN INDIA</span>
+                <span class="hero-tag">?? #1 TRENDING MOVIE</span>
                 <div class="hero-title">Stree 2: Sarkate Ka Aatank</div>
-                <div class="hero-desc">The town of Chanderi is haunted once again by a terrifying headless entity. Vicky and friends team up with Stree to save everyone.</div>
+                <div class="hero-desc">The town of Chanderi is haunted once again by Sarkata. Vicky and his friends unite with Stree to save the town.</div>
                 <div class="hero-buttons">
                     <button class="btn-gold" onclick="playVideo('Stree 2 (2024)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">? Play Now</button>
                     <button class="btn-outline" onclick="playVideo('Stree 2 (2024)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">? Details</button>
@@ -175,15 +188,15 @@
         <div class="carousel-row">
             <div class="media-card" onclick="playVideo('Chhello Show (Last Film Show)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
                 <div class="poster-wrap">
-                    <img src="https://image.tmdb.org/t/p/w500/6yQY3vYjY4K6r8g2w4t1x.jpg" class="poster-img">
+                    <img src="https://image.tmdb.org/t/p/w500/6yQY3vYjY4K6r8g2w4t1x.jpg" class="poster-img" onerror="this.src='apple-touch-icon.png'">
                     <div class="card-rating">? 8.6</div>
                 </div>
                 <div class="card-title">Chhello Show</div>
                 <div class="card-year">2022 • Gujarati</div>
             </div>
-            <div class="media-card" onclick="playVideo('Hellaro', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
+            <div class="media-card" onclick="playVideo('Hellaro (National Award Winner)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
                 <div class="poster-wrap">
-                    <img src="https://image.tmdb.org/t/p/w500/hellaro_gujarati_poster.jpg" class="poster-img">
+                    <img src="https://image.tmdb.org/t/p/w500/mKsm9bFqfO2Y8yD3qW8p0c6H2o4.jpg" class="poster-img" onerror="this.src='apple-touch-icon.png'">
                     <div class="card-rating">? 8.7</div>
                 </div>
                 <div class="card-title">Hellaro</div>
@@ -191,27 +204,19 @@
             </div>
             <div class="media-card" onclick="playVideo('Naadi Dosh', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
                 <div class="poster-wrap">
-                    <img src="https://image.tmdb.org/t/p/w500/naadi_dosh_poster.jpg" class="poster-img">
+                    <img src="https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg" class="poster-img" onerror="this.src='apple-touch-icon.png'">
                     <div class="card-rating">? 8.3</div>
                 </div>
                 <div class="card-title">Naadi Dosh</div>
                 <div class="card-year">2022 • Gujarati</div>
             </div>
-            <div class="media-card" onclick="playVideo('Fakt Mahilao Maate', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
+            <div class="media-card" onclick="playVideo('3 Ekka (Superhit)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
                 <div class="poster-wrap">
-                    <img src="https://image.tmdb.org/t/p/w500/fakt_mahilao_poster.jpg" class="poster-img">
-                    <div class="card-rating">? 8.2</div>
+                    <img src="https://image.tmdb.org/t/p/w500/w7V5w9G8U0l1uP0oG2K8G8zV2X.jpg" class="poster-img" onerror="this.src='apple-touch-icon.png'">
+                    <div class="card-rating">? 8.1</div>
                 </div>
-                <div class="card-title">Fakt Mahilao Maate</div>
-                <div class="card-year">2022 • Gujarati</div>
-            </div>
-            <div class="media-card" onclick="playVideo('Chaal Jeevi Laiye!', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
-                <div class="poster-wrap">
-                    <img src="https://image.tmdb.org/t/p/w500/chaal_jeevi_laiye.jpg" class="poster-img">
-                    <div class="card-rating">? 9.1</div>
-                </div>
-                <div class="card-title">Chaal Jeevi Laiye!</div>
-                <div class="card-year">2019 • Gujarati</div>
+                <div class="card-title">3 Ekka</div>
+                <div class="card-year">2023 • Gujarati</div>
             </div>
         </div>
 
@@ -223,37 +228,29 @@
             </div>
         </div>
         <div class="carousel-row">
-            <div class="media-card" onclick="playVideo('Jawan (2023)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
+            <div class="media-card" onclick="playVideo('Jawan (Shah Rukh Khan)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
                 <div class="poster-wrap">
-                    <img src="https://image.tmdb.org/t/p/w500/jawan_shahrukh_khan.jpg" class="poster-img">
+                    <img src="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" class="poster-img">
                     <div class="card-rating">? 8.2</div>
                 </div>
                 <div class="card-title">Jawan</div>
                 <div class="card-year">2023 • Hindi</div>
             </div>
-            <div class="media-card" onclick="playVideo('Animal (2023)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
+            <div class="media-card" onclick="playVideo('Animal (Ranbir Kapoor)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
                 <div class="poster-wrap">
-                    <img src="https://image.tmdb.org/t/p/w500/animal_ranbir_kapoor.jpg" class="poster-img">
+                    <img src="https://image.tmdb.org/t/p/w500/czembW0Rk1Ke7lCJGahbOhdCuhV.jpg" class="poster-img">
                     <div class="card-rating">? 7.7</div>
                 </div>
                 <div class="card-title">Animal</div>
                 <div class="card-year">2023 • Hindi</div>
             </div>
-            <div class="media-card" onclick="playVideo('Dunki (2023)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
+            <div class="media-card" onclick="playVideo('Dunki', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
                 <div class="poster-wrap">
-                    <img src="https://image.tmdb.org/t/p/w500/dunki_shahrukh_khan.jpg" class="poster-img">
+                    <img src="https://image.tmdb.org/t/p/w500/8kOWDBK6XlPUzckuHDo3wwVRFwt.jpg" class="poster-img">
                     <div class="card-rating">? 7.9</div>
                 </div>
                 <div class="card-title">Dunki</div>
                 <div class="card-year">2023 • Hindi</div>
-            </div>
-            <div class="media-card" onclick="playVideo('Fighter (2024)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
-                <div class="poster-wrap">
-                    <img src="https://image.tmdb.org/t/p/w500/fighter_hrithik_roshan.jpg" class="poster-img">
-                    <div class="card-rating">? 7.8</div>
-                </div>
-                <div class="card-title">Fighter</div>
-                <div class="card-year">2024 • Hindi</div>
             </div>
         </div>
     </div>
@@ -263,7 +260,7 @@
         <div class="section-header" style="margin-top:0;">
             <div>
                 <div class="section-title">?? Live Cricket & Sports Hub</div>
-                <div class="section-sub">Powered by Cricify, Sktech & Sportzx</div>
+                <div class="section-sub">Powered by Cricify, Sktech & Sportzx • 0% Ads</div>
             </div>
         </div>
 
@@ -274,8 +271,8 @@
             </div>
             <div class="cricket-title">Star Sports 1 Hindi HD — Live Match</div>
             <div class="server-pills">
-                <div class="server-pill" onclick="playVideo('Star Sports 1 Hindi (Server 1)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">Server 1 (Cricify)</div>
-                <div class="server-pill" onclick="playVideo('Star Sports 1 Hindi (Server 2)', 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8')">Server 2 (Sktech)</div>
+                <div class="server-pill" onclick="playVideo('Star Sports 1 Hindi (Server 1 - Cricify)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">Server 1 (Cricify)</div>
+                <div class="server-pill" onclick="playVideo('Star Sports 1 Hindi (Server 2 - Sktech)', 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8')">Server 2 (Sktech)</div>
             </div>
         </div>
 
@@ -284,7 +281,7 @@
                 <span class="cricket-tour">?? WORLD CRICKET & LEAGUES</span>
                 <span class="live-pill">? LIVE HD</span>
             </div>
-            <div class="cricket-title">Willow Cricket HD (English)</div>
+            <div class="cricket-title">Willow Cricket HD (English Broadcast)</div>
             <div class="server-pills">
                 <div class="server-pill" onclick="playVideo('Willow Cricket HD (Server 1)', 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8')">Server 1 (Cricify)</div>
                 <div class="server-pill" onclick="playVideo('Willow Cricket HD (Server 2)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">Server 2 (Sportzx)</div>
@@ -308,7 +305,14 @@
     <div id="tabSearch" class="tab-view">
         <input type="text" class="search-box" placeholder="?? Search Movies, Gujarati, Cricket..." id="searchInput" oninput="handleSearch()">
         <div id="searchResults" class="carousel-row" style="flex-wrap: wrap;">
-            <!-- Populated on search -->
+            <div class="media-card" onclick="playVideo('Stree 2', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
+                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/8kOWDBK6XlPUzckuHDo3wwVRFwt.jpg" class="poster-img"></div>
+                <div class="card-title">Stree 2</div>
+            </div>
+            <div class="media-card" onclick="playVideo('Chhello Show', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
+                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/6yQY3vYjY4K6r8g2w4t1x.jpg" class="poster-img"></div>
+                <div class="card-title">Chhello Show</div>
+            </div>
         </div>
     </div>
 
@@ -329,22 +333,22 @@
 
         <div class="cricket-card">
             <div class="cricket-title" style="margin-bottom: 4px;">?? Add to iPhone Home Screen</div>
-            <div style="font-size: 11px; color: #B0B8C4; line-height: 1.5;">
-                1. Tap the <b>Share button</b> (square with up arrow) in Safari.<br>
+            <div style="font-size: 11px; color: #B0B8C4; line-height: 1.6;">
+                1. Tap the <b>Share (?)</b> button at the bottom of Safari.<br>
                 2. Tap <b>"Add to Home Screen"</b>.<br>
                 3. The official <b>Y+M Gold Crest</b> will appear on your iPhone screen and run in full-screen standalone mode!
             </div>
         </div>
     </div>
 
-    <!-- Native Video Player Modal -->
+    <!-- Native Video Player Modal (AirPlay + PiP Enabled) -->
     <div id="playerModal" class="player-modal">
         <div class="player-header">
             <div id="playerTitle" style="font-size: 14px; font-weight: 700; color: #FFD700;">Now Playing</div>
             <button class="close-player" onclick="closePlayer()">? Close</button>
         </div>
         <div class="player-content">
-            <video id="hlsPlayer" controls playsinline></video>
+            <video id="hlsPlayer" controls playsinline webkit-playsinline x-webkit-airplay="allow"></video>
         </div>
     </div>
 
@@ -369,12 +373,10 @@
     </nav>
 
     <script>
-        // PWA Service Worker Registration
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
         }
 
-        // Tab Switching
         function switchTab(tabId, btn) {
             document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -382,7 +384,6 @@
             btn.classList.add('active');
         }
 
-        // Video Player Logic with HLS.js and iOS AVPlayer fallback
         const playerModal = document.getElementById('playerModal');
         const video = document.getElementById('hlsPlayer');
         let hls = null;
@@ -400,7 +401,7 @@
                     video.play().catch(() => {});
                 });
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                // Native iOS Safari video engine
+                // Native Apple AVPlayer engine for iOS Safari
                 video.src = url;
                 video.addEventListener('loadedmetadata', function () {
                     video.play().catch(() => {});
