@@ -1,9 +1,6 @@
 package com.yogesh.streamer.core.extractors
 
-import com.yogesh.streamer.core.scrapers.CastleTVScraper
-import com.yogesh.streamer.core.scrapers.CricifyScraper
-import com.yogesh.streamer.core.scrapers.LiveCricketMatch
-import com.yogesh.streamer.core.scrapers.StreamServer
+import com.yogesh.streamer.core.scrapers.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
@@ -20,22 +17,35 @@ object MasterExtractorManager {
     suspend fun getMovieStreams(tmdbId: Int, title: String): ExtractedMediaStreams = withContext(Dispatchers.IO) {
         val serverList = mutableListOf<StreamServer>()
 
-        val superStreamDeferred = async { SuperStreamExtractor.extract(tmdbId) }
+        val hdhubDeferred = async { HDHub4uScraper.resolveStreams(tmdbId, title) }
+        val movieBoxDeferred = async { MovieBoxScraper.resolveStreams(tmdbId, title) }
         val castleTvDeferred = async { CastleTVScraper.resolveMovieStreams(tmdbId, title) }
+        val superStreamDeferred = async { SuperStreamExtractor.extract(tmdbId) }
 
-        val superStreams = superStreamDeferred.await()
-        val castleStreams = castleTvDeferred.await()
+        try {
+            serverList.addAll(hdhubDeferred.await())
+        } catch (e: Exception) { e.printStackTrace() }
 
-        serverList.addAll(superStreams)
-        serverList.addAll(castleStreams)
+        try {
+            serverList.addAll(movieBoxDeferred.await())
+        } catch (e: Exception) { e.printStackTrace() }
+
+        try {
+            serverList.addAll(castleTvDeferred.await())
+        } catch (e: Exception) { e.printStackTrace() }
+
+        try {
+            serverList.addAll(superStreamDeferred.await())
+        } catch (e: Exception) { e.printStackTrace() }
 
         if (serverList.isEmpty()) {
             serverList.add(
                 StreamServer(
-                    serverName = "VidCloud Multi-Audio Pro",
-                    streamUrl = "https://vidsrc.xyz/embed/movie?tmdb=",
+                    serverName = "Universal Multi-Audio Server 1",
+                    streamUrl = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
                     quality = "1080p Ultra HD",
-                    isHls = true
+                    isHls = true,
+                    headers = mapOf("Referer" to "https://cricify.live/")
                 )
             )
         }
@@ -47,6 +57,37 @@ object MasterExtractorManager {
     }
 
     suspend fun getLiveCricketStreams(): List<LiveCricketMatch> = withContext(Dispatchers.IO) {
-        CricifyScraper.getLiveMatches()
+        val matches = mutableListOf<LiveCricketMatch>()
+
+        val cricifyDeferred = async { CricifyScraper.getLiveMatches() }
+        val sktechDeferred = async { SKTechScraper.getLiveSportsServers() }
+        val sportzxDeferred = async { SportzxScraper.getLiveSportsServers() }
+
+        val cricifyMatches = try { cricifyDeferred.await() } catch (e: Exception) { emptyList() }
+        val sktechServers = try { sktechDeferred.await() } catch (e: Exception) { emptyList() }
+        val sportzxServers = try { sportzxDeferred.await() } catch (e: Exception) { emptyList() }
+
+        matches.addAll(cricifyMatches)
+
+        if (sktechServers.isNotEmpty() || sportzxServers.isNotEmpty()) {
+            val extraServers = mutableListOf<StreamServer>()
+            extraServers.addAll(sktechServers)
+            extraServers.addAll(sportzxServers)
+
+            matches.add(
+                LiveCricketMatch(
+                    id = "live_multi_sports_hub",
+                    matchTitle = "Live Sports Multi-Server Hub (Star / Sony / Willow / Astro)",
+                    team1 = "Universal",
+                    team2 = "Multi-Server",
+                    tournament = "Live Cricket & Sports",
+                    status = "LIVE",
+                    matchTime = "Live Now",
+                    servers = extraServers
+                )
+            )
+        }
+
+        matches
     }
 }

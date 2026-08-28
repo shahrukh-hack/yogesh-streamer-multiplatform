@@ -13,11 +13,10 @@ import com.yogesh.streamer.ui.theme.YogeshStreamerTheme
 
 class MainActivity : ComponentActivity() {
 
+    private var hasPlayedAudio = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Guaranteed Om Namah Shivaya intro audio playback
-        StartupAudioManager.playStartupAudio(this)
 
         setContent {
             YogeshStreamerTheme {
@@ -28,6 +27,14 @@ class MainActivity : ComponentActivity() {
                     MainScreen()
                 }
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!hasPlayedAudio) {
+            hasPlayedAudio = true
+            StartupAudioManager.playStartupAudio(this)
         }
     }
 }

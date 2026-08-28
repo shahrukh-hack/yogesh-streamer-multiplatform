@@ -1,5 +1,6 @@
 package com.yogesh.streamer.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -34,13 +35,20 @@ fun MainScreen() {
     var activePlaybackUrl by remember { mutableStateOf<String?>(null) }
     var activePlaybackTitle by remember { mutableStateOf("") }
 
+    // Hierarchical BackHandler Navigation Hierarchy
     if (activePlaybackUrl != null) {
+        BackHandler {
+            activePlaybackUrl = null
+        }
         PlayerScreen(
             videoUrl = activePlaybackUrl!!,
             title = activePlaybackTitle,
             onBack = { activePlaybackUrl = null }
         )
     } else if (selectedMediaItem != null) {
+        BackHandler {
+            selectedMediaItem = null
+        }
         DetailsScreen(
             item = selectedMediaItem!!,
             onBackClick = { selectedMediaItem = null },
@@ -50,6 +58,12 @@ fun MainScreen() {
             }
         )
     } else {
+        if (currentTab != NavDestination.HOME) {
+            BackHandler {
+                currentTab = NavDestination.HOME
+            }
+        }
+
         Scaffold(
             bottomBar = {
                 if (!isTv) {
@@ -89,7 +103,7 @@ fun MainScreen() {
                                 onClick = { currentTab = dest },
                                 icon = { Icon(dest.icon, contentDescription = dest.title) },
                                 label = { Text(dest.title) },
-                                colors = NavigationRailItemDefaults.colors(
+                                colors = NavigationBarItemDefaults.colors(
                                     selectedIconColor = GoldPrimary,
                                     selectedTextColor = GoldPrimary,
                                     unselectedIconColor = TextMuted,

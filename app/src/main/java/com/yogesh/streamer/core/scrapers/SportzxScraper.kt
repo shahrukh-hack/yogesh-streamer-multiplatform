@@ -4,10 +4,22 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 object SportzxScraper {
-    suspend fun getBackupServers(matchId: String): List<StreamServer> = withContext(Dispatchers.IO) {
+    suspend fun getLiveSportsServers(): List<StreamServer> = withContext(Dispatchers.IO) {
         listOf(
-            StreamServer("Sportzx High-Speed Backup 1", "https://sportzx.live/hls//stream.m3u8", "1080p"),
-            StreamServer("Sportzx Fast CDN Backup 2", "https://sportzx.live/cdn//index.m3u8", "720p")
+            StreamServer(
+                serverName = "Sportzx Sony Ten 3 Hindi HD",
+                streamUrl = "https://cricify.live/stream/sonyten3/index.m3u8",
+                quality = "1080p",
+                isHls = true,
+                headers = mapOf("Referer" to "https://cricify.live/")
+            ),
+            StreamServer(
+                serverName = "Sportzx Willow Cricket HD (Global)",
+                streamUrl = "https://willow.live/stream/willowhd/playlist.m3u8",
+                quality = "1080p",
+                isHls = true,
+                headers = mapOf("Referer" to "https://willow.live/")
+            )
         )
     }
 }

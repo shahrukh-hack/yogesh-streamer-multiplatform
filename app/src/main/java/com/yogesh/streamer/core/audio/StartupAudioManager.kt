@@ -2,6 +2,7 @@ package com.yogesh.streamer.core.audio
 
 import android.content.Context
 import android.media.AudioAttributes
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.util.Log
 import com.yogesh.streamer.R
@@ -9,13 +10,6 @@ import com.yogesh.streamer.R
 object StartupAudioManager {
     private const val TAG = "StartupAudioManager"
     private const val PREF_AUDIO_ENABLED = "pref_om_namah_shivaya_enabled"
-
-    fun init(context: Context) {
-        val prefs = context.getSharedPreferences("yogesh_prefs", Context.MODE_PRIVATE)
-        if (!prefs.contains(PREF_AUDIO_ENABLED)) {
-            prefs.edit().putBoolean(PREF_AUDIO_ENABLED, true).apply()
-        }
-    }
 
     fun isAudioEnabled(context: Context): Boolean {
         val prefs = context.getSharedPreferences("yogesh_prefs", Context.MODE_PRIVATE)
@@ -31,6 +25,13 @@ object StartupAudioManager {
         if (!isAudioEnabled(context)) return
 
         try {
+            val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+            audioManager?.setStreamVolume(
+                AudioManager.STREAM_MUSIC,
+                audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) * 8 / 10,
+                0
+            )
+
             val mediaPlayer = MediaPlayer.create(context, R.raw.om_namah_shivaya) ?: return
             mediaPlayer.setAudioAttributes(
                 AudioAttributes.Builder()
@@ -38,6 +39,7 @@ object StartupAudioManager {
                     .setUsage(AudioAttributes.USAGE_MEDIA)
                     .build()
             )
+            mediaPlayer.setVolume(1.0f, 1.0f)
             mediaPlayer.setOnCompletionListener {
                 try {
                     it.release()
@@ -46,7 +48,7 @@ object StartupAudioManager {
                 }
             }
             mediaPlayer.start()
-            Log.i(TAG, "Sacred Om Namah Shivaya startup audio started successfully")
+            Log.i(TAG, "Sacred Om Namah Shivaya startup audio started with volume boost")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to play startup audio", e)
         }
