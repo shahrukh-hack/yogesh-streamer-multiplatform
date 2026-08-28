@@ -146,7 +146,7 @@
                 <div class="logo-sub">Multi-Platform v1.4.0</div>
             </div>
         </div>
-        <div class="version-badge">0% ADS</div>
+        <div class="version-badge">PRO v1.4</div>
     </header>
 
     <!-- 🏠 1. HOME TAB (Movies, Gujarati, Web Series, K-Dramas) -->
@@ -246,10 +246,10 @@
         <div style="background: #121824; border: 1px solid #1E283C; border-radius: 12px; padding: 16px; margin-top: 14px;">
             <h3 style="color: #FFD700; margin-bottom: 8px;">Yogesh Streamer v1.4.0</h3>
             <p style="font-size: 12px; color: #B0B8C4; line-height: 1.6;">
-                • Engine: Sandboxed Zero-Ad Player (Direct HLS + Hardened Web Stream)<br>
+                • Engine: Multi-CDN Stream Provider (VidLink, MultiEmbed, AutoEmbed)<br>
                 • Indian Live TV: DD Girnar, ABP Asmita, Sandesh News, B4U Movies, DD National, Aaj Tak<br>
                 • Sports: Star Sports Hindi HD, Willow HD, Astro Cricket 60fps<br>
-                • 100% Ad-Blocked, Zero Popups, Zero Redirects
+                • Fullscreen Enabled, Multi-Audio Support
             </p>
         </div>
     </div>
@@ -260,7 +260,7 @@
             <button class="player-back-btn" onclick="closePlayer()">
                 <i class="fas fa-arrow-left"></i> <span id="player-title">Playing Video</span>
             </button>
-            <div style="font-size: 11px; color: #00E5FF; font-weight: 700;">1080p • Zero Ads</div>
+            <div style="font-size: 11px; color: #00E5FF; font-weight: 700;">1080p Ultra HD</div>
         </div>
         <div class="player-content" id="player-container"></div>
     </div>
@@ -410,12 +410,12 @@
             document.getElementById('player-modal').classList.add('open');
 
             const streamUrl = isTv 
-                ? `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&sea=1&epi=1` 
-                : `https://vidsrc.me/embed/movie?tmdb=${tmdbId}`;
+                ? `https://vidlink.pro/tv/${tmdbId}/1/1` 
+                : `https://vidlink.pro/movie/${tmdbId}`;
 
-            // Sandboxed Ad-Blocked Iframe Player (Blocks 100% of popups and redirects)
+            // Clean embed iframe without sandbox restrictions
             container.innerHTML = `
-                <iframe src="${streamUrl}" sandbox="allow-scripts allow-same-origin allow-fullscreen" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
+                <iframe src="${streamUrl}" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen></iframe>
             `;
         }
 
