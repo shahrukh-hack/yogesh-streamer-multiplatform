@@ -78,9 +78,9 @@ fun DetailsScreen(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "? ", color = GoldPrimary, fontSize = 14.sp)
+                    Text(text = "Rating: ", color = GoldPrimary, fontSize = 14.sp)
                     Spacer(modifier = Modifier.width(12.dp))
-                    Text(text = item.releaseYear, color = TextMuted, fontSize = 14.sp)
+                    Text(text = item.releaseYear ?: "2024", color = TextMuted, fontSize = 14.sp)
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(text = "Multi-Audio (Hindi/Eng/Guj)", color = CyanAccent, fontSize = 12.sp)
                 }
@@ -115,7 +115,7 @@ fun DetailsScreen(
 
                 // Multi-Server Options
                 Text(
-                    text = "? Select Streaming Server (Auto-Fallback)",
+                    text = "Select Streaming Server (Auto-Fallback)",
                     color = GoldPrimary,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold

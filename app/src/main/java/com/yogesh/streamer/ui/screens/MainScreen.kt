@@ -43,8 +43,8 @@ fun MainScreen() {
     } else if (selectedMediaItem != null) {
         DetailsScreen(
             item = selectedMediaItem!!,
-            onBack = { selectedMediaItem = null },
-            onPlay = { url, title ->
+            onBackClick = { selectedMediaItem = null },
+            onPlayServer = { url: String, title: String ->
                 activePlaybackUrl = url
                 activePlaybackTitle = title
             }
@@ -108,7 +108,7 @@ fun MainScreen() {
                             onPlayClick = { selectedMediaItem = it }
                         )
                         NavDestination.CRICKET -> LiveCricketScreen(
-                            onPlayStream = { url, title ->
+                            onPlayLiveServer = { url: String, title: String ->
                                 activePlaybackUrl = url
                                 activePlaybackTitle = title
                             }

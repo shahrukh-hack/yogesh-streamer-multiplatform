@@ -31,7 +31,7 @@ object StreamWishExtractor {
             val m3u8Matcher = Pattern.compile("""(https?://[^\s"'<>]+\.m3u8[^\s"'<>]*)""").matcher(unpacked)
             if (m3u8Matcher.find()) {
                 val streamUrl = m3u8Matcher.group(1) ?: ""
-                servers.add(StreamServer("StreamWish Pro 1080p", streamUrl, "1080p", mapOf("Referer" to url)))
+                servers.add(StreamServer("StreamWish Pro 1080p", streamUrl, "1080p", true, mapOf("Referer" to url)))
             }
         } catch (e: Exception) {
             e.printStackTrace()
