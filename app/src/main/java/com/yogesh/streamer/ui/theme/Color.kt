@@ -20,3 +20,7 @@ val TextMuted = Color(0xFF717D96)
 
 val LiveRed = Color(0xFFFF2E56)
 val StreamGreen = Color(0xFF00E676)
+
+val RoyalGold = GoldPrimary
+val NeonCyan = CyanAccent
+val DarkNavy = BgDark

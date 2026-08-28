@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.yogesh.streamer.core.scrapers.MediaItem
-import com.yogesh.streamer.core.scrapers.StreamServer
 import com.yogesh.streamer.core.tv.TvNavigationHelper
 import com.yogesh.streamer.ui.theme.*
 
@@ -32,21 +31,21 @@ fun MainScreen() {
 
     var currentTab by remember { mutableStateOf(NavDestination.HOME) }
     var selectedMediaItem by remember { mutableStateOf<MediaItem?>(null) }
-    var activePlaybackServer by remember { mutableStateOf<StreamServer?>(null) }
+    var activePlaybackUrl by remember { mutableStateOf<String?>(null) }
     var activePlaybackTitle by remember { mutableStateOf("") }
 
-    if (activePlaybackServer != null) {
+    if (activePlaybackUrl != null) {
         PlayerScreen(
-            server = activePlaybackServer!!,
+            videoUrl = activePlaybackUrl!!,
             title = activePlaybackTitle,
-            onBackClick = { activePlaybackServer = null }
+            onBack = { activePlaybackUrl = null }
         )
     } else if (selectedMediaItem != null) {
         DetailsScreen(
             item = selectedMediaItem!!,
-            onBackClick = { selectedMediaItem = null },
-            onPlayServer = { server, title ->
-                activePlaybackServer = server
+            onBack = { selectedMediaItem = null },
+            onPlay = { url, title ->
+                activePlaybackUrl = url
                 activePlaybackTitle = title
             }
         )
@@ -109,8 +108,8 @@ fun MainScreen() {
                             onPlayClick = { selectedMediaItem = it }
                         )
                         NavDestination.CRICKET -> LiveCricketScreen(
-                            onPlayLiveServer = { server, title ->
-                                activePlaybackServer = server
+                            onPlayStream = { url, title ->
+                                activePlaybackUrl = url
                                 activePlaybackTitle = title
                             }
                         )

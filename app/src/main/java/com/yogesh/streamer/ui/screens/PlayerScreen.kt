@@ -13,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Audiotrack
-import androidx.compose.material.icons.filled.Subtitles
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,14 +22,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.media3.common.C
 import androidx.media3.common.MediaItem
-import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
-import com.yogesh.streamer.ui.theme.NeonCyan
-import com.yogesh.streamer.ui.theme.RoyalGold
+import com.yogesh.streamer.ui.theme.*
 
 @OptIn(UnstableApi::class)
 @Composable
@@ -109,9 +105,9 @@ fun PlayerScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0x80121824)),
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Icon(Icons.Default.Audiotrack, contentDescription = "Audio Track", tint = RoyalGold, modifier = Modifier.size(18.dp))
+                    Icon(Icons.Default.Audiotrack, contentDescription = "Audio Track", tint = GoldPrimary, modifier = Modifier.size(18.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Audio: ", color = RoyalGold, fontSize = 12.sp)
+                    Text("Audio: ", color = GoldPrimary, fontSize = 12.sp)
                 }
             }
         }
@@ -120,7 +116,7 @@ fun PlayerScreen(
         if (showAudioDialog) {
             AlertDialog(
                 onDismissRequest = { showAudioDialog = false },
-                title = { Text("Select Audio Track (Multi-Audio)", color = RoyalGold, fontSize = 16.sp) },
+                title = { Text("Select Audio Track (Multi-Audio)", color = GoldPrimary, fontSize = 16.sp) },
                 text = {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         audioLanguages.forEach { lang ->
@@ -148,9 +144,9 @@ fun PlayerScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(lang, color = if (isSelected) NeonCyan else Color.White, fontSize = 14.sp)
+                                Text(lang, color = if (isSelected) CyanAccent else Color.White, fontSize = 14.sp)
                                 if (isSelected) {
-                                    Text("? Selected", color = NeonCyan, fontSize = 12.sp)
+                                    Text("? Selected", color = CyanAccent, fontSize = 12.sp)
                                 }
                             }
                         }
@@ -158,10 +154,10 @@ fun PlayerScreen(
                 },
                 confirmButton = {
                     TextButton(onClick = { showAudioDialog = false }) {
-                        Text("Close", color = RoyalGold)
+                        Text("Close", color = GoldPrimary)
                     }
                 },
-                containerColor = Color(0xFF121824)
+                containerColor = SurfaceDark
             )
         }
     }
