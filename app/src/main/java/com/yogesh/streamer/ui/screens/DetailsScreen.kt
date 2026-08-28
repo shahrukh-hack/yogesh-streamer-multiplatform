@@ -1,4 +1,4 @@
-package com.yogesh.streamer.ui.screens
+ï»¿package com.yogesh.streamer.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,8 +22,10 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.yogesh.streamer.core.extractors.ExtractedMediaStreams
 import com.yogesh.streamer.core.extractors.MasterExtractorManager
+import com.yogesh.streamer.core.extractors.UniversalExtractorManager
 import com.yogesh.streamer.core.scrapers.MediaItem
 import com.yogesh.streamer.ui.theme.*
+import kotlinx.coroutines.launch
 
 @Composable
 fun DetailsScreen(
@@ -33,7 +35,9 @@ fun DetailsScreen(
 ) {
     var streams by remember { mutableStateOf<ExtractedMediaStreams?>(null) }
     var isLoadingStreams by remember { mutableStateOf(true) }
+    var isResolvingLive by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(item.tmdbId) {
         val tmdbId = item.tmdbId ?: item.id.toIntOrNull() ?: 1139829
@@ -78,7 +82,7 @@ fun DetailsScreen(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Rating: ", color = GoldPrimary, fontSize = 14.sp)
+                    Text(text = "Rating: 8.5/10", color = GoldPrimary, fontSize = 14.sp)
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(text = item.releaseYear ?: "2024", color = TextMuted, fontSize = 14.sp)
                     Spacer(modifier = Modifier.width(12.dp))
@@ -87,7 +91,7 @@ fun DetailsScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = item.overview ?: "High definition stream with multi-server playback and zero advertisements.",
+                    text = item.overview ?: "High definition stream with auto-resolving extractor engine.",
                     color = TextSecondary,
                     fontSize = 14.sp,
                     lineHeight = 20.sp
@@ -95,27 +99,41 @@ fun DetailsScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Play Button
+                // Play Button with Universal Extractor Auto-Resolution
                 Button(
                     onClick = {
                         val firstServer = streams?.servers?.firstOrNull()
-                        val url = firstServer?.streamUrl ?: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-                        onPlayServer(url, item.title)
+                        val rawUrl = firstServer?.streamUrl ?: "https://vidsrc.me/embed/movie?tmdb=${item.tmdbId ?: 1139829}"
+                        
+                        coroutineScope.launch {
+                            isResolvingLive = true
+                            val resolvedList = UniversalExtractorManager.resolveStream(rawUrl)
+                            isResolvingLive = false
+                            val streamToPlay = resolvedList.firstOrNull()?.url ?: rawUrl
+                            onPlayServer(streamToPlay, item.title)
+                        }
                     },
                     modifier = Modifier.fillMaxWidth().height(50.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary),
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(10.dp),
+                    enabled = !isResolvingLive
                 ) {
-                    Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.Black)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Play Movie (1080p Multi-Audio)", color = Color.Black, fontWeight = FontWeight.Bold)
+                    if (isResolvingLive) {
+                        CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(24.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Extracting Direct Stream...", color = Color.Black, fontWeight = FontWeight.Bold)
+                    } else {
+                        Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.Black)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Play Movie (1080p Ultra HD)", color = Color.Black, fontWeight = FontWeight.Bold)
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // Multi-Server Options
                 Text(
-                    text = "Select Streaming Server (Auto-Fallback)",
+                    text = "Select Streaming Server",
                     color = GoldPrimary,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
@@ -130,7 +148,15 @@ fun DetailsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp)
-                                .clickable { onPlayServer(server.streamUrl, " ()") },
+                                .clickable {
+                                    coroutineScope.launch {
+                                        isResolvingLive = true
+                                        val resolvedList = UniversalExtractorManager.resolveStream(server.streamUrl)
+                                        isResolvingLive = false
+                                        val streamToPlay = resolvedList.firstOrNull()?.url ?: server.streamUrl
+                                        onPlayServer(streamToPlay, "${item.title} (${server.serverName})")
+                                    }
+                                },
                             colors = CardDefaults.cardColors(containerColor = SurfaceDark),
                             shape = RoundedCornerShape(8.dp)
                         ) {
@@ -141,7 +167,7 @@ fun DetailsScreen(
                             ) {
                                 Column {
                                     Text(server.serverName, color = TextPrimary, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                                    Text("0% Ads • Multi-Audio Supported", color = CyanAccent, fontSize = 11.sp)
+                                    Text("Direct Extractor Engine", color = CyanAccent, fontSize = 11.sp)
                                 }
                                 Text(server.quality, color = GoldPrimary, fontSize = 12.sp)
                             }
