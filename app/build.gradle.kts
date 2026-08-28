@@ -12,8 +12,8 @@ android {
         applicationId = "com.yogesh.streamer"
         minSdk = 24
         targetSdk = 34
-        versionCode = 141
-        versionName = "1.4.1"
+        versionCode = 142
+        versionName = "1.4.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -107,4 +107,5 @@ dependencies {
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 }
+
 
