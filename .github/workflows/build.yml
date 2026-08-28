@@ -1,4 +1,4 @@
-name: Build & Deploy Yogesh Streamer Multi-Platform APK
+﻿name: Build & Deploy Yogesh Streamer Multi-Platform APK
 
 on:
   push:
@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -29,10 +31,18 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Generate Deterministic Keystore if not present
+      - name: Generate and Commit Permanent Keystore if not present
         run: |
           if [ ! -f release.keystore ]; then
+            echo "Generating permanent release.keystore..."
             keytool -genkeypair -v -keystore release.keystore -alias yogesh -keyalg RSA -keysize 2048 -validity 10000 -storepass yogeshstreamer123 -keypass yogeshstreamer123 -dname "CN=YogeshStreamer, OU=Streaming, O=Yogesh, L=Ahmedabad, ST=Gujarat, C=IN"
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add release.keystore
+            git commit -m "🔐 Add permanent release.keystore for seamless OTA updates" || true
+            git push origin HEAD:master || true
+          else
+            echo "Permanent release.keystore already exists. Using identical cryptographic certificate."
           fi
 
       - name: Build APKs
@@ -61,17 +71,16 @@ jobs:
           tag_name: v${{ env.VERSION_NAME }}
           name: "Yogesh Streamer v${{ env.VERSION_NAME }} Multi-Platform Official Release"
           body: |
-            # ?? Yogesh Streamer v${{ env.VERSION_NAME }} � Professional Multi-Grade Release
+            # 🚀 Yogesh Streamer v${{ env.VERSION_NAME }} — Professional Multi-Grade Release
             
             Welcome to the upgraded **Yogesh Streamer v${{ env.VERSION_NAME }}**, built with pure native architecture!
 
-            ### ?? Key Highlights in this Build:
-            * **??? Sacred Intro Audio:** Plays *Om Namah Shivaya* chant on startup.
-            * **?? Live-Tested Cricket & Sports HD:** Direct 1-tap streams for Star Sports 1 Hindi HD, Willow Cricket HD, and Astro Cricket 60fps.
-            * **?? ExoPlayer Multi-Audio Track Selector:** Switch between Hindi Dubbed, Gujarati, English, Tamil, and Telugu audio tracks in 1 tap.
-            * **?? Curated Deduplicated Cinema:** 380+ verified Gujarati titles, 10,400+ Bollywood hits, South Hindi Dubbed, and Hollywood 4K.
-            * **?? 100% Zero Popups & Zero Ads:** Completely free of third-party Telegram or CNCV subscription dialogs.
-            * **?? Fixed Package Keystore:** Deterministic signature ensures seamless future in-app updates.
+            ### 🌟 Key Highlights in this Build:
+            * **📺 Dedicated Live Indian TV Channels:** DD Girnar, ABP Asmita, Sandesh News, B4U Movies, Goldmines, DD National, Aaj Tak, 9X Jalwa, Sanskar TV.
+            * **🏏 Universal Live Sports Hub:** Direct 1-tap streams for Star Sports 1 Hindi HD, Willow Cricket HD, and Astro Cricket 60fps.
+            * **🪞 NetMirror Multi-CDN Engine:** Instant multi-audio streams for Bollywood, Gujarati blockbusters, and South Dubbed.
+            * **🕉️ Sacred Intro Audio:** Plays *Om Namah Shivaya* chant on startup.
+            * **🔐 Permanent Keystore:** Identical cryptographic signature ensures seamless in-app OTA updates forever.
           draft: false
           prerelease: false
           files: output_apks/*.apk
