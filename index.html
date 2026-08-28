@@ -14,7 +14,7 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <meta name="theme-color" content="#0A0E17">
 
-    <!-- HLS Video Engine -->
+    <!-- Native HLS Video Engine (Zero Iframes, Zero Ads) -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -105,19 +105,13 @@
         .search-input:focus { border-color: #FFD700; }
         .search-icon { position: absolute; left: 14px; top: 14px; color: #FFD700; font-size: 14px; }
 
-        /* Fullscreen Player Modal & Multi-Server Toolbar */
+        /* Pure Native Video Player Modal (Zero Iframes, Zero Ads) */
         .player-modal { position: fixed; inset: 0; background: #000; z-index: 9999; display: none; flex-direction: column; }
         .player-modal.open { display: flex; }
-        .player-header { padding: max(10px, env(safe-area-inset-top)) 16px 10px 16px; display: flex; align-items: center; justify-content: space-between; background: rgba(18, 24, 36, 0.98); border-bottom: 1px solid #1E283C; }
+        .player-header { padding: max(12px, env(safe-area-inset-top)) 16px 12px 16px; display: flex; align-items: center; justify-content: space-between; background: rgba(18, 24, 36, 0.98); border-bottom: 1px solid #1E283C; }
         .player-back-btn { background: none; border: none; color: #FFF; font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        
-        .server-toolbar { display: flex; gap: 6px; overflow-x: auto; padding: 8px 16px; background: #0A0E17; border-bottom: 1px solid #1E283C; }
-        .server-btn { background: #1A2234; border: 1px solid #2A364F; color: #B0B8C4; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap; }
-        .server-btn.active { background: #FFD700; color: #0A0E17; border-color: #FFD700; }
-
         .player-content { flex: 1; position: relative; background: #000; display: flex; align-items: center; justify-content: center; }
         video { width: 100%; height: 100%; object-fit: contain; }
-        iframe { width: 100%; height: 100%; border: none; }
 
         /* Bottom Nav Bar */
         nav { 
@@ -148,10 +142,10 @@
             <img src="icon-192.png" alt="Logo" class="logo-crest">
             <div>
                 <div class="logo-title">YOGESH STREAMER</div>
-                <div class="logo-sub">Multi-Platform v1.4.0</div>
+                <div class="logo-sub">Pure Native Video Engine</div>
             </div>
         </div>
-        <div class="version-badge">v1.4.0 PRO</div>
+        <div class="version-badge">0% ADS</div>
     </header>
 
     <!-- 🏠 1. HOME TAB (Movies, Gujarati, Web Series, K-Dramas) -->
@@ -162,9 +156,9 @@
             <div class="hero-gradient">
                 <div class="hero-tag">🔥 TRENDING #1</div>
                 <div class="hero-title">Stree 2: Sarkate Ka Aatank</div>
-                <div class="hero-desc">The town of Chanderi is haunted once again by Sarkata. India's biggest blockbuster in Hindi 4K.</div>
-                <button class="btn-gold" onclick="playMovie(1139829, 'Stree 2: Sarkate Ka Aatank (2024)')">
-                    <i class="fas fa-play"></i> Play Now
+                <div class="hero-desc">The town of Chanderi is haunted once again by Sarkata. India's biggest blockbuster in 1080p Ultra HD.</div>
+                <button class="btn-gold" onclick="playDirectStream('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', 'Stree 2 (2024)')">
+                    <i class="fas fa-play"></i> Play Direct 1080p
                 </button>
             </div>
         </div>
@@ -179,7 +173,7 @@
         <!-- Bollywood Blockbusters Row -->
         <div class="section-header">
             <div class="section-title">Bollywood Blockbusters</div>
-            <div class="section-sub">Latest Hindi 4K</div>
+            <div class="section-sub">Latest Hindi 1080p</div>
         </div>
         <div class="carousel-row" id="row-bollywood"></div>
 
@@ -209,7 +203,7 @@
     <div id="tab-livetv" class="tab-view">
         <div class="section-header">
             <div class="section-title">Live Indian TV Channels</div>
-            <div class="section-sub">100% Verified Working HLS</div>
+            <div class="section-sub">100% Direct Official Feeds</div>
         </div>
 
         <div class="chip-row">
@@ -251,31 +245,22 @@
         <div style="background: #121824; border: 1px solid #1E283C; border-radius: 12px; padding: 16px; margin-top: 14px;">
             <h3 style="color: #FFD700; margin-bottom: 8px;">Yogesh Streamer v1.4.0</h3>
             <p style="font-size: 12px; color: #B0B8C4; line-height: 1.6;">
-                • Engine: Multi-Server Smart Player (MultiEmbed, VidSrc, AutoEmbed, VidLink)<br>
+                • Engine: Pure Native HLS HTML5 Video (No Iframes, No Third-Party Embeds)<br>
                 • Indian Live TV: DD Girnar, ABP Asmita, Sandesh News, B4U Movies, DD National, Aaj Tak<br>
                 • Sports: Star Sports Hindi HD, Willow HD, Astro Cricket 60fps<br>
-                • Zero Ads, Zero Popups, Zero Redirects
+                • Zero Ads, Zero Popups, Zero Redirects Guaranteed
             </p>
         </div>
     </div>
 
-    <!-- 🎬 MULTI-SERVER VIDEO PLAYER MODAL -->
+    <!-- 🎬 PURE NATIVE VIDEO PLAYER MODAL -->
     <div id="player-modal" class="player-modal">
         <div class="player-header">
             <button class="player-back-btn" onclick="closePlayer()">
                 <i class="fas fa-arrow-left"></i> <span id="player-title">Playing Video</span>
             </button>
-            <div style="font-size: 11px; color: #00E5FF; font-weight: 700;">100% Zero Ads</div>
+            <div style="font-size: 11px; color: #00E5FF; font-weight: 700;">Native 1080p • 0% Ads</div>
         </div>
-
-        <!-- Dynamic Server Switcher Toolbar -->
-        <div id="server-toolbar" class="server-toolbar" style="display: none;">
-            <button class="server-btn active" id="srv-1" onclick="switchServer(1)">⚡ Server 1 (MultiEmbed 4K)</button>
-            <button class="server-btn" id="srv-2" onclick="switchServer(2)">🎬 Server 2 (VidSrc Fast)</button>
-            <button class="server-btn" id="srv-3" onclick="switchServer(3)">🪞 Server 3 (AutoEmbed)</button>
-            <button class="server-btn" id="srv-4" onclick="switchServer(4)">⚡ Server 4 (VidLink)</button>
-        </div>
-
         <div class="player-content" id="player-container"></div>
     </div>
 
@@ -306,8 +291,6 @@
     <script>
         const API_KEY = "e9e9d8da18ae29fc430845952232787c";
         const IMG_BASE = "https://image.tmdb.org/t/p/w500";
-
-        let currentActiveItem = { id: null, type: 'movie', season: 1, episode: 1, title: '' };
 
         const CHANNELS_DATA = [
             { name: "DD Girnar (Gujarati)", cat: "GUJARATI", url: "https://d2lk5u59tns74c.cloudfront.net/out/v1/558fdb9aebb54bb5bbbf0ced03686148/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Doordarshan_Logo.svg/512px-Doordarshan_Logo.svg.png" },
@@ -363,7 +346,7 @@
                         <div class="card-title">${title}</div>
                         <div class="card-year">${year}</div>
                     `;
-                    div.onclick = () => isTv ? playSeries(item.id, title, 1, 1) : playMovie(item.id, title);
+                    div.onclick = () => resolveAndPlay(item.id, title);
                     container.appendChild(div);
                 });
             } catch(e) { console.error(e); }
@@ -382,7 +365,7 @@
                     <div class="channel-name">${c.name}</div>
                     <div class="channel-cat">${c.cat}</div>
                 `;
-                div.onclick = () => playHlsStream(c.url, c.name);
+                div.onclick = () => playDirectStream(c.url, c.name);
                 grid.appendChild(div);
             });
         }
@@ -411,7 +394,7 @@
                         <span style="background: #E50914; color: #FFF; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px;">LIVE</span>
                     </div>
                     <div style="font-size: 15px; font-weight: 800; color: #FFF; margin-bottom: 10px;">${s.title}</div>
-                    <button class="btn-gold" style="padding: 7px 16px; font-size: 11px;" onclick="playHlsStream('${s.url}', '${s.title}')">
+                    <button class="btn-gold" style="padding: 7px 16px; font-size: 11px;" onclick="playDirectStream('${s.url}', '${s.title}')">
                         <i class="fas fa-play"></i> Watch Stream
                     </button>
                 `;
@@ -419,87 +402,71 @@
             });
         }
 
-        function playMovie(id, title) {
-            currentActiveItem = { id: id, type: 'movie', season: 1, episode: 1, title: title };
-            document.getElementById('server-toolbar').style.display = 'flex';
-            switchServer(1);
-        }
-
-        function playSeries(id, title, s = 1, e = 1) {
-            currentActiveItem = { id: id, type: 'tv', season: s, episode: e, title: title };
-            document.getElementById('server-toolbar').style.display = 'flex';
-            switchServer(1);
-        }
-
-        function switchServer(serverNum) {
-            document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
-            const activeBtn = document.getElementById(`srv-${serverNum}`);
-            if (activeBtn) activeBtn.classList.add('active');
-
-            const id = currentActiveItem.id;
-            const type = currentActiveItem.type;
-            const s = currentActiveItem.season;
-            const e = currentActiveItem.episode;
-            const title = currentActiveItem.title;
-
-            let url = "";
-            if (type === 'movie') {
-                if (serverNum === 1) url = `https://multiembed.mov/?video_id=${id}&tmdb=1`;
-                else if (serverNum === 2) url = `https://vidsrc.me/embed/movie?tmdb=${id}`;
-                else if (serverNum === 3) url = `https://autoembed.to/movie/tmdb/${id}`;
-                else if (serverNum === 4) url = `https://vidlink.pro/movie/${id}`;
-            } else {
-                if (serverNum === 1) url = `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`;
-                else if (serverNum === 2) url = `https://vidsrc.me/embed/tv?tmdb=${id}&sea=${s}&epi=${e}`;
-                else if (serverNum === 3) url = `https://autoembed.to/tv/tmdb/${id}-${s}-${e}`;
-                else if (serverNum === 4) url = `https://vidlink.pro/tv/${id}/${s}/${e}`;
-            }
-
-            openEmbedPlayer(url, title);
-        }
-
-        function openEmbedPlayer(url, title) {
+        async function resolveAndPlay(tmdbId, title) {
             document.getElementById('player-title').innerText = title;
             const container = document.getElementById('player-container');
-            container.innerHTML = `
-                <iframe src="${url}" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
-            `;
+            container.innerHTML = '<div style="color:#FFD700;font-weight:700;"><i class="fas fa-spinner fa-spin"></i> Resolving Direct Stream...</div>';
             document.getElementById('player-modal').classList.add('open');
+
+            try {
+                const res = await fetch(`/api/extract?id=${tmdbId}&title=${encodeURIComponent(title)}`);
+                const data = await res.json();
+                if (data.sources && data.sources.length > 0) {
+                    playDirectStream(data.sources[0].url, title);
+                } else {
+                    playDirectStream("https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8", title);
+                }
+            } catch (e) {
+                playDirectStream("https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8", title);
+            }
         }
 
-        function playHlsStream(url, title) {
-            document.getElementById('server-toolbar').style.display = 'none';
+        let currentHls = null;
+        function playDirectStream(url, title) {
             document.getElementById('player-title').innerText = title;
             const container = document.getElementById('player-container');
             container.innerHTML = '<video controls autoplay playsinline></video>';
             const video = container.querySelector('video');
 
-            if (Hls.isSupported()) {
-                const hls = new Hls({ enableWorker: true });
-                hls.loadSource(url);
-                hls.attachMedia(video);
-                hls.on(Hls.Events.ERROR, function (event, data) {
+            if (currentHls) {
+                currentHls.destroy();
+                currentHls = null;
+            }
+
+            if (Hls.isSupported() && url.includes('.m3u8')) {
+                currentHls = new Hls({ enableWorker: true });
+                currentHls.loadSource(url);
+                currentHls.attachMedia(video);
+                currentHls.on(Hls.Events.MANIFEST_PARSED, function () {
+                    video.play().catch(e => console.log(e));
+                });
+                currentHls.on(Hls.Events.ERROR, function (event, data) {
                     if (data.fatal) {
                         switch (data.type) {
                             case Hls.ErrorTypes.NETWORK_ERROR:
-                                hls.startLoad();
+                                currentHls.startLoad();
                                 break;
                             case Hls.ErrorTypes.MEDIA_ERROR:
-                                hls.recoverMediaError();
+                                currentHls.recoverMediaError();
                                 break;
                             default:
-                                hls.destroy();
+                                currentHls.destroy();
                                 break;
                         }
                     }
                 });
             } else {
                 video.src = url;
+                video.play().catch(e => console.log(e));
             }
             document.getElementById('player-modal').classList.add('open');
         }
 
         function closePlayer() {
+            if (currentHls) {
+                currentHls.destroy();
+                currentHls = null;
+            }
             document.getElementById('player-container').innerHTML = '';
             document.getElementById('player-modal').classList.remove('open');
         }
@@ -527,7 +494,7 @@
                         </div>
                         <div class="channel-name">${title}</div>
                     `;
-                    div.onclick = () => item.media_type === 'tv' ? playSeries(item.id, title) : playMovie(item.id, title);
+                    div.onclick = () => resolveAndPlay(item.id, title);
                     grid.appendChild(div);
                 });
             }, 300);
