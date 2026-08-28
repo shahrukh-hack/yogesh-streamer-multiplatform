@@ -24,8 +24,8 @@ data class UpdateInfo(
 object AppUpdater {
     private const val TAG = "AppUpdater"
     private const val GITHUB_REPO = "shahrukh-hack/yogesh-streamer-multiplatform"
-    const val CURRENT_VERSION_CODE = 120
-    const val CURRENT_VERSION_NAME = "1.2.0"
+    const val CURRENT_VERSION_CODE = 130
+    const val CURRENT_VERSION_NAME = "1.3.0"
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)

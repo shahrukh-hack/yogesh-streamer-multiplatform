@@ -1,4 +1,4 @@
-package com.yogesh.streamer.ui.screens
+﻿package com.yogesh.streamer.ui.screens
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SportsCricket
+import androidx.compose.material.icons.filled.Tv
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -20,7 +21,8 @@ import com.yogesh.streamer.ui.theme.*
 
 enum class NavDestination(val title: String, val icon: ImageVector) {
     HOME("Home", Icons.Default.Home),
-    CRICKET("Live Cricket", Icons.Default.SportsCricket),
+    LIVE_TV("Live TV", Icons.Default.Tv),
+    SPORTS("Sports", Icons.Default.SportsCricket),
     SEARCH("Search", Icons.Default.Search),
     SETTINGS("Settings", Icons.Default.Settings)
 }
@@ -121,7 +123,13 @@ fun MainScreen() {
                             onMediaClick = { selectedMediaItem = it },
                             onPlayClick = { selectedMediaItem = it }
                         )
-                        NavDestination.CRICKET -> LiveCricketScreen(
+                        NavDestination.LIVE_TV -> LiveTvScreen(
+                            onPlayChannel = { url: String, name: String ->
+                                activePlaybackUrl = url
+                                activePlaybackTitle = name
+                            }
+                        )
+                        NavDestination.SPORTS -> LiveCricketScreen(
                             onPlayLiveServer = { url: String, title: String ->
                                 activePlaybackUrl = url
                                 activePlaybackTitle = title
