@@ -1,16 +1,13 @@
 ﻿package com.yogesh.streamer.core.channels
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-
 object LiveChannelService {
 
-    suspend fun getChannels(category: ChannelCategory = ChannelCategory.ALL): List<LiveChannel> = withContext(Dispatchers.IO) {
+    fun getChannels(category: ChannelCategory = ChannelCategory.ALL): List<LiveChannel> {
         val allChannels = listOf(
-            // 🎭 GUJARATI REGIONAL
+            // GUJARATI REGIONAL
             LiveChannel(
                 id = "dd_girnar",
-                name = "DD Girnar (Gujarati)",
+                name = "DD Girnar (Gujarati Regional)",
                 category = ChannelCategory.GUJARATI,
                 streamUrl = "https://d2lk5u59tns74c.cloudfront.net/out/v1/558fdb9aebb54bb5bbbf0ced03686148/index.m3u8",
                 logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Doordarshan_Logo.svg/512px-Doordarshan_Logo.svg.png",
@@ -26,11 +23,11 @@ object LiveChannelService {
             ),
             LiveChannel(
                 id = "sandesh_news",
-                name = "Sandesh News Gujarati",
+                name = "Sandesh News Gujarat",
                 category = ChannelCategory.GUJARATI,
                 streamUrl = "https://mumt03.tangotv.in/Dsly5z3HSANDESHNEWS/index.m3u8",
                 logoUrl = "https://sandesh.com/assets/images/sandesh-logo.png",
-                quality = "720p HD"
+                quality = "1080p HD"
             ),
             LiveChannel(
                 id = "vtv_gujarati",
@@ -38,18 +35,18 @@ object LiveChannelService {
                 category = ChannelCategory.GUJARATI,
                 streamUrl = "https://mumt03.tangotv.in/Dsly5z3HVTVNEWS/index.m3u8",
                 logoUrl = "https://vtvgujarati.com/assets/images/vtv-logo.png",
-                quality = "720p HD"
+                quality = "1080p HD"
             ),
             LiveChannel(
                 id = "tv9_gujarati",
                 name = "TV9 Gujarati",
                 category = ChannelCategory.GUJARATI,
                 streamUrl = "https://mumt01.tangotv.in/O5aw8Zn3TV9GUJARATI/index.m3u8",
-                logoUrl = "https://tv9gujarati.com/wp-content/uploads/2021/04/tv9-gujarati-logo.png",
+                logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/TV9_Gujarati_logo.png/250px-TV9_Gujarati_logo.png",
                 quality = "1080p HD"
             ),
 
-            // 🎬 MOVIE CHANNELS
+            // MOVIE CHANNELS
             LiveChannel(
                 id = "b4u_movies",
                 name = "B4U Movies (Bollywood)",
@@ -60,7 +57,7 @@ object LiveChannelService {
             ),
             LiveChannel(
                 id = "goldmines_movies",
-                name = "Goldmines Movies (South Hindi)",
+                name = "Goldmines Telefilms (South Hindi)",
                 category = ChannelCategory.MOVIES,
                 streamUrl = "https://mumt01.tangotv.in/O5aw8Zn3GOLDMINES/index.m3u8",
                 logoUrl = "https://upload.wikimedia.org/wikipedia/en/thumb/2/23/Goldmines_Telefilms_logo.png/220px-Goldmines_Telefilms_logo.png",
@@ -71,22 +68,22 @@ object LiveChannelService {
                 name = "Manoranjan Movies",
                 category = ChannelCategory.MOVIES,
                 streamUrl = "https://mumt03.tangotv.in/Dsly5z3HMANORANJANMOVIES/index.m3u8",
-                logoUrl = "https://manoranjangroup.co.in/images/movies.png",
-                quality = "720p HD"
+                logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Manoranjan_TV_Logo.png/250px-Manoranjan_TV_Logo.png",
+                quality = "1080p HD"
             ),
             LiveChannel(
                 id = "maha_movie",
-                name = "Maha Movie Hindi",
+                name = "Maha Movie",
                 category = ChannelCategory.MOVIES,
                 streamUrl = "https://mumt01.tangotv.in/O5aw8Zn3MAHAMOVIE/index.m3u8",
-                logoUrl = "https://upload.wikimedia.org/wikipedia/en/thumb/d/d4/Maha_Movie.png/220px-Maha_Movie.png",
-                quality = "720p HD"
+                logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Maha_Movie_logo.png/250px-Maha_Movie_logo.png",
+                quality = "1080p HD"
             ),
 
-            // 🏛️ ENTERTAINMENT & NATIONAL
+            // ENTERTAINMENT & NATIONAL
             LiveChannel(
                 id = "dd_national",
-                name = "DD National HD",
+                name = "DD National HD (Main)",
                 category = ChannelCategory.ENTERTAINMENT,
                 streamUrl = "https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/7ff57cc9046b4c188b51a0d506f36e7f/index.m3u8",
                 logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Doordarshan_Logo.svg/512px-Doordarshan_Logo.svg.png",
@@ -94,7 +91,7 @@ object LiveChannelService {
             ),
             LiveChannel(
                 id = "dd_bharati",
-                name = "DD Bharati (Culture & Arts)",
+                name = "DD Bharati (Culture & Heritage)",
                 category = ChannelCategory.ENTERTAINMENT,
                 streamUrl = "https://d2lk5u59tns74c.cloudfront.net/out/v1/67cec794d8b14f9ba21f73924ac65797/index.m3u8",
                 logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Doordarshan_Logo.svg/512px-Doordarshan_Logo.svg.png",
@@ -117,7 +114,7 @@ object LiveChannelService {
                 quality = "1080p HD"
             ),
 
-            // 📰 NEWS 24/7
+            // NEWS 24/7
             LiveChannel(
                 id = "aaj_tak",
                 name = "Aaj Tak News HD",
@@ -151,7 +148,7 @@ object LiveChannelService {
                 quality = "1080p HD"
             ),
 
-            // 🎶 MUSIC HITS
+            // MUSIC HITS
             LiveChannel(
                 id = "9x_jalwa",
                 name = "9X Jalwa (Retro & Hits)",
@@ -185,7 +182,7 @@ object LiveChannelService {
                 quality = "1080p HD"
             ),
 
-            // 🕉️ SPIRITUAL & BHAKTI
+            // SPIRITUAL & BHAKTI
             LiveChannel(
                 id = "aastha_bhajan",
                 name = "Aastha Bhajan (Bhakti)",
@@ -203,7 +200,7 @@ object LiveChannelService {
                 quality = "1080p HD"
             ),
 
-            // 🏏 SPORTS CHANNELS
+            // SPORTS CHANNELS
             LiveChannel(
                 id = "star_sports_hindi",
                 name = "Star Sports 1 Hindi HD",

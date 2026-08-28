@@ -38,7 +38,7 @@ fun LiveCricketScreen(
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "Powered by Cricify, Sportzx & SKTV - 100% Zero Ads",
+                text = "Powered by Cricify, Sportzx & SKTV - 100% Direct Streams",
                 color = CyanAccent,
                 fontSize = 12.sp
             )
@@ -85,24 +85,32 @@ fun LiveCricketScreen(
                                 )
                                 Spacer(modifier = Modifier.height(12.dp))
 
-                                // Server Buttons
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
+                                // Server Buttons in a flexible vertical list
+                                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                     match.servers.forEach { server ->
                                         Button(
                                             onClick = { onPlayLiveServer(server.streamUrl, match.matchTitle + " - " + server.serverName) },
-                                            modifier = Modifier.weight(1f),
+                                            modifier = Modifier.fillMaxWidth().height(42.dp),
                                             colors = ButtonDefaults.buttonColors(containerColor = SurfaceVariant),
                                             shape = RoundedCornerShape(8.dp)
                                         ) {
-                                            Text(
-                                                text = server.serverName,
-                                                color = GoldPrimary,
-                                                fontSize = 11.sp,
-                                                maxLines = 1
-                                            )
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(
+                                                    text = server.serverName,
+                                                    color = GoldPrimary,
+                                                    fontSize = 12.sp,
+                                                    fontWeight = FontWeight.SemiBold
+                                                )
+                                                Text(
+                                                    text = server.quality,
+                                                    color = CyanAccent,
+                                                    fontSize = 11.sp
+                                                )
+                                            }
                                         }
                                     }
                                 }
