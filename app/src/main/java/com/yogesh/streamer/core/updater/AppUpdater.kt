@@ -34,7 +34,7 @@ object AppUpdater {
 
     suspend fun checkForUpdate(): UpdateInfo = withContext(Dispatchers.IO) {
         try {
-            val url = "https://api.github.com/repos/\/releases/latest"
+            val url = "https://api.github.com/repos/$GITHUB_REPO/releases/latest"
             val request = Request.Builder().url(url).build()
             val response = client.newCall(request).execute()
             if (response.isSuccessful) {
@@ -107,7 +107,7 @@ object AppUpdater {
             withContext(Dispatchers.Main) {
                 val uri = FileProvider.getUriForFile(
                     context,
-                    "\.fileprovider",
+                    "${context.packageName}.fileprovider",
                     apkFile
                 )
                 val intent = Intent(Intent.ACTION_VIEW).apply {

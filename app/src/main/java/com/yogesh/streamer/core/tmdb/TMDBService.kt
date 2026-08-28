@@ -26,11 +26,8 @@ object TMDBService {
     private suspend fun fetchDiscover(endpoint: String): List<MediaItem> = withContext(Dispatchers.IO) {
         val items = mutableListOf<MediaItem>()
         try {
-            val url = if (endpoint.contains("?")) {
-                "$BASE_URL/&api_key="
-            } else {
-                "$BASE_URL/="
-            }
+            val separator = if (endpoint.contains("?")) "&" else "?"
+            val url = "$BASE_URL/$endpoint${separator}api_key=$API_KEY"
             val request = Request.Builder().url(url).build()
             val response = client.newCall(request).execute()
             if (response.isSuccessful) {
@@ -52,9 +49,9 @@ object TMDBService {
                                 id = id.toString(),
                                 tmdbId = id,
                                 title = title,
-                                posterUrl = "$IMG_BASE",
-                                backdropUrl = if (backdropPath != null) "$BACKDROP_BASE" else null,
-                                releaseYear = releaseDate.take(4),
+                                posterUrl = "$IMG_BASE$posterPath",
+                                backdropUrl = if (backdropPath != null) "$BACKDROP_BASE$backdropPath" else null,
+                                releaseYear = if (releaseDate.length >= 4) releaseDate.substring(0, 4) else "2024",
                                 rating = rating,
                                 mediaType = MediaType.MOVIE,
                                 overview = overview
@@ -93,7 +90,7 @@ object TMDBService {
     }
 
     suspend fun search(query: String): List<MediaItem> = withContext(Dispatchers.IO) {
-        fetchDiscover("search/multi?query=")
+        fetchDiscover("search/multi?query=$query")
     }
 
     private fun getFallbackHero(): List<MediaItem> = listOf(
