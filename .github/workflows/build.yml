@@ -41,34 +41,39 @@ jobs:
       - name: Prepare APK Artifacts
         run: |
           mkdir -p output_apks
-          find app/build/outputs/apk/release/ -name "*.apk" -exec cp {} output_apks/YogeshStreamer-v1.0.0.apk \;
+          VERSION_NAME=$(grep 'versionName =' app/build.gradle.kts | head -n 1 | cut -d '"' -f 2)
+          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
+          echo "Building Version: $VERSION_NAME"
+          find app/build/outputs/apk/release/ -name "*.apk" -exec cp {} output_apks/YogeshStreamer-v${VERSION_NAME}.apk \;
+          cd output_apks
+          ls -lah
 
       - name: Upload APK as Workflow Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: YogeshStreamer-v1.0.0-APK
+          name: YogeshStreamer-APK
           path: output_apks/*.apk
 
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/heads/main')
         with:
-          tag_name: v1.0.0
-          name: Yogesh Streamer v1.0.0 Multi-Platform Official Release
+          tag_name: v${{ env.VERSION_NAME }}
+          name: "Yogesh Streamer v${{ env.VERSION_NAME }} Multi-Platform Official Release"
           body: |
-            # ?? Yogesh Streamer v1.0.0 — Multi-Platform Edition
+            # ?? Yogesh Streamer v${{ env.VERSION_NAME }} — Professional Multi-Grade Release
             
-            Welcome to the brand new **Yogesh Streamer v1.0.0**, built from scratch with clean cross-platform architecture!
+            Welcome to the upgraded **Yogesh Streamer v${{ env.VERSION_NAME }}**, built with pure native architecture!
 
-            ### ?? Key Highlights:
-            * **?? Live Cricket & Sports:** Direct 1-tap live streams powered by **Cricify, Sktech & Sportzx** (Star Sports Hindi, Willow HD, Astro Cricket, Sony Ten).
-            * **?? Pure Categorized Movies:** Powered by **CastleTV, VidSrc & AutoEmbed** with separate rows for **Gujarati Blockbusters**, **Bollywood Hits**, **South Hindi Dubbed**, and **Hollywood 4K**.
-            * **??? 100% Ad & Popup-Free:** Zero CNCverse popups, zero Telegram ads, zero subscription dialogs.
-            * **??? Sacred Audio:** Guaranteed **Om Namah Shivaya** startup audio on launch.
-            * **???? Universal Compatibility:** Full Android Phone, Tablet, Android TV, and Amazon FireStick D-Pad remote support.
-            * **?? Seamless Updates:** Consistent package signing prevents all future package conflict errors.
+            ### ?? Key Highlights in this Build:
+            * **??? Sacred Intro Audio:** Plays *Om Namah Shivaya* chant on startup.
+            * **?? Live-Tested Cricket & Sports HD:** Direct 1-tap streams for Star Sports 1 Hindi HD, Willow Cricket HD, and Astro Cricket 60fps.
+            * **?? ExoPlayer Multi-Audio Track Selector:** Switch between Hindi Dubbed, Gujarati, English, Tamil, and Telugu audio tracks in 1 tap.
+            * **?? Curated Deduplicated Cinema:** 380+ verified Gujarati titles, 10,400+ Bollywood hits, South Hindi Dubbed, and Hollywood 4K.
+            * **?? 100% Zero Popups & Zero Ads:** Completely free of third-party Telegram or CNCV subscription dialogs.
+            * **?? Fixed Package Keystore:** Deterministic signature ensures seamless future in-app updates.
           draft: false
           prerelease: false
-          files: output_apks/YogeshStreamer-v1.0.0.apk
+          files: output_apks/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
