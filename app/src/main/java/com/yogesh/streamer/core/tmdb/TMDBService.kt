@@ -89,6 +89,18 @@ object TMDBService {
         fetchDiscover("trending/movie/day")
     }
 
+    suspend fun getBollywoodSeries(): List<MediaItem> = withContext(Dispatchers.IO) {
+        fetchDiscover("discover/tv?with_original_language=hi&sort_by=popularity.desc")
+    }
+
+    suspend fun getHollywoodSeries(): List<MediaItem> = withContext(Dispatchers.IO) {
+        fetchDiscover("discover/tv?with_original_language=en&sort_by=popularity.desc")
+    }
+
+    suspend fun getKDramasHindiDubbed(): List<MediaItem> = withContext(Dispatchers.IO) {
+        fetchDiscover("discover/tv?with_original_language=ko&sort_by=popularity.desc")
+    }
+
     suspend fun search(query: String): List<MediaItem> = withContext(Dispatchers.IO) {
         fetchDiscover("search/multi?query=$query")
     }

@@ -1,4 +1,4 @@
-﻿package com.yogesh.streamer.ui.screens
+package com.yogesh.streamer.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -31,7 +31,10 @@ fun HomeScreen(
     var heroItems by remember { mutableStateOf<List<MediaItem>>(emptyList()) }
     var gujaratiItems by remember { mutableStateOf<List<MediaItem>>(emptyList()) }
     var bollywoodItems by remember { mutableStateOf<List<MediaItem>>(emptyList()) }
+    var bollywoodSeries by remember { mutableStateOf<List<MediaItem>>(emptyList()) }
+    var kdramaItems by remember { mutableStateOf<List<MediaItem>>(emptyList()) }
     var southItems by remember { mutableStateOf<List<MediaItem>>(emptyList()) }
+    var hollywoodSeries by remember { mutableStateOf<List<MediaItem>>(emptyList()) }
     var hollywoodItems by remember { mutableStateOf<List<MediaItem>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
 
@@ -39,13 +42,19 @@ fun HomeScreen(
         val heroDeferred = async { TMDBService.getHeroBannerItems() }
         val gujaratiDeferred = async { TMDBService.getGujaratiCinema() }
         val bollywoodDeferred = async { TMDBService.getBollywoodHits() }
+        val seriesDeferred = async { TMDBService.getBollywoodSeries() }
+        val kdramaDeferred = async { TMDBService.getKDramasHindiDubbed() }
         val southDeferred = async { TMDBService.getSouthHindiDubbed() }
+        val hollywoodSeriesDeferred = async { TMDBService.getHollywoodSeries() }
         val hollywoodDeferred = async { TMDBService.getHollywood4K() }
 
         heroItems = heroDeferred.await()
         gujaratiItems = gujaratiDeferred.await()
         bollywoodItems = bollywoodDeferred.await()
+        bollywoodSeries = seriesDeferred.await()
+        kdramaItems = kdramaDeferred.await()
         southItems = southDeferred.await()
+        hollywoodSeries = hollywoodSeriesDeferred.await()
         hollywoodItems = hollywoodDeferred.await()
         isLoading = false
     }
@@ -103,6 +112,30 @@ fun HomeScreen(
                     }
                 }
 
+                // Bollywood Web Series Row
+                if (bollywoodSeries.isNotEmpty()) {
+                    item {
+                        HomeSection(
+                            title = "Bollywood Web Series",
+                            subtitle = "Trending OTT Original Shows",
+                            items = bollywoodSeries,
+                            onItemClick = onMediaClick
+                        )
+                    }
+                }
+
+                // K-Dramas Hindi Dubbed Row
+                if (kdramaItems.isNotEmpty()) {
+                    item {
+                        HomeSection(
+                            title = "K-Dramas (Hindi Dubbed)",
+                            subtitle = "Top Korean Romances & Thrillers",
+                            items = kdramaItems,
+                            onItemClick = onMediaClick
+                        )
+                    }
+                }
+
                 // South Hindi Dubbed Row
                 if (southItems.isNotEmpty()) {
                     item {
@@ -110,6 +143,18 @@ fun HomeScreen(
                             title = "South Hindi Dubbed",
                             subtitle = "Action Epics & Thrillers",
                             items = southItems,
+                            onItemClick = onMediaClick
+                        )
+                    }
+                }
+
+                // Hollywood Web Series Row
+                if (hollywoodSeries.isNotEmpty()) {
+                    item {
+                        HomeSection(
+                            title = "Hollywood TV Series & Shows",
+                            subtitle = "Global Binge-Worthy Series",
+                            items = hollywoodSeries,
                             onItemClick = onMediaClick
                         )
                     }
