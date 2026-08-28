@@ -1,62 +1,35 @@
-package com.yogesh.streamer.core.extractors
-
-import java.util.regex.Pattern
+﻿package com.yogesh.streamer.core.extractors
 
 object JsUnpacker {
-    private val PACKED_PATTERN = Pattern.compile(
-        """\}\s*\('(.*)',\s*(\d+),\s*(\d+),\s*'(.*)'\.split\('\|'\)""",
-        Pattern.DOTALL
-    )
 
-    fun unpack(packedJs: String): String {
-        val matcher = PACKED_PATTERN.matcher(packedJs)
-        if (!matcher.find()) return packedJs
+    fun unpack(packedJs: String): String? {
+        val regex = Regex("""eval\(function\(p,a,c,k,e,[rd]\)\{.*\}\('(.*)',\s*(\d+),\s*(\d+),\s*'(.*?)'\.split\('\|'\)""", RegexOption.DOT_MATCHES_ALL)
+        val match = regex.find(packedJs) ?: return null
 
-        val payload = matcher.group(1) ?: return packedJs
-        val radixStr = matcher.group(2) ?: "10"
-        val countStr = matcher.group(3) ?: "0"
-        val symtabStr = matcher.group(4) ?: ""
+        val payload = match.groupValues[1]
+        val radix = match.groupValues[2].toIntOrNull() ?: 10
+        val count = match.groupValues[3].toIntOrNull() ?: 0
+        val symtab = match.groupValues[4].split("|")
 
-        val radix = radixStr.toIntOrNull() ?: 10
-        val count = countStr.toIntOrNull() ?: 0
-        val dictionary = symtabStr.split("|")
-
-        fun getWord(encoded: String): String {
-            val index = try {
-                encoded.toInt(radix)
-            } catch (e: Exception) {
-                -1
+        fun baseN(num: Int, base: Int): String {
+            val chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            if (num == 0) return "0"
+            var n = num
+            val sb = StringBuilder()
+            while (n > 0) {
+                sb.append(chars[n % base])
+                n /= base
             }
-            return if (index in 0 until count && index < dictionary.size && dictionary[index].isNotEmpty()) {
-                dictionary[index]
-            } else {
-                encoded
-            }
+            return sb.reverse().toString()
         }
 
-        val wordPattern = Pattern.compile("""\b\w+\b""")
-        val wordMatcher = wordPattern.matcher(payload)
-        val sb = StringBuffer()
-
-        while (wordMatcher.find()) {
-            val word = wordMatcher.group()
-            val replacement = getWord(word)
-            wordMatcher.appendReplacement(sb, MatcherHelper.quoteReplacement(replacement))
+        var result = payload
+        for (i in count - 1 downTo 0) {
+            val word = symtab.getOrNull(i)?.takeIf { it.isNotEmpty() } ?: baseN(i, radix)
+            val key = baseN(i, radix)
+            result = result.replace(Regex("""\b$key\b"""), word)
         }
-        wordMatcher.appendTail(sb)
 
-        return sb.toString()
-    }
-}
-
-object MatcherHelper {
-    fun quoteReplacement(s: String): String {
-        if (!s.contains('\\') && !s.contains('$')) return s
-        val sb = StringBuilder()
-        for (c in s) {
-            if (c == '\\' || c == '$') sb.append('\\')
-            sb.append(c)
-        }
-        return sb.toString()
+        return result
     }
 }
