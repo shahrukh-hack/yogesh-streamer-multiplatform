@@ -1,4 +1,4 @@
-package com.yogesh.streamer.core.updater
+﻿package com.yogesh.streamer.core.updater
 
 import android.content.Context
 import android.content.Intent
@@ -24,8 +24,8 @@ data class UpdateInfo(
 object AppUpdater {
     private const val TAG = "AppUpdater"
     private const val GITHUB_REPO = "shahrukh-hack/yogesh-streamer-multiplatform"
-    const val CURRENT_VERSION_CODE = 140
-    const val CURRENT_VERSION_NAME = "1.4.0"
+    const val CURRENT_VERSION_CODE = 141
+    const val CURRENT_VERSION_NAME = "1.4.1"
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
@@ -121,3 +121,4 @@ object AppUpdater {
         }
     }
 }
+
