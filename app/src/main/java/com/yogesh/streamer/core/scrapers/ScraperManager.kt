@@ -14,23 +14,22 @@ object ScraperManager {
 
     suspend fun getLiveCricketMatches(): List<LiveCricketMatch> = withContext(Dispatchers.IO) {
         val cricifyDeferred = async { CricifyScraper.getLiveMatches() }
-        val sktechDeferred = async { SktechScraper.getLiveSports() }
+        val sktechDeferred = async { SKTechScraper.getLiveSportsServers() }
 
         val results = mutableListOf<LiveCricketMatch>()
         results.addAll(cricifyDeferred.await())
-        results.addAll(sktechDeferred.await())
         results
     }
 
     suspend fun resolveMovieStreams(tmdbId: Int, title: String): List<StreamServer> = withContext(Dispatchers.IO) {
         val servers = mutableListOf<StreamServer>()
         val castleDeferred = async { CastleTVScraper.resolveMovieStreams(tmdbId, title) }
-        val vidsrcDeferred = async { VidSrcScraper.resolveStream(tmdbId) }
-        val autoEmbedDeferred = async { AutoEmbedScraper.resolveStream(tmdbId) }
+        val hdhubDeferred = async { HDHub4uScraper.resolveStreams(tmdbId, title) }
+        val movieboxDeferred = async { MovieBoxScraper.resolveStreams(tmdbId, title) }
 
         servers.addAll(castleDeferred.await())
-        servers.addAll(vidsrcDeferred.await())
-        servers.addAll(autoEmbedDeferred.await())
+        servers.addAll(hdhubDeferred.await())
+        servers.addAll(movieboxDeferred.await())
         servers
     }
 }

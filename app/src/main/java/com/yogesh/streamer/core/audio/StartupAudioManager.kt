@@ -11,6 +11,10 @@ object StartupAudioManager {
     private const val TAG = "StartupAudioManager"
     private const val PREF_AUDIO_ENABLED = "pref_om_namah_shivaya_enabled"
 
+    fun init(context: Context) {
+        // Prepare or cache state if needed
+    }
+
     fun isAudioEnabled(context: Context): Boolean {
         val prefs = context.getSharedPreferences("yogesh_prefs", Context.MODE_PRIVATE)
         return prefs.getBoolean(PREF_AUDIO_ENABLED, true)

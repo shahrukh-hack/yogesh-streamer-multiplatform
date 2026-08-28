@@ -103,7 +103,7 @@ fun MainScreen() {
                                 onClick = { currentTab = dest },
                                 icon = { Icon(dest.icon, contentDescription = dest.title) },
                                 label = { Text(dest.title) },
-                                colors = NavigationBarItemDefaults.colors(
+                                colors = NavigationRailItemDefaults.colors(
                                     selectedIconColor = GoldPrimary,
                                     selectedTextColor = GoldPrimary,
                                     unselectedIconColor = TextMuted,
