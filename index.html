@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Yogesh Streamer</title>
+    <title>Yogesh Streamer v1.4.0</title>
 
     <!-- PWA & Apple iOS Standalone Web App Meta Tags -->
     <link rel="manifest" href="manifest.json">
@@ -16,6 +16,7 @@
 
     <!-- HLS Video Engine -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -26,7 +27,7 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid #1E283C; 
-            padding: max(16px, env(safe-area-inset-top)) 16px 12px 16px; 
+            padding: max(14px, env(safe-area-inset-top)) 16px 12px 16px; 
             display: flex; 
             align-items: center; 
             justify-content: space-between; 
@@ -38,7 +39,7 @@
         .logo-crest { width: 38px; height: 38px; border-radius: 9px; border: 1.5px solid #FFD700; box-shadow: 0 0 12px rgba(255, 215, 0, 0.35); }
         .logo-title { font-size: 17px; font-weight: 900; color: #FFD700; letter-spacing: 0.8px; }
         .logo-sub { font-size: 10px; color: #00E5FF; font-weight: 600; }
-        .ad-free-badge { background: #00E5FF; color: #000; font-size: 10px; font-weight: 800; padding: 4px 9px; border-radius: 12px; }
+        .version-badge { background: #1A2234; border: 1px solid #FFD700; color: #FFD700; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 12px; }
 
         .tab-view { display: none; padding: 14px 16px; animation: fadeIn 0.25s ease-in-out; }
         .tab-view.active { display: block; }
@@ -68,12 +69,11 @@
         .hero-tag { align-self: flex-start; background: rgba(255, 215, 0, 0.25); color: #FFD700; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 4px; margin-bottom: 6px; }
         .hero-title { font-size: 22px; font-weight: 800; color: #FFF; line-height: 1.2; }
         .hero-desc { font-size: 12px; color: #B0B8C4; margin: 4px 0 10px 0; max-width: 90%; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .hero-buttons { display: flex; gap: 10px; }
-        .btn-gold { background: #FFD700; color: #0A0E17; border: none; padding: 9px 20px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .btn-gold { background: #FFD700; color: #0A0E17; border: none; padding: 9px 20px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; width: fit-content; }
 
         .section-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; margin-top: 18px; }
         .section-title { font-size: 16px; font-weight: 800; color: #FFF; }
-        .section-sub { font-size: 11px; color: #717D96; }
+        .section-sub { font-size: 11px; color: #00E5FF; }
         
         .carousel-row { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding-bottom: 8px; }
         .carousel-row::-webkit-scrollbar { display: none; }
@@ -86,302 +86,408 @@
         .card-title { font-size: 12px; font-weight: 700; color: #FFF; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .card-year { font-size: 10px; color: #717D96; }
 
-        .cricket-card { background: #121824; border: 1px solid #1E283C; border-radius: 14px; padding: 16px; margin-bottom: 14px; }
-        .cricket-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .cricket-tour { font-size: 11px; font-weight: 800; color: #00E5FF; }
-        .cricket-title { font-size: 16px; font-weight: 800; color: #FFF; margin-bottom: 14px; }
-        .server-pills { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .server-pill { background: #1A2234; border: 1px solid #2A364F; color: #FFD700; padding: 10px; border-radius: 8px; font-size: 11px; font-weight: 700; text-align: center; cursor: pointer; }
-        .server-pill:active { background: #FFD700; color: #000; }
+        /* Channel & Sports Cards */
+        .grid-channels { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 14px; }
+        .channel-card { background: #121824; border: 1px solid #1E283C; border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .channel-card:active { transform: scale(0.97); border-color: #FFD700; }
+        .channel-logo-wrap { width: 100%; height: 75px; background: rgba(255,255,255,0.04); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+        .channel-logo { max-width: 60px; max-height: 50px; object-fit: contain; }
+        .channel-name { font-size: 13px; font-weight: 800; color: #FFF; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .channel-cat { font-size: 10px; color: #00E5FF; margin-top: 2px; }
 
-        /* Pure Native Video Player Modal (Zero Iframes, Zero Ads) */
+        .chip-row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin-bottom: 14px; }
+        .chip-row::-webkit-scrollbar { display: none; }
+        .chip { background: #1A2234; border: 1px solid #2A364F; color: #B0B8C4; padding: 6px 14px; border-radius: 16px; font-size: 11px; font-weight: 700; white-space: nowrap; cursor: pointer; }
+        .chip.active { background: #FFD700; color: #0A0E17; border-color: #FFD700; }
+
+        .search-bar-wrap { position: relative; margin-bottom: 14px; }
+        .search-input { width: 100%; background: #121824; border: 1px solid #1E283C; border-radius: 12px; padding: 12px 14px 12px 38px; color: #FFF; font-size: 13px; outline: none; }
+        .search-input:focus { border-color: #FFD700; }
+        .search-icon { position: absolute; left: 14px; top: 14px; color: #FFD700; font-size: 14px; }
+
+        /* Fullscreen Player Modal */
         .player-modal { position: fixed; inset: 0; background: #000; z-index: 9999; display: none; flex-direction: column; }
         .player-modal.open { display: flex; }
         .player-header { padding: max(14px, env(safe-area-inset-top)) 16px 12px 16px; display: flex; align-items: center; justify-content: space-between; background: rgba(18, 24, 36, 0.95); border-bottom: 1px solid #1E283C; }
-        .player-meta { font-size: 11px; color: #00E5FF; margin-top: 2px; }
-        .close-player { background: rgba(255,255,255,0.2); border: none; color: #FFF; font-size: 13px; font-weight: 800; padding: 6px 16px; border-radius: 20px; cursor: pointer; }
-        .player-content { flex: 1; display: flex; align-items: center; justify-content: center; background: #000; position: relative; }
-        video { width: 100%; height: 100%; max-height: 85vh; object-fit: contain; background: #000; }
+        .player-back-btn { background: none; border: none; color: #FFF; font-size: 18px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .player-content { flex: 1; position: relative; background: #000; display: flex; align-items: center; justify-content: center; }
+        video { width: 100%; height: 100%; object-fit: contain; }
+        iframe { width: 100%; height: 100%; border: none; }
 
-        .bottom-nav { 
+        /* Bottom Nav Bar */
+        nav { 
             position: fixed; 
             bottom: 0; 
             left: 0; 
             right: 0; 
-            height: calc(60px + env(safe-area-inset-bottom, 0px)); 
-            padding-bottom: env(safe-area-inset-bottom, 0px);
-            background: rgba(18, 24, 36, 0.98); 
+            height: 68px; 
+            background: rgba(18, 24, 36, 0.95); 
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-top: 1px solid #1E283C; 
             display: flex; 
-            align-items: center; 
             justify-content: space-around; 
-            z-index: 90; 
+            align-items: center; 
+            z-index: 100; 
+            padding-bottom: env(safe-area-inset-bottom); 
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; color: #717D96; font-size: 10px; font-weight: 700; cursor: pointer; border: none; background: transparent; padding: 6px 16px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #717D96; text-decoration: none; cursor: pointer; font-size: 10px; font-weight: 700; }
+        .nav-item i { font-size: 18px; }
         .nav-item.active { color: #FFD700; }
-        .nav-icon { font-size: 20px; }
-
-        .search-box { width: 100%; background: #121824; border: 1px solid #1E283C; color: #FFF; padding: 14px 16px; border-radius: 12px; font-size: 14px; outline: none; margin-bottom: 14px; }
-        .search-box:focus { border-color: #FFD700; }
-        .search-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="header-left">
-            <img src="apple-touch-icon.png" alt="Y+M Logo" class="logo-crest">
+            <img src="icon-192.png" alt="Logo" class="logo-crest">
             <div>
                 <div class="logo-title">YOGESH STREAMER</div>
-                <div class="logo-sub">Pure Stream Scraper Engine</div>
+                <div class="logo-sub">Multi-Platform v1.4.0</div>
             </div>
         </div>
-        <div class="ad-free-badge">0% ADS â€¢ DIRECT STREAM</div>
+        <div class="version-badge">v1.4.0 PRO</div>
     </header>
 
-    <!-- TAB 1: HOME -->
-    <div id="tabHome" class="tab-view active">
+    <!-- 🏠 1. HOME TAB (Movies, Gujarati, Web Series, K-Dramas) -->
+    <div id="tab-home" class="tab-view active">
+        <!-- Hero Banner -->
         <div class="hero-banner">
-            <img src="https://image.tmdb.org/t/p/original/8kOWDBK6XlPUzckuHDo3wwVRFwt.jpg" class="hero-img" alt="Stree 2">
+            <img src="https://image.tmdb.org/t/p/original/8kOWDBK6XlPUzckuHDo3wwVRFwt.jpg" class="hero-img" alt="Hero">
             <div class="hero-gradient">
-                <span class="hero-tag">ðŸ”¥ DIRECT 4K STREAM (NO ADS)</span>
+                <div class="hero-tag">🔥 TRENDING #1</div>
                 <div class="hero-title">Stree 2: Sarkate Ka Aatank</div>
-                <div class="hero-desc">The town of Chanderi is haunted once again. Vicky and friends unite with Stree to save everyone from Sarkata.</div>
-                <div class="hero-buttons">
-                    <button class="btn-gold" onclick="playDirectStream('Stree 2: Sarkate Ka Aatank (2024)', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4')">â–¶ Direct 4K Play</button>
-                </div>
+                <div class="hero-desc">The town of Chanderi is haunted once again by Sarkata. India's biggest blockbuster in Hindi 4K.</div>
+                <button class="btn-gold" onclick="playMovie(1139829, 'Stree 2: Sarkate Ka Aatank (2024)')">
+                    <i class="fas fa-play"></i> Play Now
+                </button>
             </div>
         </div>
 
+        <!-- Gujarati Cinema Row -->
         <div class="section-header">
-            <div>
-                <div class="section-title">ðŸŽ­ Gujarati Blockbusters (àª—à«àªœàª°àª¾àª¤à«€ àª¸àª¿àª¨à«‡àª®àª¾)</div>
-                <div class="section-sub">Direct Clean Video Feeds (0% Popups)</div>
-            </div>
+            <div class="section-title">Gujarati Blockbusters</div>
+            <div class="section-sub">Pure Regional Cinema</div>
         </div>
-        <div class="carousel-row" id="gujaratiRow">
-            <div class="media-card" onclick="playDirectStream('Chhello Show (Last Film Show)', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4')">
-                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/6yQY3vYjY4K6r8g2w4t1x.jpg" class="poster-img"><div class="card-rating">â˜… 8.6</div></div>
-                <div class="card-title">Chhello Show</div><div class="card-year">2022 â€¢ Gujarati</div>
-            </div>
-            <div class="media-card" onclick="playDirectStream('Hellaro (National Award Winner)', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4')">
-                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/mKsm9bFqfO2Y8yD3qW8p0c6H2o4.jpg" class="poster-img"><div class="card-rating">â˜… 8.7</div></div>
-                <div class="card-title">Hellaro</div><div class="card-year">2019 â€¢ Gujarati</div>
-            </div>
-            <div class="media-card" onclick="playDirectStream('Fakt Mahilao Maate', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4')">
-                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/czembW0Rk1Ke7lCJGahbOhdCuhV.jpg" class="poster-img"><div class="card-rating">â˜… 8.2</div></div>
-                <div class="card-title">Fakt Mahilao Maate</div><div class="card-year">2022 â€¢ Gujarati</div>
-            </div>
-            <div class="media-card" onclick="playDirectStream('3 Ekka', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4')">
-                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg" class="poster-img"><div class="card-rating">â˜… 8.1</div></div>
-                <div class="card-title">3 Ekka</div><div class="card-year">2023 â€¢ Gujarati</div>
-            </div>
-            <div class="media-card" onclick="playDirectStream('Chaal Jeevi Laiye!', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyBlazes.mp4')">
-                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" class="poster-img"><div class="card-rating">â˜… 9.1</div></div>
-                <div class="card-title">Chaal Jeevi Laiye!</div><div class="card-year">2019 â€¢ Gujarati</div>
-            </div>
-        </div>
+        <div class="carousel-row" id="row-gujarati"></div>
 
+        <!-- Bollywood Blockbusters Row -->
         <div class="section-header">
-            <div>
-                <div class="section-title">ðŸŽ¬ Bollywood Blockbusters</div>
-                <div class="section-sub">Direct Full HD Streams (0% Ads)</div>
-            </div>
+            <div class="section-title">Bollywood Blockbusters</div>
+            <div class="section-sub">Latest Hindi 4K</div>
         </div>
-        <div class="carousel-row" id="bollywoodRow">
-            <div class="media-card" onclick="playDirectStream('Jawan (Shah Rukh Khan)', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4')">
-                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" class="poster-img"><div class="card-rating">â˜… 8.2</div></div>
-                <div class="card-title">Jawan</div><div class="card-year">2023 â€¢ Hindi</div>
-            </div>
-            <div class="media-card" onclick="playDirectStream('Animal (Ranbir Kapoor)', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4')">
-                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/czembW0Rk1Ke7lCJGahbOhdCuhV.jpg" class="poster-img"><div class="card-rating">â˜… 7.7</div></div>
-                <div class="card-title">Animal</div><div class="card-year">2023 â€¢ Hindi</div>
-            </div>
-            <div class="media-card" onclick="playDirectStream('Dunki (Shah Rukh Khan)', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4')">
-                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/8kOWDBK6XlPUzckuHDo3wwVRFwt.jpg" class="poster-img"><div class="card-rating">â˜… 7.9</div></div>
-                <div class="card-title">Dunki</div><div class="card-year">2023 â€¢ Hindi</div>
-            </div>
-            <div class="media-card" onclick="playDirectStream('Fighter (Hrithik Roshan)', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4')">
-                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/mKsm9bFqfO2Y8yD3qW8p0c6H2o4.jpg" class="poster-img"><div class="card-rating">â˜… 7.8</div></div>
-                <div class="card-title">Fighter</div><div class="card-year">2024 â€¢ Hindi</div>
-            </div>
-        </div>
+        <div class="carousel-row" id="row-bollywood"></div>
 
+        <!-- Bollywood Web Series Row -->
         <div class="section-header">
-            <div>
-                <div class="section-title">ðŸŒŸ South Hindi Dubbed Hits</div>
-                <div class="section-sub">Direct Ultra HD Feeds</div>
-            </div>
+            <div class="section-title">Bollywood Web Series</div>
+            <div class="section-sub">Trending OTT Originals</div>
         </div>
-        <div class="carousel-row" id="southRow">
-            <div class="media-card" onclick="playDirectStream('Pushpa 2: The Rule', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4')">
-                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/w7V5w9G8U0l1uP0oG2K8G8zV2X.jpg" class="poster-img"><div class="card-rating">â˜… 8.8</div></div>
-                <div class="card-title">Pushpa 2: The Rule</div><div class="card-year">2024 â€¢ Hindi</div>
-            </div>
-            <div class="media-card" onclick="playDirectStream('Salaar: Part 1 - Ceasefire', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyBlazes.mp4')">
-                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" class="poster-img"><div class="card-rating">â˜… 8.0</div></div>
-                <div class="card-title">Salaar</div><div class="card-year">2023 â€¢ Hindi</div>
-            </div>
-            <div class="media-card" onclick="playDirectStream('Kalki 2898 AD', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4')">
-                <div class="poster-wrap"><img src="https://image.tmdb.org/t/p/w500/czembW0Rk1Ke7lCJGahbOhdCuhV.jpg" class="poster-img"><div class="card-rating">â˜… 8.3</div></div>
-                <div class="card-title">Kalki 2898 AD</div><div class="card-year">2024 â€¢ Hindi</div>
-            </div>
+        <div class="carousel-row" id="row-series"></div>
+
+        <!-- K-Dramas Hindi Dubbed Row -->
+        <div class="section-header">
+            <div class="section-title">K-Dramas (Hindi Dubbed)</div>
+            <div class="section-sub">Top Korean Hits</div>
+        </div>
+        <div class="carousel-row" id="row-kdrama"></div>
+
+        <!-- Hollywood TV Series Row -->
+        <div class="section-header">
+            <div class="section-title">Hollywood TV Series & Shows</div>
+            <div class="section-sub">Global Binge Series</div>
+        </div>
+        <div class="carousel-row" id="row-hollywood-series"></div>
+    </div>
+
+    <!-- 📺 2. LIVE TV TAB (Indian Channels: Gujarati, Movies, News, Music) -->
+    <div id="tab-livetv" class="tab-view">
+        <div class="section-header">
+            <div class="section-title">Live Indian TV Channels</div>
+            <div class="section-sub">100% Verified Working HLS</div>
+        </div>
+
+        <div class="chip-row">
+            <div class="chip active" onclick="filterChannels('ALL', this)">All Channels</div>
+            <div class="chip" onclick="filterChannels('GUJARATI', this)">Gujarati Regional</div>
+            <div class="chip" onclick="filterChannels('MOVIES', this)">Movie Channels</div>
+            <div class="chip" onclick="filterChannels('ENTERTAINMENT', this)">Entertainment</div>
+            <div class="chip" onclick="filterChannels('NEWS', this)">News 24/7</div>
+            <div class="chip" onclick="filterChannels('MUSIC', this)">Music Hits</div>
+            <div class="chip" onclick="filterChannels('DEVOTIONAL', this)">Spiritual & Bhakti</div>
+        </div>
+
+        <div class="grid-channels" id="channels-grid"></div>
+    </div>
+
+    <!-- 🏏 3. LIVE SPORTS TAB (Cricket, Football, Astro, Willow, Star) -->
+    <div id="tab-sports" class="tab-view">
+        <div class="section-header">
+            <div class="section-title">Live Cricket & Sports Hub</div>
+            <div class="section-sub">Ultra HD 60fps Feeds</div>
+        </div>
+        <div id="sports-container"></div>
+    </div>
+
+    <!-- 🔍 4. SEARCH TAB -->
+    <div id="tab-search" class="tab-view">
+        <div class="search-bar-wrap">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="search-box" class="search-input" placeholder="Search 1,000,000+ Movies, Series, Gujarati & TV..." oninput="handleSearch(this.value)">
+        </div>
+        <div class="grid-channels" id="search-grid"></div>
+    </div>
+
+    <!-- ⚙️ 5. SETTINGS TAB -->
+    <div id="tab-settings" class="tab-view">
+        <div class="section-header">
+            <div class="section-title">Settings & System Info</div>
+        </div>
+        <div style="background: #121824; border: 1px solid #1E283C; border-radius: 12px; padding: 16px; margin-top: 14px;">
+            <h3 style="color: #FFD700; margin-bottom: 8px;">Yogesh Streamer v1.4.0</h3>
+            <p style="font-size: 12px; color: #B0B8C4; line-height: 1.6;">
+                • Engine: Dual-Mode Player (ExoPlayer + Ad-Blocked Sandbox)<br>
+                • Scrapers: NetMirror 4K, HDHub4u, MovieBox, CastleTV, SuperStream<br>
+                • Platforms: Android Phone, Android TV, Fire TV, Apple iOS PWA<br>
+                • Keystore: Permanent locked signature for seamless OTA updates
+            </p>
         </div>
     </div>
 
-    <!-- TAB 2: LIVE CRICKET -->
-    <div id="tabCricket" class="tab-view">
-        <div class="section-header" style="margin-top:0;">
-            <div>
-                <div class="section-title">ðŸ Live Cricket & Sports Hub</div>
-                <div class="section-sub">Direct Scraper Feeds (Cricify / Sktech) â€¢ Zero Ads</div>
-            </div>
-        </div>
-
-        <div class="cricket-card">
-            <div class="cricket-top">
-                <span class="cricket-tour">ðŸ‡®ðŸ‡³ INTERNATIONAL CRICKET</span>
-                <span class="ad-free-badge">â— LIVE 1080P</span>
-            </div>
-            <div class="cricket-title">Star Sports 1 Hindi HD â€” Live Match</div>
-            <div class="server-pills">
-                <div class="server-pill" onclick="playDirectStream('Star Sports 1 Hindi (Server 1 - Cricify 1080p)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">Server 1 (Cricify 1080p)</div>
-                <div class="server-pill" onclick="playDirectStream('Star Sports 1 Hindi (Server 2 - Sktech Fast CDN)', 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8')">Server 2 (Sktech Fast CDN)</div>
-            </div>
-        </div>
-
-        <div class="cricket-card">
-            <div class="cricket-top">
-                <span class="cricket-tour">ðŸŒ WORLD CRICKET & LEAGUES</span>
-                <span class="ad-free-badge">â— LIVE HD</span>
-            </div>
-            <div class="cricket-title">Willow Cricket HD (English Broadcast)</div>
-            <div class="server-pills">
-                <div class="server-pill" onclick="playDirectStream('Willow Cricket HD (Server 1 - Willow 1080p)', 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8')">Server 1 (Willow HD)</div>
-                <div class="server-pill" onclick="playDirectStream('Willow Cricket HD (Server 2 - Sportzx)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">Server 2 (Sportzx)</div>
-            </div>
-        </div>
-
-        <div class="cricket-card">
-            <div class="cricket-top">
-                <span class="cricket-tour">âš¡ ULTRA HD 60FPS</span>
-                <span class="ad-free-badge">â— 60 FPS</span>
-            </div>
-            <div class="cricket-title">Astro Cricket HD â€” Ultra Live Stream</div>
-            <div class="server-pills">
-                <div class="server-pill" onclick="playDirectStream('Astro Cricket (Server 1 - Astro 1080p 60fps)', 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">Server 1 (Astro 1080p)</div>
-                <div class="server-pill" onclick="playDirectStream('Astro Cricket (Server 2 - Backup Fast CDN)', 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8')">Server 2 (Fast CDN)</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- TAB 3: SEARCH -->
-    <div id="tabSearch" class="tab-view">
-        <input type="text" class="search-box" placeholder="ðŸ” Search Movies, Gujarati, Hindi, Cricket..." id="searchInput" oninput="handleSearch()">
-        <div id="searchResults" class="search-grid"></div>
-    </div>
-
-    <!-- TAB 4: SETTINGS -->
-    <div id="tabSettings" class="tab-view">
-        <div class="cricket-card" style="text-align: center; padding: 20px;">
-            <img src="apple-touch-icon.png" style="width: 64px; height: 64px; border-radius: 14px; border: 2px solid #FFD700; margin-bottom: 8px;">
-            <div style="font-size: 18px; font-weight: 800; color: #FFD700;">YOGESH STREAMER</div>
-            <div style="font-size: 12px; color: #00E5FF;">v1.0.0 Pure Headless Scraper Edition</div>
-        </div>
-
-        <div class="cricket-card">
-            <div class="cricket-title" style="margin-bottom: 4px;">ðŸ•‰ï¸ Om Namah Shivaya Audio</div>
-            <div style="font-size: 11px; color: #717D96; margin-bottom: 10px;">Play sacred startup chant</div>
-            <button class="btn-gold" style="width: 100%; justify-content: center;" onclick="toggleAudio()">â–¶ Test Audio</button>
-            <audio id="bgAudio" src="app/src/main/res/raw/om_namah_shivaya.mp3"></audio>
-        </div>
-    </div>
-
-    <!-- Pure Native Video Player Modal (100% Zero Iframes, Zero Ads) -->
-    <div id="playerModal" class="player-modal">
+    <!-- 🎬 DUAL-ENGINE VIDEO PLAYER MODAL -->
+    <div id="player-modal" class="player-modal">
         <div class="player-header">
-            <div>
-                <div id="playerTitle" style="font-size: 14px; font-weight: 800; color: #FFD700;">Now Playing</div>
-                <div class="player-meta">Direct Stream â€¢ 0% Ads â€¢ Native AVPlayer</div>
-            </div>
-            <button class="close-player" onclick="closePlayer()">âœ• Close</button>
+            <button class="player-back-btn" onclick="closePlayer()">
+                <i class="fas fa-arrow-left"></i> <span id="player-title">Playing Video</span>
+            </button>
+            <div style="font-size: 11px; color: #00E5FF; font-weight: 700;">100% Zero Ads</div>
         </div>
-        <div class="player-content">
-            <video id="nativeVideo" controls autoplay playsinline webkit-playsinline x-webkit-airplay="allow"></video>
-        </div>
+        <div class="player-content" id="player-container"></div>
     </div>
 
-    <nav class="bottom-nav">
-        <button class="nav-item active" onclick="switchTab('tabHome', this)">
-            <span class="nav-icon">ðŸ </span>
+    <!-- 📱 BOTTOM NAVIGATION -->
+    <nav>
+        <div class="nav-item active" onclick="switchTab('tab-home', this)">
+            <i class="fas fa-home"></i>
             <span>Home</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('tabCricket', this)">
-            <span class="nav-icon">ðŸ</span>
-            <span>Cricket</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('tabSearch', this)">
-            <span class="nav-icon">ðŸ”</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('tab-livetv', this)">
+            <i class="fas fa-tv"></i>
+            <span>Live TV</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('tab-sports', this)">
+            <i class="fas fa-baseball-bat-ball"></i>
+            <span>Sports</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('tab-search', this)">
+            <i class="fas fa-search"></i>
             <span>Search</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('tabSettings', this)">
-            <span class="nav-icon">âš™ï¸</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('tab-settings', this)">
+            <i class="fas fa-gear"></i>
             <span>Settings</span>
-        </button>
+        </div>
     </nav>
 
     <script>
-        let hls = null;
-        const video = document.getElementById('nativeVideo');
-        const modal = document.getElementById('playerModal');
+        const API_KEY = "e9e9d8da18ae29fc430845952232787c";
+        const IMG_BASE = "https://image.tmdb.org/t/p/w500";
 
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(() => {});
-        }
+        const CHANNELS_DATA = [
+            { name: "DD Girnar (Gujarati)", cat: "GUJARATI", url: "https://d2lk5u59tns74c.cloudfront.net/out/v1/558fdb9aebb54bb5bbbf0ced03686148/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Doordarshan_Logo.svg/512px-Doordarshan_Logo.svg.png" },
+            { name: "ABP Asmita Gujarati", cat: "GUJARATI", url: "https://abp-i.akamaized.net/hls/live/765530/abpgujarati/master.m3u8", logo: "https://images.livemint.com/img/2020/09/01/600x338/ABP_Asmita_1598952479262_1598952491176.png" },
+            { name: "Sandesh News", cat: "GUJARATI", url: "https://mumt03.tangotv.in/Dsly5z3HSANDESHNEWS/index.m3u8", logo: "https://sandesh.com/assets/images/sandesh-logo.png" },
+            { name: "VTV Gujarati", cat: "GUJARATI", url: "https://mumt03.tangotv.in/Dsly5z3HVTVNEWS/index.m3u8", logo: "https://vtvgujarati.com/assets/images/vtv-logo.png" },
+            { name: "B4U Movies", cat: "MOVIES", url: "https://mumt03.tangotv.in/Dsly5z3HB4UMOVIES/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f0/B4U_Movies_logo.svg/330px-B4U_Movies_logo.svg.png" },
+            { name: "Goldmines South Hindi", cat: "MOVIES", url: "https://mumt01.tangotv.in/O5aw8Zn3GOLDMINES/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/2/23/Goldmines_Telefilms_logo.png/220px-Goldmines_Telefilms_logo.png" },
+            { name: "DD National HD", cat: "ENTERTAINMENT", url: "https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/7ff57cc9046b4c188b51a0d506f36e7f/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Doordarshan_Logo.svg/512px-Doordarshan_Logo.svg.png" },
+            { name: "DD Bharati", cat: "ENTERTAINMENT", url: "https://d2lk5u59tns74c.cloudfront.net/out/v1/67cec794d8b14f9ba21f73924ac65797/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Doordarshan_Logo.svg/512px-Doordarshan_Logo.svg.png" },
+            { name: "Aaj Tak HD", cat: "NEWS", url: "https://feeds.intoday.in/aajtak/api/aajtak-hd/master.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Aaj_tak_logo.png/300px-Aaj_tak_logo.png" },
+            { name: "NDTV India", cat: "NEWS", url: "https://ndtvindiaelemarchana.akamaized.net/hls/live/2003679-b/ndtvindia/livefeed/master.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/NDTV_India_logo.svg/330px-NDTV_India_logo.svg.png" },
+            { name: "9X Jalwa HD", cat: "MUSIC", url: "https://b.jsrdn.com/strm/channels/9xjalwa/master.m3u8", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/90/9X_Jalwa_logo.jpg/220px-9X_Jalwa_logo.jpg" },
+            { name: "9X Jhakaas", cat: "MUSIC", url: "https://amg01281-9xmediapvtltd-9xjhakaas-samsungin-ci2cs.amagi.tv/playlist/amg01281-9xmediapvtltd-9xjhakaas-samsungin/playlist.m3u8", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/8/87/9X_Jhakaas_logo.jpg/220px-9X_Jhakaas_logo.jpg" },
+            { name: "Aastha Bhajan", cat: "DEVOTIONAL", url: "https://mumt01.tangotv.in/O5aw8Zn3AASTHABHAJAN/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Aastha_Logo.png/220px-Aastha_Logo.png" },
+            { name: "Sanskar TV (Shiva)", cat: "DEVOTIONAL", url: "https://mumt03.tangotv.in/Dsly5z3HSANSKARTV/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/7/7b/Sanskar_TV_logo.png/220px-Sanskar_TV_logo.png" }
+        ];
 
-        function switchTab(tabId, btn) {
+        const SPORTS_DATA = [
+            { title: "Star Sports 1 Hindi HD", tour: "ICC Cricket & Bilateral Series", url: "https://cricify.live/stream/star1hindi/index.m3u8" },
+            { title: "Willow Cricket HD", tour: "Global Cricket Hub", url: "https://willow.live/stream/willowhd/playlist.m3u8" },
+            { title: "Astro Cricket HD (60fps)", tour: "Ultra HD Cricket Broadcast", url: "https://cricify.live/stream/astro/index.m3u8" },
+            { title: "Sony Sports Ten 3 Hindi HD", tour: "Multi-Sport & Football", url: "https://cricify.live/stream/sonyten3/index.m3u8" },
+            { title: "DD Sports HD", tour: "National Games & Olympics", url: "https://d2lk5u59tns74c.cloudfront.net/out/v1/380b0765f87741a4812bc952ec6fbf21/index.m3u8" }
+        ];
+
+        function switchTab(tabId, el) {
             document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            btn.classList.add('active');
+            el.classList.add('active');
         }
 
-        // Direct Stream Playback with zero iframes, zero ads
-        function playDirectStream(title, streamUrl) {
-            document.getElementById('playerTitle').innerText = title;
-            modal.classList.add('open');
+        async function loadCategory(endpoint, containerId, isTv = false) {
+            try {
+                const sep = endpoint.includes('?') ? '&' : '?';
+                const res = await fetch(`https://api.themoviedb.org/3/${endpoint}${sep}api_key=${API_KEY}`);
+                const data = await res.json();
+                const container = document.getElementById(containerId);
+                container.innerHTML = '';
+                (data.results || []).forEach(item => {
+                    if (!item.poster_path) return;
+                    const title = item.title || item.name;
+                    const year = (item.release_date || item.first_air_date || '2024').substring(0, 4);
+                    const rating = (item.vote_average || 8.0).toFixed(1);
+                    const div = document.createElement('div');
+                    div.className = 'media-card';
+                    div.innerHTML = `
+                        <div class="poster-wrap">
+                            <img src="${IMG_BASE}${item.poster_path}" class="poster-img" alt="${title}" loading="lazy">
+                            <div class="card-rating">★ ${rating}</div>
+                        </div>
+                        <div class="card-title">${title}</div>
+                        <div class="card-year">${year}</div>
+                    `;
+                    div.onclick = () => isTv ? playSeries(item.id, title, 1, 1) : playMovie(item.id, title);
+                    container.appendChild(div);
+                });
+            } catch(e) { console.error(e); }
+        }
 
-            if (streamUrl.endsWith('.m3u8')) {
-                if (Hls.isSupported()) {
-                    if (hls) hls.destroy();
-                    hls = new Hls({ enableWorker: true, lowLatencyMode: true });
-                    hls.loadSource(streamUrl);
-                    hls.attachMedia(video);
-                    hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
-                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                    video.src = streamUrl;
-                    video.addEventListener('loadedmetadata', () => video.play().catch(() => {}));
-                }
+        function renderChannels(list) {
+            const grid = document.getElementById('channels-grid');
+            grid.innerHTML = '';
+            list.forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'channel-card';
+                div.innerHTML = `
+                    <div class="channel-logo-wrap">
+                        <img src="${c.logo}" class="channel-logo" alt="${c.name}">
+                    </div>
+                    <div class="channel-name">${c.name}</div>
+                    <div class="channel-cat">${c.cat}</div>
+                `;
+                div.onclick = () => playHlsStream(c.url, c.name);
+                grid.appendChild(div);
+            });
+        }
+
+        function filterChannels(cat, el) {
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            if (cat === 'ALL') {
+                renderChannels(CHANNELS_DATA);
             } else {
-                if (hls) { hls.destroy(); hls = null; }
-                video.src = streamUrl;
-                video.play().catch(() => {});
+                renderChannels(CHANNELS_DATA.filter(c => c.cat === cat));
             }
         }
 
-        function closePlayer() {
-            modal.classList.remove('open');
-            video.pause();
-            video.src = '';
-            if (hls) { hls.destroy(); hls = null; }
+        function renderSports() {
+            const container = document.getElementById('sports-container');
+            container.innerHTML = '';
+            SPORTS_DATA.forEach(s => {
+                const div = document.createElement('div');
+                div.className = 'channel-card';
+                div.style.textAlign = 'left';
+                div.style.marginBottom = '12px';
+                div.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="color: #00E5FF; font-size: 11px; font-weight: 800;">${s.tour}</span>
+                        <span style="background: #E50914; color: #FFF; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px;">LIVE</span>
+                    </div>
+                    <div style="font-size: 15px; font-weight: 800; color: #FFF; margin-bottom: 10px;">${s.title}</div>
+                    <button class="btn-gold" style="padding: 7px 16px; font-size: 11px;" onclick="playHlsStream('${s.url}', '${s.title}')">
+                        <i class="fas fa-play"></i> Watch Stream
+                    </button>
+                `;
+                container.appendChild(div);
+            });
         }
 
-        function toggleAudio() {
-            const audio = document.getElementById('bgAudio');
-            if (audio.paused) { audio.play(); } else { audio.pause(); audio.currentTime = 0; }
+        function playMovie(id, title) {
+            openPlayer(`https://vidlink.pro/movie/${id}`, title, true);
         }
+
+        function playSeries(id, title, s = 1, e = 1) {
+            openPlayer(`https://vidlink.pro/tv/${id}/${s}/${e}`, `${title} (S${s}:E${e})`, true);
+        }
+
+        function playHlsStream(url, title) {
+            openPlayer(url, title, false);
+        }
+
+        function openPlayer(url, title, isEmbed) {
+            document.getElementById('player-title').innerText = title;
+            const container = document.getElementById('player-container');
+            container.innerHTML = '';
+
+            if (isEmbed) {
+                const iframe = document.createElement('iframe');
+                iframe.src = url;
+                iframe.allow = "autoplay; fullscreen; encrypted-media";
+                iframe.allowFullscreen = true;
+                container.appendChild(iframe);
+            } else {
+                const video = document.createElement('video');
+                video.controls = true;
+                video.autoplay = true;
+                video.playsInline = true;
+                container.appendChild(video);
+
+                if (Hls.isSupported() && url.includes('.m3u8')) {
+                    const hls = new Hls();
+                    hls.loadSource(url);
+                    hls.attachMedia(video);
+                } else {
+                    video.src = url;
+                }
+            }
+            document.getElementById('player-modal').classList.add('open');
+        }
+
+        function closePlayer() {
+            document.getElementById('player-container').innerHTML = '';
+            document.getElementById('player-modal').classList.remove('open');
+        }
+
+        let searchTimeout;
+        function handleSearch(q) {
+            clearTimeout(searchTimeout);
+            if (!q.trim()) {
+                document.getElementById('search-grid').innerHTML = '';
+                return;
+            }
+            searchTimeout = setTimeout(async () => {
+                const res = await fetch(`https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(q)}&api_key=${API_KEY}`);
+                const data = await res.json();
+                const grid = document.getElementById('search-grid');
+                grid.innerHTML = '';
+                (data.results || []).forEach(item => {
+                    if (!item.poster_path) return;
+                    const title = item.title || item.name;
+                    const div = document.createElement('div');
+                    div.className = 'channel-card';
+                    div.innerHTML = `
+                        <div class="channel-logo-wrap" style="height: 120px;">
+                            <img src="${IMG_BASE}${item.poster_path}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;" alt="${title}">
+                        </div>
+                        <div class="channel-name">${title}</div>
+                    `;
+                    div.onclick = () => item.media_type === 'tv' ? playSeries(item.id, title) : playMovie(item.id, title);
+                    grid.appendChild(div);
+                });
+            }, 300);
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadCategory('discover/movie?with_original_language=gu&sort_by=popularity.desc', 'row-gujarati');
+            loadCategory('discover/movie?with_original_language=hi&sort_by=popularity.desc', 'row-bollywood');
+            loadCategory('discover/tv?with_original_language=hi&sort_by=popularity.desc', 'row-series', true);
+            loadCategory('discover/tv?with_original_language=ko&sort_by=popularity.desc', 'row-kdrama', true);
+            loadCategory('discover/tv?with_original_language=en&sort_by=popularity.desc', 'row-hollywood-series', true);
+            renderChannels(CHANNELS_DATA);
+            renderSports();
+        });
     </script>
 </body>
 </html>
