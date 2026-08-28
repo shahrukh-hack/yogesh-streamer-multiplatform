@@ -3,7 +3,6 @@ package com.yogesh.streamer.core.updater
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.util.Log
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.Dispatchers
@@ -25,8 +24,8 @@ data class UpdateInfo(
 object AppUpdater {
     private const val TAG = "AppUpdater"
     private const val GITHUB_REPO = "shahrukh-hack/yogesh-streamer-multiplatform"
-    private const val CURRENT_VERSION_CODE = 100
-    private const val CURRENT_VERSION_NAME = "1.0.0"
+    const val CURRENT_VERSION_CODE = 110
+    const val CURRENT_VERSION_NAME = "1.1.0"
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
@@ -35,7 +34,7 @@ object AppUpdater {
 
     suspend fun checkForUpdate(): UpdateInfo = withContext(Dispatchers.IO) {
         try {
-            val url = "https://api.github.com/repos//releases/latest"
+            val url = "https://api.github.com/repos/\/releases/latest"
             val request = Request.Builder().url(url).build()
             val response = client.newCall(request).execute()
             if (response.isSuccessful) {
@@ -108,7 +107,7 @@ object AppUpdater {
             withContext(Dispatchers.Main) {
                 val uri = FileProvider.getUriForFile(
                     context,
-                    ".fileprovider",
+                    "\.fileprovider",
                     apkFile
                 )
                 val intent = Intent(Intent.ACTION_VIEW).apply {

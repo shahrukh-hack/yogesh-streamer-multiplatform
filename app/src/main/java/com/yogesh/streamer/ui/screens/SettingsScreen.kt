@@ -31,7 +31,7 @@ fun SettingsScreen() {
     val context = LocalContext.current
     var isAudioEnabled by remember { mutableStateOf(StartupAudioManager.isAudioEnabled(context)) }
     var isCheckingUpdates by remember { mutableStateOf(false) }
-    var updateStatusText by remember { mutableStateOf("Current Version: v1.0.0 (Latest)") }
+    var updateStatusText by remember { mutableStateOf("Current Version: v\ (Latest)") }
     val scope = rememberCoroutineScope()
 
     LazyColumn(
@@ -60,7 +60,7 @@ fun SettingsScreen() {
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "v1.0.0 Multi-Platform Edition",
+                    text = "v\ Multi-Platform Edition",
                     color = CyanAccent,
                     fontSize = 12.sp
                 )
@@ -164,11 +164,11 @@ fun SettingsScreen() {
                                     val updateInfo = AppUpdater.checkForUpdate()
                                     isCheckingUpdates = false
                                     if (updateInfo.hasUpdate) {
-                                        updateStatusText = "Update available: v"
+                                        updateStatusText = "Update available: v\"
                                         Toast.makeText(context, "Downloading update...", Toast.LENGTH_LONG).show()
                                         AppUpdater.downloadAndInstallApk(context, updateInfo.downloadUrl) {}
                                     } else {
-                                        updateStatusText = "You are on latest v1.0.0"
+                                        updateStatusText = "You are on latest v\"
                                         Toast.makeText(context, "Already on latest version!", Toast.LENGTH_SHORT).show()
                                     }
                                 }
