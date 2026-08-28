@@ -1,4 +1,4 @@
-package com.yogesh.streamer.ui.screens
+ï»¿package com.yogesh.streamer.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -32,13 +32,13 @@ fun LiveCricketScreen(
     Box(modifier = Modifier.fillMaxSize().background(BgDark)) {
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             Text(
-                text = "?? Live Cricket & Sports Hub",
+                text = "Live Cricket & Sports Hub",
                 color = GoldPrimary,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "Powered by Cricify & SKTech Scraper Engine • 0% Ads",
+                text = "Powered by Cricify, Sportzx & SKTV - 100% Zero Ads",
                 color = CyanAccent,
                 fontSize = 12.sp
             )
@@ -68,7 +68,7 @@ fun LiveCricketScreen(
                                         shape = RoundedCornerShape(12.dp)
                                     ) {
                                         Text(
-                                            text = "? LIVE",
+                                            text = "LIVE",
                                             color = Color.White,
                                             fontSize = 10.sp,
                                             fontWeight = FontWeight.Bold,
@@ -92,7 +92,7 @@ fun LiveCricketScreen(
                                 ) {
                                     match.servers.forEach { server ->
                                         Button(
-                                            onClick = { onPlayLiveServer(server.streamUrl, " - ") },
+                                            onClick = { onPlayLiveServer(server.streamUrl, match.matchTitle + " - " + server.serverName) },
                                             modifier = Modifier.weight(1f),
                                             colors = ButtonDefaults.buttonColors(containerColor = SurfaceVariant),
                                             shape = RoundedCornerShape(8.dp)

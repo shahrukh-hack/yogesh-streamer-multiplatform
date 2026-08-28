@@ -1,26 +1,21 @@
-package com.yogesh.streamer.ui.screens
+﻿package com.yogesh.streamer.ui.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.yogesh.streamer.R
 import com.yogesh.streamer.core.scrapers.MediaItem
 import com.yogesh.streamer.core.tmdb.TMDBService
 import com.yogesh.streamer.ui.components.HeroBanner
-import com.yogesh.streamer.ui.components.MediaCard
-import com.yogesh.streamer.ui.theme.*
-import kotlinx.coroutines.launch
+import com.yogesh.streamer.ui.components.MediaRow
+import com.yogesh.streamer.ui.components.SectionHeader
+import com.yogesh.streamer.ui.theme.BgDark
+import com.yogesh.streamer.ui.theme.GoldPrimary
+import kotlinx.coroutines.async
 
 @Composable
 fun HomeScreen(
@@ -28,130 +23,99 @@ fun HomeScreen(
     onPlayClick: (MediaItem) -> Unit
 ) {
     var heroItems by remember { mutableStateOf<List<MediaItem>>(emptyList()) }
-    var gujaratiMovies by remember { mutableStateOf<List<MediaItem>>(emptyList()) }
-    var bollywoodHits by remember { mutableStateOf<List<MediaItem>>(emptyList()) }
-    var southHindi by remember { mutableStateOf<List<MediaItem>>(emptyList()) }
-    var hollywood4K by remember { mutableStateOf<List<MediaItem>>(emptyList()) }
-
-    val scope = rememberCoroutineScope()
+    var gujaratiItems by remember { mutableStateOf<List<MediaItem>>(emptyList()) }
+    var bollywoodItems by remember { mutableStateOf<List<MediaItem>>(emptyList()) }
+    var southItems by remember { mutableStateOf<List<MediaItem>>(emptyList()) }
+    var hollywoodItems by remember { mutableStateOf<List<MediaItem>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
-        scope.launch { heroItems = TMDBService.getHeroBannerItems() }
-        scope.launch { gujaratiMovies = TMDBService.getGujaratiCinema() }
-        scope.launch { bollywoodHits = TMDBService.getBollywoodHits() }
-        scope.launch { southHindi = TMDBService.getSouthHindiDubbed() }
-        scope.launch { hollywood4K = TMDBService.getHollywood4K() }
+        val heroDeferred = async { TMDBService.getHeroBannerItems() }
+        val gujaratiDeferred = async { TMDBService.getGujaratiCinema() }
+        val bollywoodDeferred = async { TMDBService.getBollywoodHits() }
+        val southDeferred = async { TMDBService.getSouthHindiDubbed() }
+        val hollywoodDeferred = async { TMDBService.getHollywood4K() }
+
+        heroItems = heroDeferred.await()
+        gujaratiItems = gujaratiDeferred.await()
+        bollywoodItems = bollywoodDeferred.await()
+        southItems = southDeferred.await()
+        hollywoodItems = hollywoodDeferred.await()
+        isLoading = false
     }
 
-    LazyColumn(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(BgDark)
-            .padding(horizontal = 16.dp),
-        contentPadding = PaddingValues(bottom = 80.dp)
     ) {
-        // App Bar / Royal Branding Header
-        item {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp)
+        if (isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.splash_logo),
-                    contentDescription = "Y+M Luxury Crest",
-                    modifier = Modifier.size(40.dp)
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                Column {
-                    Text(
-                        text = "YOGESH STREAMER",
-                        color = GoldPrimary,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = 1.2.sp
-                    )
-                    Text(
-                        text = "Luxury Multi-Platform Streaming",
-                        color = CyanAccent,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Medium
-                    )
+                CircularProgressIndicator(color = GoldPrimary)
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 80.dp)
+            ) {
+                // Dynamic Hero Carousel
+                if (heroItems.isNotEmpty()) {
+                    item {
+                        HeroBanner(
+                            items = heroItems,
+                            onPlayClick = onPlayClick,
+                            onInfoClick = onMediaClick
+                        )
+                    }
+                }
+
+                // Gujarati Cinema Row
+                if (gujaratiItems.isNotEmpty()) {
+                    item {
+                        SectionHeader(title = "Gujarati Blockbusters", subtitle = "Pure Regional Cinema")
+                        MediaRow(
+                            items = gujaratiItems,
+                            onItemClick = onMediaClick
+                        )
+                    }
+                }
+
+                // Bollywood Blockbusters Row
+                if (bollywoodItems.isNotEmpty()) {
+                    item {
+                        SectionHeader(title = "Bollywood Blockbusters", subtitle = "Latest Hindi Releases")
+                        MediaRow(
+                            items = bollywoodItems,
+                            onItemClick = onMediaClick
+                        )
+                    }
+                }
+
+                // South Hindi Dubbed Row
+                if (southItems.isNotEmpty()) {
+                    item {
+                        SectionHeader(title = "South Hindi Dubbed", subtitle = "Action Epics & Thrillers")
+                        MediaRow(
+                            items = southItems,
+                            onItemClick = onMediaClick
+                        )
+                    }
+                }
+
+                // Hollywood 4K Blockbusters Row
+                if (hollywoodItems.isNotEmpty()) {
+                    item {
+                        SectionHeader(title = "Hollywood 4K Ultra HD", subtitle = "Worldwide Trending Hits")
+                        MediaRow(
+                            items = hollywoodItems,
+                            onItemClick = onMediaClick
+                        )
+                    }
                 }
             }
         }
-
-        // Hero Banner
-        item {
-            heroItems.firstOrNull()?.let { hero ->
-                HeroBanner(
-                    item = hero,
-                    onPlayClick = { onPlayClick(hero) },
-                    onDetailsClick = { onMediaClick(hero) }
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-            }
-        }
-
-        // ?? Gujarati Cinema Row
-        item {
-            SectionHeader(title = "?? Gujarati Blockbusters", subtitle = "Pure Regional Cinema")
-            LazyRow(modifier = Modifier.padding(vertical = 8.dp)) {
-                items(gujaratiMovies) { item ->
-                    MediaCard(item = item, onClick = { onMediaClick(item) })
-                }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
-        // ?? Bollywood Blockbusters Row
-        item {
-            SectionHeader(title = "?? Bollywood Blockbusters", subtitle = "Latest Hindi Releases")
-            LazyRow(modifier = Modifier.padding(vertical = 8.dp)) {
-                items(bollywoodHits) { item ->
-                    MediaCard(item = item, onClick = { onMediaClick(item) })
-                }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
-        // ?? South Hindi Dubbed Row
-        item {
-            SectionHeader(title = "?? South Hindi Dubbed", subtitle = "Action Epics & Thrillers")
-            LazyRow(modifier = Modifier.padding(vertical = 8.dp)) {
-                items(southHindi) { item ->
-                    MediaCard(item = item, onClick = { onMediaClick(item) })
-                }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
-        // ?? Hollywood 4K Blockbusters Row
-        item {
-            SectionHeader(title = "?? Hollywood 4K Ultra HD", subtitle = "Worldwide Trending Hits")
-            LazyRow(modifier = Modifier.padding(vertical = 8.dp)) {
-                items(hollywood4K) { item ->
-                    MediaCard(item = item, onClick = { onMediaClick(item) })
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun SectionHeader(title: String, subtitle: String) {
-    Column {
-        Text(
-            text = title,
-            color = TextPrimary,
-            fontSize = 17.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = subtitle,
-            color = TextMuted,
-            fontSize = 11.sp
-        )
     }
 }

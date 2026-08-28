@@ -1,4 +1,4 @@
-package com.yogesh.streamer.ui.screens
+﻿package com.yogesh.streamer.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,41 +8,34 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yogesh.streamer.core.scrapers.MediaItem
 import com.yogesh.streamer.core.tmdb.TMDBService
 import com.yogesh.streamer.ui.components.MediaCard
 import com.yogesh.streamer.ui.theme.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     onMediaClick: (MediaItem) -> Unit
 ) {
-    var searchQuery by remember { mutableStateOf("") }
-    var searchResults by remember { mutableStateOf<List<MediaItem>>(emptyList()) }
+    var query by remember { mutableStateOf("") }
+    var results by remember { mutableStateOf<List<MediaItem>>(emptyList()) }
+    var isSearching by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    var searchJob by remember { mutableStateOf<Job?>(null) }
 
-    val trendingTags = listOf("?? Pushpa 2", "?? Stree 2", "?? Live Cricket", "?? Gujarati", "?? Jawan", "?? Kalki")
-
-    LaunchedEffect(searchQuery) {
-        if (searchQuery.isNotBlank()) {
-            scope.launch {
-                searchResults = TMDBService.search(searchQuery)
-            }
-        } else {
-            searchResults = emptyList()
-        }
-    }
+    val trendingTags = listOf("Pushpa 2", "Stree 2", "Live Cricket", "Gujarati", "Jawan", "Kalki")
 
     Column(
         modifier = Modifier
@@ -50,17 +43,33 @@ fun SearchScreen(
             .background(BgDark)
             .padding(16.dp)
     ) {
-        // Search Bar
+        // Search Input Bar
         OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("Search movies, Gujarati, Cricket...", color = TextMuted) },
+            value = query,
+            onValueChange = { newQuery ->
+                query = newQuery
+                searchJob?.cancel()
+                if (newQuery.isNotBlank()) {
+                    isSearching = true
+                    searchJob = scope.launch {
+                        delay(400) // Debounce typing
+                        results = TMDBService.search(newQuery)
+                        isSearching = false
+                    }
+                } else {
+                    results = emptyList()
+                    isSearching = false
+                }
+            },
+            placeholder = { Text("Search 1,000,000+ Movies, Gujarati & Cricket...", color = TextMuted, fontSize = 13.sp) },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search", tint = GoldPrimary) },
             trailingIcon = {
-                if (searchQuery.isNotEmpty()) {
-                    IconButton(onClick = { searchQuery = "" }) {
-                        Icon(Icons.Default.Close, contentDescription = "Clear", tint = TextMuted)
+                if (query.isNotEmpty()) {
+                    IconButton(onClick = {
+                        query = ""
+                        results = emptyList()
+                    }) {
+                        Icon(Icons.Default.Clear, contentDescription = "Clear", tint = TextMuted)
                     }
                 }
             },
@@ -73,41 +82,66 @@ fun SearchScreen(
                 unfocusedContainerColor = SurfaceCard,
                 focusedTextColor = TextPrimary,
                 unfocusedTextColor = TextPrimary
-            )
+            ),
+            modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(14.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        // Trending Pills
+        // Trending Search Chips
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            trendingTags.take(3).forEach { tag ->
-                AssistChip(
-                    onClick = { searchQuery = tag.substringAfter(" ").trim() },
-                    label = { Text(tag, fontSize = 11.sp, fontWeight = FontWeight.SemiBold) },
-                    colors = AssistChipDefaults.assistChipColors(
-                        containerColor = SurfaceVariant,
-                        labelColor = GoldPrimary
-                    ),
-                    border = null
-                )
+            trendingTags.take(4).forEach { tag ->
+                Surface(
+                    color = SurfaceVariant,
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.clickable {
+                        query = tag
+                        isSearching = true
+                        scope.launch {
+                            results = TMDBService.search(tag)
+                            isSearching = false
+                        }
+                    }
+                ) {
+                    Text(
+                        text = tag,
+                        color = CyanAccent,
+                        fontSize = 11.sp,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                    )
+                }
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Results Grid
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 130.dp),
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 80.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(searchResults) { item ->
-                MediaCard(item = item, onClick = { onMediaClick(item) })
+        if (isSearching) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = GoldPrimary)
+            }
+        } else if (results.isEmpty() && query.isNotBlank()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("No movies found for \"$query\"", color = TextMuted)
+            }
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 110.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(bottom = 80.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(results) { item ->
+                    MediaCard(
+                        item = item,
+                        onClick = { onMediaClick(item) },
+                        width = 110.dp,
+                        height = 165.dp
+                    )
+                }
             }
         }
     }

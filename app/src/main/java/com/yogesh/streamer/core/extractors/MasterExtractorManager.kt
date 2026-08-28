@@ -1,4 +1,4 @@
-package com.yogesh.streamer.core.extractors
+﻿package com.yogesh.streamer.core.extractors
 
 import com.yogesh.streamer.core.scrapers.*
 import kotlinx.coroutines.Dispatchers
@@ -17,10 +17,15 @@ object MasterExtractorManager {
     suspend fun getMovieStreams(tmdbId: Int, title: String): ExtractedMediaStreams = withContext(Dispatchers.IO) {
         val serverList = mutableListOf<StreamServer>()
 
+        val netmirrorDeferred = async { NetMirrorScraper.resolveStreams(tmdbId, title) }
         val hdhubDeferred = async { HDHub4uScraper.resolveStreams(tmdbId, title) }
         val movieBoxDeferred = async { MovieBoxScraper.resolveStreams(tmdbId, title) }
         val castleTvDeferred = async { CastleTVScraper.resolveMovieStreams(tmdbId, title) }
         val superStreamDeferred = async { SuperStreamExtractor.extract(tmdbId) }
+
+        try {
+            serverList.addAll(netmirrorDeferred.await())
+        } catch (e: Exception) { e.printStackTrace() }
 
         try {
             serverList.addAll(hdhubDeferred.await())
