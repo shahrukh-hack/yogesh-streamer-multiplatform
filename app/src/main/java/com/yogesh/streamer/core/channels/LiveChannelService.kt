@@ -119,7 +119,7 @@ object LiveChannelService {
             )
         )
 
-        if (category == ChannelCategory.ALL) {
+        return if (category == ChannelCategory.ALL) {
             allChannels
         } else {
             allChannels.filter { it.category == category }
