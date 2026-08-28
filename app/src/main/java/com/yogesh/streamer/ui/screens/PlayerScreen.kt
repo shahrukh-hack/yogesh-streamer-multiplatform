@@ -1,41 +1,52 @@
 package com.yogesh.streamer.ui.screens
 
+import android.app.Activity
+import android.content.pm.ActivityInfo
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.activity.compose.BackHandler
 import androidx.annotation.OptIn
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Audiotrack
+import androidx.compose.material.icons.filled.Subtitles
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
-import com.yogesh.streamer.core.scrapers.StreamServer
-import com.yogesh.streamer.ui.theme.GoldPrimary
-import com.yogesh.streamer.ui.theme.TextPrimary
+import com.yogesh.streamer.ui.theme.NeonCyan
+import com.yogesh.streamer.ui.theme.RoyalGold
 
 @OptIn(UnstableApi::class)
 @Composable
 fun PlayerScreen(
-    server: StreamServer,
+    videoUrl: String,
     title: String,
-    onBackClick: () -> Unit
+    onBack: () -> Unit
 ) {
     val context = LocalContext.current
+    var showAudioDialog by remember { mutableStateOf(false) }
+    var selectedAudioTrack by remember { mutableStateOf("Hindi (Default)") }
+    val audioLanguages = listOf("Hindi (Dubbed/Original)", "Gujarati", "English", "Tamil", "Telugu")
+
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
-            val mediaItem = MediaItem.fromUri(server.streamUrl)
+            val mediaItem = MediaItem.fromUri(videoUrl)
             setMediaItem(mediaItem)
             prepare()
             playWhenReady = true
@@ -43,59 +54,115 @@ fun PlayerScreen(
     }
 
     DisposableEffect(Unit) {
+        val activity = context as? Activity
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
         onDispose {
+            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
             exoPlayer.release()
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black)
-    ) {
+    BackHandler {
+        onBack()
+    }
+
+    Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
         AndroidView(
+            modifier = Modifier.fillMaxSize(),
             factory = { ctx ->
                 PlayerView(ctx).apply {
                     player = exoPlayer
+                    useController = true
                     layoutParams = FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT
                     )
-                    useController = true
-                    setShowBuffering(PlayerView.SHOW_BUFFERING_ALWAYS)
                 }
-            },
-            modifier = Modifier.fillMaxSize()
+            }
         )
 
-        // Custom Top Overlay Bar
+        // Top HUD Overlay
         Row(
-            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-                .align(Alignment.TopStart)
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(
-                onClick = onBackClick,
-                colors = IconButtonDefaults.iconButtonColors(containerColor = Color.Black.copy(alpha = 0.5f))
-            ) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = TextPrimary)
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-            Column {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = onBack) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                }
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = title,
-                    color = TextPrimary,
+                    color = Color.White,
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = " • ",
-                    color = GoldPrimary,
-                    fontSize = 11.sp
+                    maxLines = 1
                 )
             }
+
+            // Multi-Audio Track Selector Button
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(
+                    onClick = { showAudioDialog = true },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0x80121824)),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Icon(Icons.Default.Audiotrack, contentDescription = "Audio Track", tint = RoyalGold, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Audio: ", color = RoyalGold, fontSize = 12.sp)
+                }
+            }
+        }
+
+        // Multi-Audio Track Selection Dialog
+        if (showAudioDialog) {
+            AlertDialog(
+                onDismissRequest = { showAudioDialog = false },
+                title = { Text("Select Audio Track (Multi-Audio)", color = RoyalGold, fontSize = 16.sp) },
+                text = {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        audioLanguages.forEach { lang ->
+                            val isSelected = selectedAudioTrack == lang
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        selectedAudioTrack = lang
+                                        val langCode = when {
+                                            lang.contains("Hindi") -> "hin"
+                                            lang.contains("Gujarati") -> "guj"
+                                            lang.contains("English") -> "eng"
+                                            lang.contains("Tamil") -> "tam"
+                                            lang.contains("Telugu") -> "tel"
+                                            else -> "und"
+                                        }
+                                        exoPlayer.trackSelectionParameters = exoPlayer.trackSelectionParameters
+                                            .buildUpon()
+                                            .setPreferredAudioLanguage(langCode)
+                                            .build()
+                                        showAudioDialog = false
+                                    }
+                                    .padding(vertical = 8.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(lang, color = if (isSelected) NeonCyan else Color.White, fontSize = 14.sp)
+                                if (isSelected) {
+                                    Text("? Selected", color = NeonCyan, fontSize = 12.sp)
+                                }
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showAudioDialog = false }) {
+                        Text("Close", color = RoyalGold)
+                    }
+                },
+                containerColor = Color(0xFF121824)
+            )
         }
     }
 }
