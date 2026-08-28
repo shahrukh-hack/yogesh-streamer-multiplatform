@@ -14,7 +14,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yogesh.streamer.core.scrapers.MediaItem
@@ -128,7 +127,7 @@ fun SearchScreen(
             }
         } else {
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 110.dp),
+                columns = GridCells.Adaptive(minSize = 135.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(bottom = 80.dp),
@@ -137,9 +136,7 @@ fun SearchScreen(
                 items(results) { item ->
                     MediaCard(
                         item = item,
-                        onClick = { onMediaClick(item) },
-                        width = 110.dp,
-                        height = 165.dp
+                        onClick = { onMediaClick(item) }
                     )
                 }
             }
