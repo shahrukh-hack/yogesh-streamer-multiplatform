@@ -1369,9 +1369,264 @@
             color: var(--gold);
             font-size: 24px;
         }
+
+        /* 🔒 FAMILY PIN LOCK SCREEN */
+        body.pin-locked {
+            overflow: hidden;
+        }
+        body.pin-locked header,
+        body.pin-locked .tab-view,
+        body.pin-locked .bottom-nav {
+            filter: blur(18px) brightness(0.6);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        #pin-lock-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 999999;
+            background: radial-gradient(circle at 50% 20%, #151d33 0%, #080c16 65%, #020306 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: opacity 0.35s ease, visibility 0.35s ease;
+        }
+        #pin-lock-modal.unlocked {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .pin-card {
+            width: 100%;
+            max-width: 380px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(0, 229, 255, 0.15);
+            border-radius: 28px;
+            padding: 28px 22px;
+            text-align: center;
+            position: relative;
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+        }
+        .pin-logo-wrap {
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+        .pin-logo-img {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            object-fit: cover;
+        }
+        .pin-title {
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #fff;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+        .pin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 229, 255, 0.12);
+            border: 1px solid rgba(0, 229, 255, 0.35);
+            color: var(--cyan);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 14px;
+        }
+        .pin-prompt {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 18px;
+            font-weight: 500;
+        }
+        .pin-dots-container {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+        .pin-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: transparent;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .pin-dot.filled {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--cyan) 100%);
+            border-color: var(--cyan);
+            box-shadow: 0 0 16px rgba(0, 229, 255, 0.8);
+            transform: scale(1.15);
+        }
+        .pin-dots-container.shake {
+            animation: pinShake 0.45s ease-in-out;
+        }
+        .pin-dots-container.granted .pin-dot {
+            background: #10B981 !important;
+            border-color: #10B981 !important;
+            box-shadow: 0 0 20px #10B981 !important;
+        }
+        @keyframes pinShake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-12px); }
+            40%, 80% { transform: translateX(12px); }
+        }
+        .pin-error-banner {
+            min-height: 20px;
+            font-size: 12px;
+            color: #ef4444;
+            font-weight: 600;
+            margin-bottom: 14px;
+            transition: opacity 0.2s ease;
+        }
+        .pin-error-banner.success {
+            color: #10B981;
+        }
+        .pin-keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 280px;
+            margin: 0 auto 14px;
+        }
+        .pin-key {
+            height: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.16s ease;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .pin-key:hover, .pin-key.focusable:focus {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: var(--gold);
+            color: var(--gold);
+            transform: translateY(-2px);
+            outline: none;
+            box-shadow: 0 0 16px rgba(255, 215, 0, 0.4);
+        }
+        .pin-key:active {
+            transform: scale(0.92);
+            background: rgba(0, 229, 255, 0.25);
+        }
+        .pin-key.pin-action {
+            font-size: 16px;
+            color: #94a3b8;
+        }
+        .pin-key.pin-submit {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(0, 229, 255, 0.25));
+            color: #fff;
+            border-color: rgba(0, 229, 255, 0.4);
+        }
+        .pin-hint {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+        .pin-hint b {
+            color: var(--gold);
+        }
+        .header-right-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-lock-session {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: #cbd5e1;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-lock-session:hover, .btn-lock-session.focusable:focus {
+            background: rgba(239, 68, 68, 0.18);
+            border-color: #ef4444;
+            color: #ef4444;
+            outline: none;
+        }
+        @media (max-width: 600px) {
+            .header-status {
+                display: none;
+            }
+            .btn-lock-session span {
+                display: none;
+            }
+            .btn-lock-session {
+                padding: 6px 9px;
+            }
+        }
     </style>
 </head>
 <body>
+
+    <!-- 🔒 6-DIGIT FAMILY PIN LOCK GATEWAY -->
+    <div id="pin-lock-modal" class="pin-modal-overlay">
+        <div class="pin-card">
+            <div class="pin-logo-wrap">
+                <img src="https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg" alt="Logo" class="pin-logo-img">
+            </div>
+            <div class="pin-title">YOGESH STREAMER</div>
+            <div class="pin-badge"><i class="fas fa-shield-halved"></i> Family Private Access</div>
+            <p class="pin-prompt">Enter 6-digit access code to unlock cinema</p>
+
+            <div class="pin-dots-container" id="pin-dots">
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+            </div>
+
+            <div class="pin-error-banner" id="pin-error"></div>
+
+            <div class="pin-keypad" id="pin-keypad">
+                <button type="button" class="pin-key focusable" tabindex="0" onclick="pressPinDigit('1')">1</button>
+                <button type="button" class="pin-key focusable" tabindex="0" onclick="pressPinDigit('2')">2</button>
+                <button type="button" class="pin-key focusable" tabindex="0" onclick="pressPinDigit('3')">3</button>
+                <button type="button" class="pin-key focusable" tabindex="0" onclick="pressPinDigit('4')">4</button>
+                <button type="button" class="pin-key focusable" tabindex="0" onclick="pressPinDigit('5')">5</button>
+                <button type="button" class="pin-key focusable" tabindex="0" onclick="pressPinDigit('6')">6</button>
+                <button type="button" class="pin-key focusable" tabindex="0" onclick="pressPinDigit('7')">7</button>
+                <button type="button" class="pin-key focusable" tabindex="0" onclick="pressPinDigit('8')">8</button>
+                <button type="button" class="pin-key focusable" tabindex="0" onclick="pressPinDigit('9')">9</button>
+                <button type="button" class="pin-key pin-action focusable" tabindex="0" onclick="backspacePin()" title="Delete"><i class="fas fa-delete-left"></i></button>
+                <button type="button" class="pin-key focusable" tabindex="0" onclick="pressPinDigit('0')">0</button>
+                <button type="button" class="pin-key pin-action pin-submit focusable" tabindex="0" onclick="submitPin()" title="Unlock"><i class="fas fa-arrow-right"></i></button>
+            </div>
+
+            <div class="pin-hint"><i class="fas fa-tv"></i> Remote numbers 0-9 & keyboard supported • Default: <b>778899</b></div>
+        </div>
+    </div>
 
     <!-- 🔝 LUXURY STICKY HEADER -->
     <header>
@@ -1392,8 +1647,13 @@
             <a class="nav-pill focusable" tabindex="0" onclick="switchNavTab('tab-search', 5)"><i class="fas fa-search"></i> Search</a>
         </div>
 
-        <div class="header-status">
-            <span class="status-dot"></span> 42 SOURCES ONLINE
+        <div class="header-right-actions">
+            <div class="header-status">
+                <span class="status-dot"></span> 42 SOURCES ONLINE
+            </div>
+            <button class="btn-lock-session focusable" tabindex="0" onclick="lockApp()" title="Lock Session">
+                <i class="fas fa-lock"></i> <span>Lock</span>
+            </button>
         </div>
     </header>
 
@@ -1576,7 +1836,7 @@
     </nav>
 
     <script>
-        const API_BASE = window.location.origin.includes('onrender.com') 
+        const API_BASE = (window.location.origin && window.location.origin !== 'null' && !window.location.protocol.startsWith('file')) 
             ? window.location.origin 
             : 'https://yogesh-streamer-bridge.onrender.com';
 
@@ -1585,6 +1845,172 @@
         let catalogItemCache = {};
         let universalSearchIndex = [];
         let currentHlsEngine = null;
+
+        // 🔒 6-Digit Family Security PIN Protection Engine
+        let enteredPinBuffer = '';
+        const PIN_LENGTH = 6;
+        const DEFAULT_PIN = '778899';
+        let isVerifyingPin = false;
+        let appBootstrapped = false;
+
+        function pressPinDigit(digit) {
+            if (isVerifyingPin || enteredPinBuffer.length >= PIN_LENGTH) return;
+            enteredPinBuffer += String(digit);
+            updatePinDots();
+            clearPinError();
+
+            if (enteredPinBuffer.length === PIN_LENGTH) {
+                setTimeout(submitPin, 120);
+            }
+        }
+
+        function backspacePin() {
+            if (isVerifyingPin || enteredPinBuffer.length === 0) return;
+            enteredPinBuffer = enteredPinBuffer.slice(0, -1);
+            updatePinDots();
+            clearPinError();
+        }
+
+        function clearPin() {
+            enteredPinBuffer = '';
+            updatePinDots();
+            clearPinError();
+        }
+
+        function updatePinDots() {
+            const dots = document.querySelectorAll('.pin-dot');
+            dots.forEach((dot, idx) => {
+                if (idx < enteredPinBuffer.length) {
+                    dot.classList.add('filled');
+                } else {
+                    dot.classList.remove('filled');
+                }
+            });
+        }
+
+        function clearPinError() {
+            const banner = document.getElementById('pin-error');
+            if (banner) {
+                banner.textContent = '';
+                banner.className = 'pin-error-banner';
+            }
+            const dotsContainer = document.getElementById('pin-dots');
+            if (dotsContainer) {
+                dotsContainer.classList.remove('shake');
+                dotsContainer.classList.remove('granted');
+            }
+        }
+
+        async function submitPin() {
+            if (isVerifyingPin) return;
+            if (enteredPinBuffer.length !== PIN_LENGTH) {
+                const banner = document.getElementById('pin-error');
+                if (banner) banner.textContent = `Please enter complete ${PIN_LENGTH}-digit PIN.`;
+                return;
+            }
+
+            isVerifyingPin = true;
+            const banner = document.getElementById('pin-error');
+            if (banner) {
+                banner.className = 'pin-error-banner';
+                banner.textContent = 'Verifying security code...';
+            }
+
+            let verified = false;
+            let sessionToken = '';
+
+            try {
+                const res = await fetch(`${API_BASE}/api/auth/pin`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pin: enteredPinBuffer })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    verified = true;
+                    sessionToken = data.token || 'valid_token';
+                }
+            } catch (err) {
+                // Standalone static hosting / offline fallback
+                if (enteredPinBuffer === DEFAULT_PIN) {
+                    verified = true;
+                    sessionToken = 'offline_token_' + Date.now();
+                }
+            }
+
+            if (verified) {
+                const dotsContainer = document.getElementById('pin-dots');
+                if (dotsContainer) dotsContainer.classList.add('granted');
+                if (banner) {
+                    banner.className = 'pin-error-banner success';
+                    banner.innerHTML = '<i class="fas fa-check-circle"></i> Access Granted! Welcome.';
+                }
+                localStorage.setItem('y_streamer_pin_session', sessionToken);
+
+                setTimeout(() => {
+                    const modal = document.getElementById('pin-lock-modal');
+                    if (modal) modal.classList.add('unlocked');
+                    document.body.classList.remove('pin-locked');
+                    enteredPinBuffer = '';
+                    updatePinDots();
+                    isVerifyingPin = false;
+                    ensureAppBootstrapped();
+                }, 400);
+            } else {
+                const dotsContainer = document.getElementById('pin-dots');
+                if (dotsContainer) dotsContainer.classList.add('shake');
+                if (banner) {
+                    banner.className = 'pin-error-banner';
+                    banner.innerHTML = '<i class="fas fa-circle-exclamation"></i> Incorrect PIN code. Please try again.';
+                }
+                setTimeout(() => {
+                    if (dotsContainer) dotsContainer.classList.remove('shake');
+                    enteredPinBuffer = '';
+                    updatePinDots();
+                    isVerifyingPin = false;
+                }, 600);
+            }
+        }
+
+        function lockApp() {
+            localStorage.removeItem('y_streamer_pin_session');
+            const modal = document.getElementById('pin-lock-modal');
+            if (modal) modal.classList.remove('unlocked');
+            document.body.classList.add('pin-locked');
+            enteredPinBuffer = '';
+            updatePinDots();
+            clearPinError();
+            setTimeout(() => {
+                const firstKey = document.querySelector('.pin-key');
+                if (firstKey) firstKey.focus();
+            }, 200);
+        }
+
+        function checkInitialLock() {
+            const session = localStorage.getItem('y_streamer_pin_session');
+            const modal = document.getElementById('pin-lock-modal');
+            if (session) {
+                if (modal) modal.classList.add('unlocked');
+                document.body.classList.remove('pin-locked');
+                ensureAppBootstrapped();
+            } else {
+                if (modal) modal.classList.remove('unlocked');
+                document.body.classList.add('pin-locked');
+                setTimeout(() => {
+                    const firstKey = document.querySelector('.pin-key');
+                    if (firstKey) firstKey.focus();
+                }, 300);
+            }
+        }
+
+        function ensureAppBootstrapped() {
+            if (!appBootstrapped) {
+                appBootstrapped = true;
+                bootstrapAllCatalogs();
+                renderLiveTVHub(VERIFIED_LIVE_CHANNELS);
+                renderSportsEventsHub();
+            }
+        }
 
         // 🌟 Title Cleaner (Strips technical scene noise like 480p 720p WEB-DL x264 ESubs)
         function cleanTitle(raw) {
@@ -2184,6 +2610,40 @@
             const keyCode = e.keyCode || e.which;
             const isPlayerOpen = document.getElementById('cinema-player-modal').classList.contains('open');
             const isFullGridOpen = document.getElementById('catalog-fullview-modal').classList.contains('open');
+            const pinModal = document.getElementById('pin-lock-modal');
+            const isPinLocked = pinModal && !pinModal.classList.contains('unlocked');
+
+            // Intercept PIN inputs when screen is locked
+            if (isPinLocked) {
+                if ((keyCode >= 48 && keyCode <= 57) || (keyCode >= 96 && keyCode <= 105)) {
+                    let num = e.key;
+                    if (num >= '0' && num <= '9') {
+                        pressPinDigit(num);
+                        e.preventDefault();
+                        return;
+                    }
+                }
+                if (keyCode === 8) {
+                    backspacePin();
+                    e.preventDefault();
+                    return;
+                }
+                if (keyCode === 13) {
+                    const active = document.activeElement;
+                    if (active && active.classList.contains('pin-key')) {
+                        active.click();
+                    } else {
+                        submitPin();
+                    }
+                    e.preventDefault();
+                    return;
+                }
+                if ([37, 38, 39, 40].includes(keyCode)) {
+                    navigateSpatial(keyCode, e);
+                    return;
+                }
+                return;
+            }
 
             // Handle Back / Return Key on TV Remotes (Tizen: 10009, Android/Esc: 27)
             if (keyCode === 27 || keyCode === 10009) {
@@ -2314,9 +2774,7 @@
 
         // 🏁 Boot Application
         window.addEventListener('DOMContentLoaded', () => {
-            bootstrapAllCatalogs();
-            renderLiveTVHub(VERIFIED_LIVE_CHANNELS);
-            renderSportsEventsHub();
+            checkInitialLock();
 
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));

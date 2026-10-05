@@ -1,10 +1,11 @@
-﻿const http = require('http');
+const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const url = require('url');
 
 const PORT = 8080;
+const APP_PIN = process.env.APP_PIN || '778899';
 const MIME_TYPES = {
     '.html': 'text/html',
     '.js': 'text/javascript',
@@ -130,6 +131,36 @@ http.createServer(async (req, res) => {
             res.end(JSON.stringify({ success: false, sources: [] }));
         }
         return;
+    }
+
+    // PIN Verification endpoint: POST /api/auth/pin or /api/auth/verify
+    if (parsedUrl.pathname === '/api/auth/pin' || parsedUrl.pathname === '/api/auth/verify') {
+        if (req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => body += chunk);
+            req.on('end', () => {
+                try {
+                    const data = JSON.parse(body || '{}');
+                    const pin = String(data.pin || '').trim();
+                    if (pin === APP_PIN) {
+                        const token = Buffer.from(`family_session_${Date.now()}_${Math.random()}`).toString('base64');
+                        res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+                        res.end(JSON.stringify({ success: true, token, message: 'Access Granted' }));
+                    } else {
+                        res.writeHead(401, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+                        res.end(JSON.stringify({ success: false, error: 'Incorrect 6-digit security PIN' }));
+                    }
+                } catch (e) {
+                    res.writeHead(400, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+                    res.end(JSON.stringify({ success: false, error: 'Invalid payload' }));
+                }
+            });
+            return;
+        } else {
+            res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+            res.end(JSON.stringify({ status: 'ok', protected: true }));
+            return;
+        }
     }
 
     // Static File Serving
