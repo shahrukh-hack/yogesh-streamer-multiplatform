@@ -238,21 +238,21 @@
         .hero-billboard {
             position: relative;
             width: 100%;
-            height: clamp(340px, 48vh, 440px);
+            height: clamp(320px, 44vh, 420px);
             border-radius: 18px;
             overflow: hidden;
             background: var(--bg-surface);
             box-shadow: 0 16px 40px rgba(0, 0, 0, 0.9), 0 0 20px rgba(255, 215, 0, 0.1);
             border: 1px solid var(--border-glow);
-            margin-bottom: 22px;
+            margin-bottom: 20px;
             cursor: pointer;
         }
 
         @media (min-width: 768px) {
             .hero-billboard {
-                height: 440px;
-                border-radius: 24px;
-                margin-bottom: 30px;
+                height: 420px;
+                border-radius: 22px;
+                margin-bottom: 28px;
             }
         }
 
@@ -276,8 +276,8 @@
             position: absolute;
             right: 36px;
             bottom: 32px;
-            width: 200px;
-            height: 300px;
+            width: 190px;
+            height: 285px;
             border-radius: 14px;
             object-fit: cover;
             box-shadow: 0 16px 40px rgba(0, 0, 0, 0.95);
@@ -299,13 +299,13 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
-            padding: 22px 18px;
+            padding: 20px 16px;
             z-index: 2;
         }
 
         @media (min-width: 768px) {
             .hero-vignette {
-                padding: 36px 36px;
+                padding: 34px 34px;
             }
         }
 
@@ -351,12 +351,12 @@
         }
 
         .hero-title {
-            font-size: clamp(22px, 5.5vw, 36px);
+            font-size: clamp(20px, 5vw, 32px);
             font-weight: 900;
             color: #FFF;
             line-height: 1.15;
             margin-bottom: 8px;
-            max-width: 720px;
+            max-width: 680px;
             text-shadow: 0 3px 14px rgba(0, 0, 0, 0.95);
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -367,21 +367,21 @@
         .hero-overview {
             font-size: 12px;
             color: var(--text-sub);
-            max-width: 600px;
+            max-width: 580px;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            margin-bottom: 16px;
-            line-height: 1.5;
+            margin-bottom: 14px;
+            line-height: 1.45;
             text-shadow: 0 2px 6px rgba(0,0,0,0.8);
         }
 
         @media (min-width: 768px) {
             .hero-overview {
-                font-size: 14px;
+                font-size: 13.5px;
                 -webkit-line-clamp: 3;
-                margin-bottom: 22px;
+                margin-bottom: 20px;
             }
         }
 
@@ -403,10 +403,10 @@
             background: var(--gold-gradient);
             color: #000;
             border: none;
-            padding: 11px 22px;
+            padding: 11px 20px;
             border-radius: 12px;
             font-weight: 900;
-            font-size: 14px;
+            font-size: 13.5px;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
@@ -442,7 +442,7 @@
             padding: 11px 18px;
             border-radius: 12px;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 13.5px;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
@@ -548,7 +548,7 @@
         .section-headline {
             display: flex;
             justify-content: space-between;
-            align-items: baseline;
+            align-items: center;
             margin-bottom: 10px;
             padding: 0 2px;
         }
@@ -565,15 +565,28 @@
 
         @media (min-width: 768px) {
             .section-title-text {
-                font-size: 20px;
+                font-size: 19px;
             }
         }
 
-        .section-counter {
-            font-size: 10px;
-            color: var(--cyan);
+        .see-all-btn {
+            font-size: 11px;
             font-weight: 800;
-            letter-spacing: 0.5px;
+            color: var(--gold);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: rgba(255, 215, 0, 0.08);
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            transition: all 0.15s ease;
+        }
+
+        .see-all-btn:hover {
+            background: var(--gold);
+            color: #000;
         }
 
         .carousel-container {
@@ -609,7 +622,7 @@
             display: none;
         }
 
-        /* Desktop & Smart TV Chevron Arrows (Hidden on mobile touch screens) */
+        /* Desktop & Smart TV Chevron Arrows */
         .carousel-arrow {
             position: absolute;
             top: 50%;
@@ -653,9 +666,12 @@
             right: -12px;
         }
 
-        /* 🃏 Media Poster Cards (Exact 2:3 Golden Ratio) */
+        /* 🃏 Media Poster Cards (Strict 2:3 Golden Ratio, Zero Blowout) */
         .media-poster-card {
-            flex: 0 0 clamp(112px, 31vw, 136px);
+            flex: 0 0 clamp(110px, 30vw, 132px);
+            width: clamp(110px, 30vw, 132px);
+            max-width: clamp(110px, 30vw, 132px);
+            min-width: 0 !important; /* CRITICAL: Prevents long text from blowing out card width */
             cursor: pointer;
             position: relative;
             scroll-snap-align: start;
@@ -666,12 +682,16 @@
         @media (min-width: 768px) {
             .media-poster-card {
                 flex: 0 0 156px;
+                width: 156px;
+                max-width: 156px;
             }
         }
 
         @media (min-width: 1200px) {
             .media-poster-card {
-                flex: 0 0 172px;
+                flex: 0 0 168px;
+                width: 168px;
+                max-width: 168px;
             }
         }
 
@@ -734,10 +754,11 @@
         }
 
         .poster-title {
+            width: 100%;
             font-size: 11.5px;
             font-weight: 700;
             color: #FFF;
-            margin-top: 7px;
+            margin-top: 6px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -747,11 +768,184 @@
         @media (min-width: 768px) {
             .poster-title {
                 font-size: 13px;
-                margin-top: 9px;
+                margin-top: 8px;
             }
         }
 
-        /* 📺 Live TV Grid (Clean 2-Column on Phone, Multi-Column on TV) */
+        /* 🔘 Netflix / Amazon "Explore All" Card at End of Row */
+        .more-explore-card {
+            flex: 0 0 clamp(110px, 30vw, 132px);
+            width: clamp(110px, 30vw, 132px);
+            max-width: clamp(110px, 30vw, 132px);
+            min-width: 0 !important;
+            aspect-ratio: 2 / 3;
+            border-radius: var(--radius-card);
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(24, 35, 60, 0.95) 100%);
+            border: 1.5px dashed var(--gold);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-align: center;
+            padding: 14px 10px;
+            scroll-snap-align: start;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.7);
+            transition: all 0.2s ease;
+        }
+
+        @media (min-width: 768px) {
+            .more-explore-card {
+                flex: 0 0 156px;
+                width: 156px;
+                max-width: 156px;
+            }
+        }
+
+        .more-explore-card:active {
+            transform: scale(0.95);
+        }
+
+        .more-explore-card:hover {
+            border-style: solid;
+            background: rgba(255, 215, 0, 0.14);
+            transform: scale(1.03);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .more-explore-circle {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--gold);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 14px rgba(255, 215, 0, 0.4);
+        }
+
+        .more-explore-text {
+            font-size: 12.5px;
+            font-weight: 900;
+            color: #FFF;
+            margin-bottom: 4px;
+        }
+
+        .more-explore-count {
+            font-size: 10px;
+            color: var(--cyan);
+            font-weight: 700;
+        }
+
+        /* 📚 Full Catalog Grid Modal (Netflix / Amazon Collection Page) */
+        .fullgrid-modal {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-deep);
+            z-index: 999;
+            display: none;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: max(14px, env(safe-area-inset-top)) 16px 40px 16px;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        @media (min-width: 768px) {
+            .fullgrid-modal {
+                padding: max(20px, env(safe-area-inset-top)) 36px 60px 36px;
+            }
+        }
+
+        .fullgrid-modal.open {
+            display: flex;
+        }
+
+        .fullgrid-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border-dim);
+            position: sticky;
+            top: 0;
+            background: var(--bg-deep);
+            z-index: 10;
+        }
+
+        .fullgrid-title-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .fullgrid-back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-dim);
+            color: #FFF;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .fullgrid-back-btn:hover {
+            background: var(--gold);
+            color: #000;
+        }
+
+        .fullgrid-title {
+            font-size: 17px;
+            font-weight: 900;
+            color: #FFF;
+        }
+
+        @media (min-width: 768px) {
+            .fullgrid-title {
+                font-size: 22px;
+            }
+        }
+
+        .fullgrid-count-badge {
+            font-size: 11px;
+            color: var(--cyan);
+            font-weight: 800;
+            background: rgba(0, 240, 255, 0.12);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            padding: 5px 12px;
+            border-radius: 14px;
+            white-space: nowrap;
+        }
+
+        .fullgrid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        @media (min-width: 600px) {
+            .fullgrid-container {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 16px;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .fullgrid-container {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 18px;
+            }
+        }
+
+        /* 📺 Live TV Grid */
         .grid-channels-hub {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -909,7 +1103,6 @@
             font-size: 16px;
         }
 
-        /* 3-Column Movie Search Grid on Phone */
         .search-grid-wrap {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -918,7 +1111,7 @@
 
         @media (min-width: 600px) {
             .search-grid-wrap {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
                 gap: 16px;
             }
         }
@@ -1281,7 +1474,7 @@
     <div id="tab-livetv" class="tab-view">
         <div class="section-headline">
             <div class="section-title-text"><i class="fas fa-satellite-dish" style="color: var(--cyan);"></i> 24/7 Verified Live Indian TV Channels</div>
-            <div class="section-counter">DIRECT HLS EDGE FEEDS</div>
+            <div class="see-all-btn focusable" tabindex="0" onclick="filterLiveTVChannels('ALL', this)">Direct Streams</div>
         </div>
 
         <div class="chips-bar" id="livetv-chips">
@@ -1301,7 +1494,7 @@
     <div id="tab-sports" class="tab-view">
         <div class="section-headline">
             <div class="section-title-text"><i class="fas fa-baseball-bat-ball" style="color: var(--gold);"></i> Live Cricket & Sports Arena</div>
-            <div class="section-counter">60FPS ULTRA HD LIVE</div>
+            <div class="see-all-btn focusable" tabindex="0">60FPS HD LIVE</div>
         </div>
         <div id="sports-events-list"></div>
     </div>
@@ -1313,6 +1506,20 @@
             <input type="text" id="universal-search-box" class="search-bar-input focusable" tabindex="0" placeholder="Search movies, web series, live cricket, TV channels..." oninput="handleUniversalSearch(this.value)">
         </div>
         <div class="search-grid-wrap" id="search-results-grid"></div>
+    </div>
+
+    <!-- 📚 FULL CATALOG GRID MODAL (Netflix & Amazon Prime "Explore All" View) -->
+    <div id="catalog-fullview-modal" class="fullgrid-modal">
+        <div class="fullgrid-header">
+            <div class="fullgrid-title-row">
+                <button class="fullgrid-back-btn focusable" tabindex="0" onclick="closeCatalogFullGrid()">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <div class="fullgrid-title" id="fullgrid-catalog-title">Catalog Collection</div>
+            </div>
+            <div class="fullgrid-count-badge" id="fullgrid-count-badge">0 Titles</div>
+        </div>
+        <div class="fullgrid-container" id="fullgrid-items-wrap"></div>
     </div>
 
     <!-- 🎬 STREAM SELECTION BOTTOM SHEET MODAL -->
@@ -1378,6 +1585,33 @@
         let catalogItemCache = {};
         let universalSearchIndex = [];
         let currentHlsEngine = null;
+
+        // 🌟 Title Cleaner (Strips technical scene noise like 480p 720p WEB-DL x264 ESubs)
+        function cleanTitle(raw) {
+            if (!raw) return '';
+            return raw
+                .replace(/\[Hindi[^\]]*\]/gi, '')
+                .replace(/\(Hindi[^\)]*\)/gi, '')
+                .replace(/\[Telugu[^\]]*\]/gi, '')
+                .replace(/\[Tamil[^\]]*\]/gi, '')
+                .replace(/\[Dual[^\]]*\]/gi, '')
+                .replace(/\[Multi[^\]]*\]/gi, '')
+                .replace(/WEB-DL|DS4K|HDRip|HD-TS|ESubs?|Multi\s*Audio|Dual\s*Audio|Full\s*Movie|x264|x265|HEVC|AMZN|NF|DD\+?5\.1/gi, '')
+                .replace(/\s*\|\s*480p.*$/gi, '')
+                .replace(/\s*\|\s*720p.*$/gi, '')
+                .replace(/\s*\|\s*1080p.*$/gi, '')
+                .replace(/\s*\|\s*2160p.*$/gi, '')
+                .replace(/480p.*$/gi, '')
+                .replace(/720p.*$/gi, '')
+                .replace(/1080p.*$/gi, '')
+                .replace(/2160p.*$/gi, '')
+                .replace(/\s{2,}/g, ' ')
+                .trim();
+        }
+
+        function escapeHtml(str) {
+            return (str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
 
         // 🌟 Verified 100% 24/7 Direct Working Live Indian TV Feeds
         const VERIFIED_LIVE_CHANNELS = [
@@ -1470,7 +1704,9 @@
             sec.innerHTML = `
                 <div class="section-headline">
                     <div class="section-title-text">${cat.name}</div>
-                    <div class="section-counter">1080P ULTRA HD</div>
+                    <span class="see-all-btn focusable" tabindex="0" onclick="openCatalogFullGrid('${cat.id}', '${escapeHtml(cat.name)}')">
+                        See All <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
+                    </span>
                 </div>
                 <div class="carousel-container">
                     <button class="carousel-arrow left focusable" tabindex="0" onclick="scrollTrack('track-${tabPrefix}-${cat.id}', -480)"><i class="fas fa-chevron-left"></i></button>
@@ -1544,7 +1780,9 @@
                 }
 
                 track.innerHTML = '';
-                metas.slice(0, 36).forEach((item, idx) => {
+                // Render first 18 titles in the carousel row
+                const sliceCount = Math.min(metas.length, 18);
+                metas.slice(0, sliceCount).forEach((item, idx) => {
                     if (!item.poster) return;
                     const card = document.createElement('div');
                     card.className = 'media-poster-card focusable';
@@ -1555,18 +1793,84 @@
                         rankBadge = `<div class="top10-rank">${idx + 1}</div>`;
                     }
 
+                    const displayTitle = cleanTitle(item.name);
+
                     card.innerHTML = `
                         <div class="poster-frame">
-                            <img src="${item.poster}" alt="${item.name}" loading="lazy" onerror="this.src='https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg'">
+                            <img src="${item.poster}" alt="${displayTitle}" loading="lazy" onerror="this.src='https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg'">
                             <div class="badge-card-quality">1080p</div>
                             ${rankBadge}
                         </div>
-                        <div class="poster-title">${item.name}</div>
+                        <div class="poster-title" title="${item.name}">${displayTitle}</div>
                     `;
                     card.onclick = () => openStreamPicker('movie', item.id, item.name);
                     track.appendChild(card);
                 });
+
+                // 🔘 Netflix & Amazon Prime Style "Explore All" Card at end of carousel
+                if (metas.length > 18) {
+                    const moreCard = document.createElement('div');
+                    moreCard.className = 'more-explore-card focusable';
+                    moreCard.tabIndex = 0;
+                    moreCard.innerHTML = `
+                        <div class="more-explore-circle">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                        <div class="more-explore-text">Explore All</div>
+                        <div class="more-explore-count">+${metas.length - 18} More Titles</div>
+                    `;
+                    moreCard.onclick = () => openCatalogFullGrid(cat.id, cat.name);
+                    track.appendChild(moreCard);
+                }
             });
+        }
+
+        // 📚 Full Catalog Grid Collection Viewer (Netflix & Amazon Style)
+        function openCatalogFullGrid(catId, catName) {
+            const modal = document.getElementById('catalog-fullview-modal');
+            const titleEl = document.getElementById('fullgrid-catalog-title');
+            const badgeEl = document.getElementById('fullgrid-count-badge');
+            const wrap = document.getElementById('fullgrid-items-wrap');
+
+            titleEl.innerText = catName || 'Catalog Collection';
+            wrap.innerHTML = '<div class="spinner-gold" style="grid-column: 1 / -1;"><i class="fas fa-spinner fa-spin"></i></div>';
+            modal.classList.add('open');
+            modal.scrollTo({ top: 0 });
+
+            const metas = catalogItemCache[catId] || [];
+            badgeEl.innerText = `${metas.length} Titles`;
+
+            if (metas.length === 0) {
+                wrap.innerHTML = '<div style="color: var(--text-sub); grid-column: 1 / -1; text-align: center; padding: 40px; font-size: 13px;">No titles found in this catalog.</div>';
+                return;
+            }
+
+            wrap.innerHTML = '';
+            metas.forEach(item => {
+                if (!item.poster) return;
+                const card = document.createElement('div');
+                card.className = 'media-poster-card focusable';
+                card.tabIndex = 0;
+                card.style.flex = 'unset';
+                card.style.width = '100%';
+                card.style.maxWidth = '100%';
+
+                const displayTitle = cleanTitle(item.name);
+
+                card.innerHTML = `
+                    <div class="poster-frame">
+                        <img src="${item.poster}" alt="${displayTitle}" loading="lazy" onerror="this.src='https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg'">
+                        <div class="badge-card-quality">1080p</div>
+                    </div>
+                    <div class="poster-title" title="${item.name}">${displayTitle}</div>
+                `;
+                card.onclick = () => openStreamPicker('movie', item.id, item.name);
+                wrap.appendChild(card);
+            });
+        }
+
+        function closeCatalogFullGrid() {
+            document.getElementById('catalog-fullview-modal').classList.remove('open');
         }
 
         function setHeroBillboard(item) {
@@ -1581,8 +1885,9 @@
                 poster.src = item.poster;
             }
             if (item.name) {
-                title.innerText = item.name;
-                desc.innerText = `Stream ${item.name} in 1080p / 4K Ultra HD with multiple audio streams and zero ads on Yogesh Streamer.`;
+                const display = cleanTitle(item.name);
+                title.innerText = display;
+                desc.innerText = `Stream ${display} in 1080p / 4K Ultra HD with multiple audio streams and zero ads on Yogesh Streamer.`;
             }
 
             document.getElementById('hero-play-btn').onclick = (e) => {
@@ -1749,13 +2054,17 @@
                 card.className = 'media-poster-card focusable';
                 card.tabIndex = 0;
                 card.style.flex = 'unset';
+                card.style.width = '100%';
+                card.style.maxWidth = '100%';
+
+                const displayTitle = cleanTitle(item.name);
 
                 card.innerHTML = `
                     <div class="poster-frame">
-                        <img src="${item.poster || ''}" alt="${item.name}" onerror="this.src='https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg'">
+                        <img src="${item.poster || ''}" alt="${displayTitle}" onerror="this.src='https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg'">
                         <div class="badge-card-quality">1080p</div>
                     </div>
-                    <div class="poster-title">${item.name}</div>
+                    <div class="poster-title" title="${item.name}">${displayTitle}</div>
                 `;
                 card.onclick = () => openStreamPicker('movie', item.id, item.name);
                 grid.appendChild(card);
@@ -1764,7 +2073,7 @@
 
         // 🎬 Stream Selection Bottom Sheet Modal
         async function openStreamPicker(type, id, title) {
-            document.getElementById('sheet-title-text').innerText = title;
+            document.getElementById('sheet-title-text').innerText = cleanTitle(title);
             const container = document.getElementById('stream-options-container');
             container.innerHTML = '<div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>';
             document.getElementById('stream-picker-modal').classList.add('open');
@@ -1817,7 +2126,7 @@
 
         // 🍿 Fullscreen Native Cinema Player
         function launchCinemaPlayer(url, title) {
-            document.getElementById('player-stream-title').innerText = title;
+            document.getElementById('player-stream-title').innerText = cleanTitle(title);
             const container = document.getElementById('player-screen-wrap');
             container.innerHTML = '<video controls autoplay playsinline webkit-playsinline></video>';
             const video = container.querySelector('video');
@@ -1874,6 +2183,7 @@
         window.addEventListener('keydown', (e) => {
             const keyCode = e.keyCode || e.which;
             const isPlayerOpen = document.getElementById('cinema-player-modal').classList.contains('open');
+            const isFullGridOpen = document.getElementById('catalog-fullview-modal').classList.contains('open');
 
             // Handle Back / Return Key on TV Remotes (Tizen: 10009, Android/Esc: 27)
             if (keyCode === 27 || keyCode === 10009) {
@@ -1885,6 +2195,11 @@
                 const isModalOpen = document.getElementById('stream-picker-modal').classList.contains('open');
                 if (isModalOpen) {
                     closeStreamPicker();
+                    e.preventDefault();
+                    return;
+                }
+                if (isFullGridOpen) {
+                    closeCatalogFullGrid();
                     e.preventDefault();
                     return;
                 }
