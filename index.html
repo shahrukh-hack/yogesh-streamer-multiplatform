@@ -1624,7 +1624,7 @@
                 <button type="button" class="pin-key pin-action pin-submit focusable" tabindex="0" onclick="submitPin()" title="Unlock"><i class="fas fa-arrow-right"></i></button>
             </div>
 
-            <div class="pin-hint"><i class="fas fa-tv"></i> Remote numbers 0-9 & keyboard supported • Default: <b>778899</b></div>
+            <div class="pin-hint"><i class="fas fa-tv"></i> Remote numbers 0-9, physical keyboard & touch keypad supported</div>
         </div>
     </div>
 
@@ -1849,7 +1849,6 @@
         // 🔒 6-Digit Family Security PIN Protection Engine
         let enteredPinBuffer = '';
         const PIN_LENGTH = 6;
-        const DEFAULT_PIN = '778899';
         let isVerifyingPin = false;
         let appBootstrapped = false;
 
@@ -1931,11 +1930,8 @@
                     sessionToken = data.token || 'valid_token';
                 }
             } catch (err) {
-                // Standalone static hosting / offline fallback
-                if (enteredPinBuffer === DEFAULT_PIN) {
-                    verified = true;
-                    sessionToken = 'offline_token_' + Date.now();
-                }
+                console.warn('Authentication request failed:', err.message);
+                verified = false;
             }
 
             if (verified) {

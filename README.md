@@ -36,7 +36,7 @@
   - **Desktop / Laptop**: Type numbers (`0`–`9`) directly on keyboard; `Backspace` deletes; `Enter` submits.
   - **Mobile Touch**: Tactile 3×4 on-screen keypad with glowing indicator circles.
 - **Session Memory**: Secure session persistence in `localStorage` with a 1-tap lock button in the header.
-- **Default PIN**: `778899` (customizable via `APP_PIN` environment variable or in configuration).
+- **Security Access**: Protected by your private 6-digit access code (configured via `APP_PIN` environment variable).
 
 ### 🎬 Netflix & Amazon Prime Style UI / UX
 - **Dynamic Billboard**: Full-bleed backdrop trailers with high-resolution poster art and 1-tap playback.
@@ -71,13 +71,13 @@ git clone https://github.com/shahrukh-hack/yogesh-streamer-multiplatform.git
 cd yogesh-streamer-multiplatform
 
 # 2. Run the local Node.js server
-APP_PIN=778899 node server.js
+APP_PIN=your_secret_6_digit_pin node server.js
 ```
 
 Open your browser at:
 `http://localhost:8080/`
 
-Enter the default family PIN (**`778899`**) to unlock the cinema portal.
+Enter your secret 6-digit family PIN to unlock the cinema portal.
 
 ---
 
@@ -99,7 +99,7 @@ The output APK will be generated at:
 
 | Variable | Default Value | Description |
 | :--- | :--- | :--- |
-| `APP_PIN` | `778899` | 6-digit access code for the web cinema gateway |
+| `APP_PIN` | *User Defined* | 6-digit access code for the web cinema gateway |
 | `PORT` | `8080` | Local HTTP server port |
 
 ---
