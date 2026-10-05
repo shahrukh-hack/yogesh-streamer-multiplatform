@@ -1,38 +1,109 @@
-# ?? Yogesh Streamer v1.0.0 � Multi-Platform Edition
+# 🌟 Yogesh Streamer • Multi-Platform Cinema Edition
 
 <div align="center">
 
-![Yogesh Streamer Banner](app/src/main/res/drawable/splash_logo.png)
+<img src="https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg" alt="Yogesh Streamer Logo" width="160" style="border-radius: 50%; border: 3px solid #FFD700; box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);" />
 
-### ?? Luxury Cross-Platform Streaming Platform for Movies, Series & Live Cricket ??
+### Luxury Cross-Platform Cinema App for Android, iOS PWA, Smart TVs & Web 🎬
 
-[![Release](https://img.shields.io/badge/Release-v1.0.0-FFD700.svg?style=for-the-badge&logo=android)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform/releases/tag/v1.0.0)
-[![Platforms](https://img.shields.io/badge/Platforms-Android%20%7C%20Android%20TV%20%7C%20FireStick%20%7C%20iOS-00E5FF.svg?style=for-the-badge)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform)
-[![Live Cricket](https://img.shields.io/badge/Live%20Cricket-Cricify%20%2B%20Sktech-00E676.svg?style=for-the-badge)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform)
-[![Movies](https://img.shields.io/badge/Movies-CastleTV%20%2B%20VidSrc-FF2E56.svg?style=for-the-badge)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform)
+[![Release](https://img.shields.io/badge/Release-v1.0.0-FFD700.svg?style=for-the-badge&logo=android)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform)
+[![Platforms](https://img.shields.io/badge/Platforms-Android%20%7C%20Smart%20TV%20%7C%20FireStick%20%7C%20iOS%20PWA-00E5FF.svg?style=for-the-badge)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform)
+[![Security](https://img.shields.io/badge/Access-6--Digit%20PIN%20Protected-00E676.svg?style=for-the-badge&logo=shield)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform)
+[![Video Engine](https://img.shields.io/badge/Streaming-4K%20UHD%20%2B%20HLS%20Direct-FF2E56.svg?style=for-the-badge)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform)
 
 ---
 
-### ?? [DOWNLOAD OFFICIAL APK (v1.0.0)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform/releases/download/v1.0.0/YogeshStreamer-v1.0.0.apk)
+### 📥 [Download Official Android APK](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform/releases/download/v1.0.0/YogeshStreamer-v1.0.0.apk) • 🌐 [Launch Web & iOS PWA App](index.html)
 
 </div>
 
 ---
 
-## ?? What Makes Yogesh Streamer Special?
+## 📖 Overview
 
-* **?? Live Cricket & Sports Hub:** Direct 1-tap live streams for **Star Sports 1 Hindi HD**, **Willow Cricket HD**, **Astro Cricket 1080p 60fps**, and **Sony Sports Ten 3 HD** powered by **Cricify, Sktech & Sportzx**.
-* **?? Pure Categorized Entertainment:** Curated separate rows for **?? Gujarati Cinema**, **?? Bollywood Blockbusters**, **?? South Hindi Dubbed**, and **?? Hollywood 4K Ultra HD** powered by **CastleTV, VidSrc & AutoEmbed**.
-* **??? Zero Popups & Zero Ads:** 100% clean background extraction without any subscription popups, Telegram redirects, or CNCverse alerts.
-* **??? Sacred Startup Sound:** Guaranteed **Om Namah Shivaya** intro chant on app launch.
-* **?? Universal TV & FireStick Remote Support:** Full D-Pad Leanback navigation for Android TV and Amazon Fire TV Stick.
-* **?? Seamless Updates:** Consistent package signing guarantees smooth 1-tap updates with zero package conflicts.
+**Yogesh Streamer Multi-Platform Edition** is a modern, unified entertainment system that brings cinema blockbusters, trending web series, 24/7 live television, and sports coverage to any screen:
+- **Android Native App (`.apk`)**: Designed for Android smartphones, tablets, Google TV, Android TV, and Amazon Fire TV Sticks.
+- **Standalone Web / iOS PWA (`index.html`)**: A luxury browser-based cinema app that runs on iPhone/iPad Safari (as a PWA), Desktop browsers, and Smart TV browsers (Samsung Tizen, Toshiba VIDAA, LG webOS).
 
 ---
 
-## ?? Supported Devices
+## ✨ Features & Architecture
+
+### 🔒 6-Digit Family Security PIN Protection
+- **Private Access Control**: Family security code gateway prevents unauthorized access.
+- **Cross-Platform Controls**:
+  - **Smart TV Remotes**: Physical remote number buttons (`0`–`9`) directly enter digits; D-Pad arrows navigate the on-screen keypad.
+  - **Desktop / Laptop**: Type numbers (`0`–`9`) directly on keyboard; `Backspace` deletes; `Enter` submits.
+  - **Mobile Touch**: Tactile 3×4 on-screen keypad with glowing indicator circles.
+- **Session Memory**: Secure session persistence in `localStorage` with a 1-tap lock button in the header.
+- **Default PIN**: `778899` (customizable via `APP_PIN` environment variable or in configuration).
+
+### 🎬 Netflix & Amazon Prime Style UI / UX
+- **Dynamic Billboard**: Full-bleed backdrop trailers with high-resolution poster art and 1-tap playback.
+- **18-Title Curated Carousels**: Optimized horizontal swipe rails with clean Hollywood title formatting.
+- **"Explore All" (+N Titles) Cards**: OTT-style cards at the end of each category carousel.
+- **Full Catalog Grid Modal ("See All")**: Tapping "See All" opens a full-screen collection viewer displaying 100+ titles in a responsive grid.
+
+### ⚡ Direct HLS Streaming Engine
+- High-definition HLS master playlists for 4K UHD, 1080p, and 720p streams with multi-audio language support.
+- Built-in video player with spatial remote control:
+  - `OK / Enter`: Play / Pause toggle
+  - `Left Arrow`: Rewind 10 seconds
+  - `Right Arrow`: Fast-forward 10 seconds
+  - `Back / Return`: Close cinema player
+
+### 📺 Supported Devices
 
 1. **Android TV & Google TV** (Sony, TCL, Mi TV, OnePlus TV, Hisense)
-2. **Amazon Fire TV** (FireStick 4K, FireStick Max, Fire TV Lite, Fire Cube)
-3. **Android Phones & Tablets** (Samsung, Pixel, OnePlus, Xiaomi, Vivo, Oppo)
-4. **Apple iOS** (iPhone & iPad via Sideloadly / AltStore / TestFlight)
+2. **Amazon Fire TV** (FireStick 4K, FireStick Max, Fire TV Cube)
+3. **Smart TVs via Web Browser** (Samsung Tizen, Toshiba VIDAA, LG webOS)
+4. **Android Phones & Tablets** (Samsung, Pixel, OnePlus, Xiaomi, Vivo, Oppo)
+5. **Apple iOS** (iPhone & iPad Safari PWA with Add to Home Screen)
+6. **Desktop & Laptop** (Chrome, Safari, Edge, Firefox)
+
+---
+
+## 🚀 Running the Web / PWA App Locally
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/shahrukh-hack/yogesh-streamer-multiplatform.git
+cd yogesh-streamer-multiplatform
+
+# 2. Run the local Node.js server
+APP_PIN=778899 node server.js
+```
+
+Open your browser at:
+`http://localhost:8080/`
+
+Enter the default family PIN (**`778899`**) to unlock the cinema portal.
+
+---
+
+## 📦 Building the Android Native APK
+
+To build the signed release APK from source:
+
+```bash
+# Using Gradle wrapper
+./gradlew assembleRelease
+```
+
+The output APK will be generated at:
+`app/build/outputs/apk/release/app-release.apk`
+
+---
+
+## 🔑 Configuration & Environment Variables
+
+| Variable | Default Value | Description |
+| :--- | :--- | :--- |
+| `APP_PIN` | `778899` | 6-digit access code for the web cinema gateway |
+| `PORT` | `8080` | Local HTTP server port |
+
+---
+
+## 📄 License
+
+MIT License. Designed and maintained for the **Yogesh Streamer** ecosystem.
