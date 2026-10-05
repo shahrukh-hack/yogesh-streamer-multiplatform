@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Yogesh Streamer v1.4.2</title>
+    <title>Yogesh Streamer • Multiplatform</title>
 
     <!-- PWA & Apple iOS Standalone Web App Meta Tags -->
     <link rel="manifest" href="manifest.json">
@@ -11,402 +11,1094 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Yogesh Streamer">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <meta name="theme-color" content="#0A0E17">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg">
+    <link rel="icon" href="https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg">
+    <meta name="theme-color" content="#070A12">
 
-    <!-- Native HLS Video Engine (100% Direct Streams, Zero Iframes, Zero Ads) -->
+    <!-- HLS Video Engine & Icons -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #0A0E17; color: #FFFFFF; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; padding-bottom: 85px; user-select: none; }
+        :root {
+            --bg-base: #070A12;
+            --bg-surface: #0E1424;
+            --bg-card: #131B30;
+            --bg-card-hover: #1A2440;
+            --border-dim: #1C2742;
+            --gold: #FFD700;
+            --gold-gradient: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
+            --cyan: #00E5FF;
+            --text-main: #FFFFFF;
+            --text-sub: #94A3B8;
+        }
 
-        header { 
-            background: rgba(18, 24, 36, 0.95); 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            padding-bottom: calc(75px + env(safe-area-inset-bottom));
+            user-select: none;
+        }
+
+        /* Top Header */
+        header {
+            background: rgba(11, 16, 28, 0.92);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid #1E283C; 
-            padding: max(14px, env(safe-area-inset-top)) 16px 12px 16px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            position: sticky; 
-            top: 0; 
-            z-index: 100; 
+            border-bottom: 1px solid var(--border-dim);
+            padding: max(14px, env(safe-area-inset-top)) 16px 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        .header-left { display: flex; align-items: center; gap: 10px; }
-        .logo-crest { width: 38px; height: 38px; border-radius: 9px; border: 1.5px solid #FFD700; box-shadow: 0 0 12px rgba(255, 215, 0, 0.35); }
-        .logo-title { font-size: 17px; font-weight: 900; color: #FFD700; letter-spacing: 0.8px; }
-        .logo-sub { font-size: 10px; color: #00E5FF; font-weight: 600; }
-        .version-badge { background: #1A2234; border: 1px solid #FFD700; color: #FFD700; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 12px; }
 
-        .tab-view { display: none; padding: 14px 16px; animation: fadeIn 0.25s ease-in-out; }
-        .tab-view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-
-        .hero-banner { 
-            position: relative; 
-            width: 100%; 
-            height: 260px; 
-            border-radius: 16px; 
-            overflow: hidden; 
-            margin-bottom: 22px; 
-            background: #121824; 
-            box-shadow: 0 8px 24px rgba(0,0,0,0.7); 
-            border: 1px solid #1E283C; 
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        .hero-img { width: 100%; height: 100%; object-fit: cover; }
-        .hero-gradient { 
-            position: absolute; 
-            inset: 0; 
-            background: linear-gradient(180deg, transparent 15%, rgba(10, 14, 23, 0.7) 60%, #0A0E17 100%); 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: flex-end; 
-            padding: 16px; 
+
+        .brand-logo {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1.5px solid var(--gold);
+            box-shadow: 0 0 14px rgba(255, 215, 0, 0.35);
         }
-        .hero-tag { align-self: flex-start; background: rgba(255, 215, 0, 0.25); color: #FFD700; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 4px; margin-bottom: 6px; }
-        .hero-title { font-size: 22px; font-weight: 800; color: #FFF; line-height: 1.2; }
-        .hero-desc { font-size: 12px; color: #B0B8C4; margin: 4px 0 10px 0; max-width: 90%; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .btn-gold { background: #FFD700; color: #0A0E17; border: none; padding: 9px 20px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; width: fit-content; }
 
-        .section-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; margin-top: 18px; }
-        .section-title { font-size: 16px; font-weight: 800; color: #FFF; }
-        .section-sub { font-size: 11px; color: #00E5FF; }
-        
-        .carousel-row { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding-bottom: 8px; }
-        .carousel-row::-webkit-scrollbar { display: none; }
+        .brand-name {
+            font-size: 17px;
+            font-weight: 800;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
+        }
 
-        .media-card { flex: 0 0 130px; cursor: pointer; transition: transform 0.2s; }
-        .media-card:active { transform: scale(0.96); }
-        .poster-wrap { position: relative; width: 130px; height: 190px; border-radius: 10px; overflow: hidden; background: #1A2234; border: 1px solid #1E283C; }
-        .poster-img { width: 100%; height: 100%; object-fit: cover; }
-        .card-rating { position: absolute; top: 6px; right: 6px; background: rgba(0, 0, 0, 0.8); color: #FFD700; font-size: 10px; font-weight: 700; padding: 2px 5px; border-radius: 4px; }
-        .card-title { font-size: 12px; font-weight: 700; color: #FFF; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .card-year { font-size: 10px; color: #717D96; }
+        .brand-tag {
+            font-size: 10px;
+            color: var(--cyan);
+            font-weight: 600;
+        }
 
-        /* Channel & Sports Cards */
-        .grid-channels { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 14px; }
-        .channel-card { background: #121824; border: 1px solid #1E283C; border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .channel-card:active { transform: scale(0.97); border-color: #FFD700; }
-        .channel-logo-wrap { width: 100%; height: 75px; background: rgba(255,255,255,0.04); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
-        .channel-logo { max-width: 60px; max-height: 50px; object-fit: contain; }
-        .channel-name { font-size: 13px; font-weight: 800; color: #FFF; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .channel-cat { font-size: 10px; color: #00E5FF; margin-top: 2px; }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-        .chip-row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin-bottom: 14px; }
-        .chip-row::-webkit-scrollbar { display: none; }
-        .chip { background: #1A2234; border: 1px solid #2A364F; color: #B0B8C4; padding: 6px 14px; border-radius: 16px; font-size: 11px; font-weight: 700; white-space: nowrap; cursor: pointer; }
-        .chip.active { background: #FFD700; color: #0A0E17; border-color: #FFD700; }
+        .status-pill {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid #22c55e;
+            color: #4ade80;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
 
-        .search-bar-wrap { position: relative; margin-bottom: 14px; }
-        .search-input { width: 100%; background: #121824; border: 1px solid #1E283C; border-radius: 12px; padding: 12px 14px 12px 38px; color: #FFF; font-size: 13px; outline: none; }
-        .search-input:focus { border-color: #FFD700; }
-        .search-icon { position: absolute; left: 14px; top: 14px; color: #FFD700; font-size: 14px; }
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 6px #22c55e;
+        }
 
-        /* Pure Native HTML5 Video Player Modal (Zero Iframes, Zero Ads) */
-        .player-modal { position: fixed; inset: 0; background: #000; z-index: 9999; display: none; flex-direction: column; }
-        .player-modal.open { display: flex; }
-        .player-header { padding: max(12px, env(safe-area-inset-top)) 16px 12px 16px; display: flex; align-items: center; justify-content: space-between; background: rgba(18, 24, 36, 0.98); border-bottom: 1px solid #1E283C; }
-        .player-back-btn { background: none; border: none; color: #FFF; font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        .player-content { flex: 1; position: relative; background: #000; display: flex; align-items: center; justify-content: center; }
-        video { width: 100%; height: 100%; object-fit: contain; }
+        /* Tab Content Views */
+        .tab-view {
+            display: none;
+            padding: 16px;
+            animation: fadeIn 0.25s ease-out;
+        }
 
-        /* Bottom Nav Bar */
-        nav { 
-            position: fixed; 
-            bottom: 0; 
-            left: 0; 
-            right: 0; 
-            height: 68px; 
-            background: rgba(18, 24, 36, 0.95); 
+        .tab-view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hero Banner */
+        .hero-banner {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 24px;
+            background: var(--bg-surface);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--border-dim);
+            cursor: pointer;
+        }
+
+        .hero-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 20%, rgba(7, 10, 18, 0.6) 60%, var(--bg-base) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 20px;
+        }
+
+        .hero-badge {
+            align-self: flex-start;
+            background: rgba(255, 215, 0, 0.25);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-size: 10px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .hero-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #FFF;
+            line-height: 1.2;
+            margin-bottom: 6px;
+        }
+
+        .hero-desc {
+            font-size: 12px;
+            color: var(--text-sub);
+            max-width: 90%;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .btn-play-hero {
+            background: var(--gold-gradient);
+            color: #000;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 13px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 16px rgba(255, 215, 0, 0.35);
+        }
+
+        /* Section Rows */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 12px;
+            margin-top: 20px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #FFF;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-sub {
+            font-size: 11px;
+            color: var(--cyan);
+            font-weight: 600;
+        }
+
+        .carousel-row {
+            display: flex;
+            gap: 14px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 8px;
+        }
+
+        .carousel-row::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Media Cards */
+        .media-card {
+            flex: 0 0 135px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .media-card:active {
+            transform: scale(0.96);
+        }
+
+        .poster-box {
+            position: relative;
+            width: 135px;
+            height: 200px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--bg-card);
+            border: 1px solid var(--border-dim);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .poster-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-tag {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            color: var(--gold);
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+
+        .card-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #FFF;
+            margin-top: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Filter Chips */
+        .chip-bar {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            margin-bottom: 16px;
+            padding-bottom: 4px;
+        }
+
+        .chip-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .chip {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-dim);
+            color: var(--text-sub);
+            padding: 7px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chip.active {
+            background: var(--gold);
+            color: #000;
+            border-color: var(--gold);
+            box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Live Channels & Sports Grid */
+        .grid-channels {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .channel-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-dim);
+            border-radius: 14px;
+            padding: 14px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .channel-card:active {
+            transform: scale(0.96);
+            border-color: var(--gold);
+        }
+
+        .channel-logo-wrap {
+            width: 100%;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+
+        .channel-logo-wrap img {
+            max-width: 70px;
+            max-height: 55px;
+            object-fit: contain;
+        }
+
+        .channel-name {
+            font-size: 13px;
+            font-weight: 800;
+            color: #FFF;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Sports Cards */
+        .sports-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-dim);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .sports-card:active {
+            border-color: var(--gold);
+        }
+
+        .sports-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .sports-tour {
+            font-size: 11px;
+            color: var(--cyan);
+            font-weight: 800;
+        }
+
+        .badge-live {
+            background: #ef4444;
+            color: #FFF;
+            font-size: 9px;
+            font-weight: 900;
+            padding: 2px 7px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .sports-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: #FFF;
+            margin-bottom: 8px;
+        }
+
+        /* Search Input */
+        .search-wrap {
+            position: relative;
+            margin-bottom: 18px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-dim);
+            border-radius: 14px;
+            padding: 14px 16px 14px 44px;
+            color: #FFF;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--gold);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gold);
+            font-size: 15px;
+        }
+
+        /* Stream Picker Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 9998;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .stream-sheet {
+            background: #0E1424;
+            border-top: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 24px 24px 0 0;
+            width: 100%;
+            max-width: 600px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 20px max(24px, env(safe-area-inset-bottom)) 20px;
+            animation: slideUp 0.25s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .sheet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .sheet-title {
+            font-size: 17px;
+            font-weight: 800;
+            color: #FFF;
+            max-width: 85%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sheet-close {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #FFF;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .stream-list {
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-right: 4px;
+        }
+
+        .stream-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-dim);
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .stream-item:active {
+            border-color: var(--gold);
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .stream-info-main {
+            font-size: 13px;
+            font-weight: 800;
+            color: #FFF;
+            margin-bottom: 3px;
+        }
+
+        .stream-info-sub {
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+
+        .stream-play-icon {
+            color: var(--gold);
+            font-size: 18px;
+        }
+
+        /* Native Fullscreen Video Player Modal */
+        .player-modal {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+        }
+
+        .player-modal.open {
+            display: flex;
+        }
+
+        .player-bar {
+            padding: max(12px, env(safe-area-inset-top)) 16px 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(14, 20, 36, 0.98);
+            border-bottom: 1px solid var(--border-dim);
+        }
+
+        .btn-player-back {
+            background: none;
+            border: none;
+            color: #FFF;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+
+        .player-view-wrap {
+            flex: 1;
+            position: relative;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Bottom Tab Navigation Bar */
+        nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: calc(65px + env(safe-area-inset-bottom));
+            background: rgba(11, 16, 28, 0.96);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid #1E283C; 
-            display: flex; 
-            justify-content: space-around; 
-            align-items: center; 
-            z-index: 100; 
-            padding-bottom: env(safe-area-inset-bottom); 
+            border-top: 1px solid var(--border-dim);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+            padding-bottom: env(safe-area-inset-bottom);
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #717D96; text-decoration: none; cursor: pointer; font-size: 10px; font-weight: 700; }
-        .nav-item i { font-size: 18px; }
-        .nav-item.active { color: #FFD700; }
+
+        .nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-sub);
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 700;
+            transition: color 0.2s;
+        }
+
+        .nav-link i {
+            font-size: 18px;
+        }
+
+        .nav-link.active {
+            color: var(--gold);
+        }
+
+        /* Loading Spinner */
+        .loader-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            color: var(--gold);
+            font-size: 24px;
+        }
     </style>
 </head>
 <body>
 
+    <!-- 🔝 Header -->
     <header>
-        <div class="header-left">
-            <img src="icon-192.png" alt="Logo" class="logo-crest">
+        <div class="header-brand">
+            <img src="https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg" alt="Logo" class="brand-logo">
             <div>
-                <div class="logo-title">YOGESH STREAMER</div>
-                <div class="logo-sub">Pure Native Video Engine</div>
+                <div class="brand-name">YOGESH STREAMER</div>
+                <div class="brand-tag">Cloud Native Video Engine</div>
             </div>
         </div>
-        <div class="version-badge">100% DIRECT • 0% ADS</div>
+        <div class="header-actions">
+            <div class="status-pill">
+                <span class="status-dot"></span> 24/7 CLOUD ACTIVE
+            </div>
+        </div>
     </header>
 
-    <!-- 🏠 1. HOME TAB (Movies, Gujarati, Web Series, K-Dramas) -->
+    <!-- 🏠 1. HOME TAB -->
     <div id="tab-home" class="tab-view active">
-        <!-- Hero Banner -->
-        <div class="hero-banner">
-            <img src="https://image.tmdb.org/t/p/original/8kOWDBK6XlPUzckuHDo3wwVRFwt.jpg" class="hero-img" alt="Hero">
-            <div class="hero-gradient">
-                <div class="hero-tag">🔥 TRENDING #1</div>
-                <div class="hero-title">Stree 2: Sarkate Ka Aatank</div>
-                <div class="hero-desc">The town of Chanderi is haunted once again by Sarkata. India's biggest blockbuster in 1080p Ultra HD.</div>
-                <button class="btn-gold" onclick="playDirectHls('https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8', 'Stree 2: Sarkate Ka Aatank (2024)')">
-                    <i class="fas fa-play"></i> Play Direct 1080p
+        <!-- Hero Featured Banner -->
+        <div class="hero-banner" id="hero-banner" onclick="openHeroDetails()">
+            <img id="hero-img" src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1200" class="hero-img" alt="Hero">
+            <div class="hero-overlay">
+                <div class="hero-badge">🔥 TRENDING #1</div>
+                <div class="hero-title" id="hero-title">Loading Featured...</div>
+                <div class="hero-desc" id="hero-desc">Discover unlimited Bollywood, South Hindi Dubbed, and Hollywood hits.</div>
+                <button class="btn-play-hero" id="btn-play-hero">
+                    <i class="fas fa-play"></i> Watch Direct 1080p
                 </button>
             </div>
         </div>
 
-        <!-- Gujarati Cinema Row -->
+        <!-- 🌟 MoviesDrive Row -->
         <div class="section-header">
-            <div class="section-title">Gujarati Blockbusters</div>
-            <div class="section-sub">Pure Regional Cinema</div>
+            <div class="section-title">🌟 MoviesDrive (Bollywood & Hindi)</div>
+            <div class="section-sub">1080p Ultra HD</div>
         </div>
-        <div class="carousel-row" id="row-gujarati"></div>
+        <div class="carousel-row" id="row-moviesdrive">
+            <div class="loader-box"><i class="fas fa-spinner fa-spin"></i></div>
+        </div>
 
-        <!-- Bollywood Blockbusters Row -->
+        <!-- 🌟 VegaMovies Row -->
         <div class="section-header">
-            <div class="section-title">Bollywood Blockbusters</div>
-            <div class="section-sub">Latest Hindi 1080p</div>
+            <div class="section-title">🌟 VegaMovies (Dual Audio & 4K)</div>
+            <div class="section-sub">Multi-Language</div>
         </div>
-        <div class="carousel-row" id="row-bollywood"></div>
+        <div class="carousel-row" id="row-vegamovies">
+            <div class="loader-box"><i class="fas fa-spinner fa-spin"></i></div>
+        </div>
 
-        <!-- Bollywood Web Series Row -->
+        <!-- 🌟 BollyFlix Row -->
         <div class="section-header">
-            <div class="section-title">Bollywood Web Series</div>
-            <div class="section-sub">Trending OTT Originals</div>
+            <div class="section-title">🌟 BollyFlix & Regional Hits</div>
+            <div class="section-sub">Latest Blockbusters</div>
         </div>
-        <div class="carousel-row" id="row-series"></div>
+        <div class="carousel-row" id="row-bollyflix">
+            <div class="loader-box"><i class="fas fa-spinner fa-spin"></i></div>
+        </div>
 
-        <!-- K-Dramas Hindi Dubbed Row -->
+        <!-- 🌟 Castle TV Row -->
         <div class="section-header">
-            <div class="section-title">K-Dramas (Hindi Dubbed)</div>
-            <div class="section-sub">Top Korean Hits</div>
+            <div class="section-title">🌟 Castle Specials</div>
+            <div class="section-sub">Curated Cinema</div>
         </div>
-        <div class="carousel-row" id="row-kdrama"></div>
-
-        <!-- Hollywood TV Series Row -->
-        <div class="section-header">
-            <div class="section-title">Hollywood TV Series & Shows</div>
-            <div class="section-sub">Global Binge Series</div>
+        <div class="carousel-row" id="row-castletv">
+            <div class="loader-box"><i class="fas fa-spinner fa-spin"></i></div>
         </div>
-        <div class="carousel-row" id="row-hollywood-series"></div>
     </div>
 
-    <!-- 📺 2. LIVE TV TAB (Indian Channels: Gujarati, Movies, News, Music) -->
+    <!-- 📺 2. LIVE TV TAB -->
     <div id="tab-livetv" class="tab-view">
         <div class="section-header">
-            <div class="section-title">Live Indian TV Channels</div>
-            <div class="section-sub">100% Direct Official Feeds</div>
+            <div class="section-title">📺 1,300+ Live Indian TV Channels</div>
+            <div class="section-sub">Direct Cloud Feeds</div>
         </div>
 
-        <div class="chip-row">
-            <div class="chip active" onclick="filterChannels('ALL', this)">All Channels</div>
-            <div class="chip" onclick="filterChannels('GUJARATI', this)">Gujarati Regional</div>
-            <div class="chip" onclick="filterChannels('MOVIES', this)">Movie Channels</div>
-            <div class="chip" onclick="filterChannels('ENTERTAINMENT', this)">Entertainment</div>
-            <div class="chip" onclick="filterChannels('NEWS', this)">News 24/7</div>
-            <div class="chip" onclick="filterChannels('MUSIC', this)">Music Hits</div>
-            <div class="chip" onclick="filterChannels('DEVOTIONAL', this)">Spiritual & Bhakti</div>
+        <div class="chip-bar">
+            <div class="chip active" onclick="filterLiveTV('ALL', this)">All Channels</div>
+            <div class="chip" onclick="filterLiveTV('Sports', this)">🏏 Sports</div>
+            <div class="chip" onclick="filterLiveTV('Entertainment', this)">🎭 Entertainment</div>
+            <div class="chip" onclick="filterLiveTV('Movies', this)">🎬 Movies</div>
+            <div class="chip" onclick="filterLiveTV('News', this)">📰 News</div>
+            <div class="chip" onclick="filterLiveTV('Music', this)">🎵 Music</div>
+            <div class="chip" onclick="filterLiveTV('Devotional', this)">🕉️ Devotional</div>
         </div>
 
-        <div class="grid-channels" id="channels-grid"></div>
+        <div class="grid-channels" id="channels-grid">
+            <div class="loader-box"><i class="fas fa-spinner fa-spin"></i></div>
+        </div>
     </div>
 
-    <!-- 🏏 3. LIVE SPORTS TAB (Cricket, Football, Astro, Willow, Star) -->
+    <!-- 🏏 3. LIVE SPORTS TAB -->
     <div id="tab-sports" class="tab-view">
         <div class="section-header">
-            <div class="section-title">Live Cricket & Sports Hub</div>
-            <div class="section-sub">Ultra HD 60fps Direct Feeds</div>
+            <div class="section-title">⚡ Live Cricket & Sports Matches</div>
+            <div class="section-sub">60fps Ultra HD</div>
         </div>
-        <div id="sports-container"></div>
+        <div id="sports-container">
+            <div class="loader-box"><i class="fas fa-spinner fa-spin"></i></div>
+        </div>
     </div>
 
     <!-- 🔍 4. SEARCH TAB -->
     <div id="tab-search" class="tab-view">
-        <div class="search-bar-wrap">
+        <div class="search-wrap">
             <i class="fas fa-search search-icon"></i>
-            <input type="text" id="search-box" class="search-input" placeholder="Search 1,000,000+ Movies, Series, Gujarati & TV..." oninput="handleSearch(this.value)">
+            <input type="text" id="search-box" class="search-input" placeholder="Search Movies, Series, Live Cricket & TV..." oninput="handleSearch(this.value)">
         </div>
-        <div class="grid-channels" id="search-grid"></div>
+        <div class="grid-channels" id="search-results"></div>
     </div>
 
     <!-- ⚙️ 5. SETTINGS TAB -->
     <div id="tab-settings" class="tab-view">
         <div class="section-header">
-            <div class="section-title">Settings & System Info</div>
+            <div class="section-title">⚙️ App Settings & Info</div>
         </div>
-        <div style="background: #121824; border: 1px solid #1E283C; border-radius: 12px; padding: 16px; margin-top: 14px;">
-            <h3 style="color: #FFD700; margin-bottom: 8px;">Yogesh Streamer v1.4.2</h3>
-            <p style="font-size: 12px; color: #B0B8C4; line-height: 1.6;">
-                • Engine: Pure HTML5 Video Player (Zero Iframes, Zero External Embeds)<br>
-                • Indian Live TV: DD Girnar, ABP Asmita, Sandesh News, B4U Movies, DD National, Aaj Tak<br>
-                • Sports: Star Sports Hindi HD, Willow HD, Astro Cricket 60fps<br>
-                • Zero Ads, Zero Popups, Zero Redirects Guaranteed
-            </p>
+        <div style="background: var(--bg-card); border: 1px solid var(--border-dim); border-radius: 16px; padding: 20px; line-height: 1.8; font-size: 13px; color: var(--text-sub);">
+            <h3 style="color: var(--gold); margin-bottom: 10px;">🌟 Yogesh Streamer Multiplatform PWA</h3>
+            <p>• <b>Engine:</b> 100% Direct Cloud Resolver (Zero Iframes, Zero Ads)</p>
+            <p>• <b>Cloud Backend:</b> Yogesh Streamer Bridge 24/7</p>
+            <p>• <b>Platform:</b> Standalone Web App for iPhone, iPad, Mac, Windows, Android</p>
+            <hr style="border: 0; border-top: 1px solid var(--border-dim); margin: 15px 0;">
+            <p style="color: #FFF; font-weight: 700; margin-bottom: 8px;">📲 Add to iPhone / iPad Home Screen:</p>
+            <p>1. Open Safari on iOS.</p>
+            <p>2. Tap the <b>Share</b> button (square with arrow pointing up).</p>
+            <p>3. Tap <b>"Add to Home Screen"</b>.</p>
+            <p>4. Launch Yogesh Streamer from your home screen for full-screen native experience!</p>
         </div>
     </div>
 
-    <!-- 🎬 PURE NATIVE VIDEO PLAYER MODAL (Zero Iframes) -->
+    <!-- 🎬 STREAM SELECTION BOTTOM SHEET -->
+    <div id="stream-modal" class="modal-overlay" onclick="closeStreamModal(event)">
+        <div class="stream-sheet" onclick="event.stopPropagation()">
+            <div class="sheet-header">
+                <div class="sheet-title" id="sheet-title">Select Stream</div>
+                <button class="sheet-close" onclick="closeStreamModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="stream-list" id="stream-list">
+                <div class="loader-box"><i class="fas fa-spinner fa-spin"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📺 NATIVE VIDEO PLAYER MODAL -->
     <div id="player-modal" class="player-modal">
-        <div class="player-header">
-            <button class="player-back-btn" onclick="closePlayer()">
+        <div class="player-bar">
+            <button class="btn-player-back" onclick="closePlayer()">
                 <i class="fas fa-arrow-left"></i> <span id="player-title">Playing Video</span>
             </button>
-            <div style="font-size: 11px; color: #00E5FF; font-weight: 700;">Direct HLS • Zero Ads</div>
+            <div style="font-size: 11px; color: var(--cyan); font-weight: 800;">1080p Direct • HLS</div>
         </div>
-        <div class="player-content" id="player-container"></div>
+        <div class="player-view-wrap" id="player-container"></div>
     </div>
 
     <!-- 📱 BOTTOM NAVIGATION -->
     <nav>
-        <div class="nav-item active" onclick="switchTab('tab-home', this)">
+        <div class="nav-link active" onclick="switchTab('tab-home', this)">
             <i class="fas fa-home"></i>
             <span>Home</span>
         </div>
-        <div class="nav-item" onclick="switchTab('tab-livetv', this)">
+        <div class="nav-link" onclick="switchTab('tab-livetv', this)">
             <i class="fas fa-tv"></i>
             <span>Live TV</span>
         </div>
-        <div class="nav-item" onclick="switchTab('tab-sports', this)">
+        <div class="nav-link" onclick="switchTab('tab-sports', this)">
             <i class="fas fa-baseball-bat-ball"></i>
             <span>Sports</span>
         </div>
-        <div class="nav-item" onclick="switchTab('tab-search', this)">
+        <div class="nav-link" onclick="switchTab('tab-search', this)">
             <i class="fas fa-search"></i>
             <span>Search</span>
         </div>
-        <div class="nav-item" onclick="switchTab('tab-settings', this)">
+        <div class="nav-link" onclick="switchTab('tab-settings', this)">
             <i class="fas fa-gear"></i>
             <span>Settings</span>
         </div>
     </nav>
 
     <script>
-        const API_KEY = "e9e9d8da18ae29fc430845952232787c";
-        const IMG_BASE = "https://image.tmdb.org/t/p/w500";
+        // Automatic API Base: uses current host if on Render, otherwise points to 24/7 Render cloud bridge
+        const API_BASE = window.location.origin.includes('onrender.com') 
+            ? window.location.origin 
+            : 'https://yogesh-streamer-bridge.onrender.com';
 
-        const CHANNELS_DATA = [
-            { name: "DD Girnar (Gujarati)", cat: "GUJARATI", url: "https://d2lk5u59tns74c.cloudfront.net/out/v1/558fdb9aebb54bb5bbbf0ced03686148/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Doordarshan_Logo.svg/512px-Doordarshan_Logo.svg.png" },
-            { name: "ABP Asmita Gujarati", cat: "GUJARATI", url: "https://abp-i.akamaized.net/hls/live/765530/abpgujarati/master.m3u8", logo: "https://images.livemint.com/img/2020/09/01/600x338/ABP_Asmita_1598952479262_1598952491176.png" },
-            { name: "Sandesh News", cat: "GUJARATI", url: "https://mumt03.tangotv.in/Dsly5z3HSANDESHNEWS/index.m3u8", logo: "https://sandesh.com/assets/images/sandesh-logo.png" },
-            { name: "VTV Gujarati", cat: "GUJARATI", url: "https://mumt03.tangotv.in/Dsly5z3HVTVNEWS/index.m3u8", logo: "https://vtvgujarati.com/assets/images/vtv-logo.png" },
-            { name: "B4U Movies", cat: "MOVIES", url: "https://mumt03.tangotv.in/Dsly5z3HB4UMOVIES/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f0/B4U_Movies_logo.svg/330px-B4U_Movies_logo.svg.png" },
-            { name: "Goldmines South Hindi", cat: "MOVIES", url: "https://mumt01.tangotv.in/O5aw8Zn3GOLDMINES/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/2/23/Goldmines_Telefilms_logo.png/220px-Goldmines_Telefilms_logo.png" },
-            { name: "DD National HD", cat: "ENTERTAINMENT", url: "https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/7ff57cc9046b4c188b51a0d506f36e7f/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Doordarshan_Logo.svg/512px-Doordarshan_Logo.svg.png" },
-            { name: "DD Bharati", cat: "ENTERTAINMENT", url: "https://d2lk5u59tns74c.cloudfront.net/out/v1/67cec794d8b14f9ba21f73924ac65797/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Doordarshan_Logo.svg/512px-Doordarshan_Logo.svg.png" },
-            { name: "Aaj Tak HD", cat: "NEWS", url: "https://feeds.intoday.in/aajtak/api/aajtak-hd/master.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Aaj_tak_logo.png/300px-Aaj_tak_logo.png" },
-            { name: "NDTV India", cat: "NEWS", url: "https://ndtvindiaelemarchana.akamaized.net/hls/live/2003679-b/ndtvindia/livefeed/master.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/NDTV_India_logo.svg/330px-NDTV_India_logo.svg.png" },
-            { name: "9X Jalwa HD", cat: "MUSIC", url: "https://b.jsrdn.com/strm/channels/9xjalwa/master.m3u8", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/90/9X_Jalwa_logo.jpg/220px-9X_Jalwa_logo.jpg" },
-            { name: "9X Jhakaas", cat: "MUSIC", url: "https://amg01281-9xmediapvtltd-9xjhakaas-samsungin-ci2cs.amagi.tv/playlist/amg01281-9xmediapvtltd-9xjhakaas-samsungin/playlist.m3u8", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/8/87/9X_Jhakaas_logo.jpg/220px-9X_Jhakaas_logo.jpg" },
-            { name: "Aastha Bhajan", cat: "DEVOTIONAL", url: "https://mumt01.tangotv.in/O5aw8Zn3AASTHABHAJAN/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Aastha_Logo.png/220px-Aastha_Logo.png" },
-            { name: "Sanskar TV (Shiva)", cat: "DEVOTIONAL", url: "https://mumt03.tangotv.in/Dsly5z3HSANSKARTV/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/7/7b/Sanskar_TV_logo.png/220px-Sanskar_TV_logo.png" }
-        ];
+        let heroItem = null;
+        let allChannels = [];
+        let allSports = [];
+        let searchIndex = [];
+        let currentHls = null;
 
-        const SPORTS_DATA = [
-            { title: "Star Sports 1 Hindi HD", tour: "ICC Cricket & Bilateral Series", url: "https://cricify.live/stream/star1hindi/index.m3u8" },
-            { title: "Willow Cricket HD", tour: "Global Cricket Hub", url: "https://willow.live/stream/willowhd/playlist.m3u8" },
-            { title: "Astro Cricket HD (60fps)", tour: "Ultra HD Cricket Broadcast", url: "https://cricify.live/stream/astro/index.m3u8" },
-            { title: "Sony Sports Ten 3 Hindi HD", tour: "Multi-Sport & Football", url: "https://cricify.live/stream/sonyten3/index.m3u8" },
-            { title: "DD Sports HD", tour: "National Games & Olympics", url: "https://d2lk5u59tns74c.cloudfront.net/out/v1/380b0765f87741a4812bc952ec6fbf21/index.m3u8" }
-        ];
-
+        // Switch navigation tabs
         function switchTab(tabId, el) {
             document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             el.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        async function loadCategory(endpoint, containerId, isTv = false) {
+        // Generic catalog row loader
+        async function loadCatalogRow(catalogPath, containerId, limit = 20) {
+            const container = document.getElementById(containerId);
             try {
-                const sep = endpoint.includes('?') ? '&' : '?';
-                const res = await fetch(`https://api.themoviedb.org/3/${endpoint}${sep}api_key=${API_KEY}`);
+                const res = await fetch(`${API_BASE}${catalogPath}`);
                 const data = await res.json();
-                const container = document.getElementById(containerId);
+                const metas = Array.isArray(data?.metas) ? data.metas : [];
+
+                if (metas.length === 0) {
+                    container.innerHTML = '<div style="color: var(--text-sub); font-size: 12px; padding: 10px;">No items found</div>';
+                    return;
+                }
+
+                // Add to search index
+                metas.forEach(m => {
+                    if (!searchIndex.some(s => s.id === m.id)) searchIndex.push(m);
+                });
+
+                // Set Hero banner from the first item of MoviesDrive
+                if (!heroItem && containerId === 'row-moviesdrive' && metas[0]) {
+                    setHero(metas[0]);
+                }
+
                 container.innerHTML = '';
-                (data.results || []).forEach(item => {
-                    if (!item.poster_path) return;
-                    const title = item.title || item.name;
-                    const year = (item.release_date || item.first_air_date || '2024').substring(0, 4);
-                    const rating = (item.vote_average || 8.0).toFixed(1);
+                metas.slice(0, limit).forEach(item => {
+                    if (!item.poster) return;
                     const div = document.createElement('div');
                     div.className = 'media-card';
                     div.innerHTML = `
-                        <div class="poster-wrap">
-                            <img src="${IMG_BASE}${item.poster_path}" class="poster-img" alt="${title}" loading="lazy">
-                            <div class="card-rating">★ ${rating}</div>
+                        <div class="poster-box">
+                            <img src="${item.poster}" alt="${item.name}" loading="lazy" onerror="this.src='https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg'">
+                            <div class="card-tag">HD</div>
                         </div>
-                        <div class="card-title">${title}</div>
-                        <div class="card-year">${year}</div>
+                        <div class="card-title">${item.name}</div>
                     `;
-                    div.onclick = () => playDirectHls('https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8', title);
+                    div.onclick = () => openStreamSelector(item.type || 'movie', item.id, item.name);
                     container.appendChild(div);
                 });
-            } catch(e) { console.error(e); }
+            } catch (err) {
+                console.error(`Error loading ${catalogPath}:`, err);
+                container.innerHTML = '<div style="color: var(--text-sub); font-size: 12px; padding: 10px;">Offline</div>';
+            }
         }
 
-        function renderChannels(list) {
+        function setHero(item) {
+            heroItem = item;
+            document.getElementById('hero-img').src = item.poster || '';
+            document.getElementById('hero-title').innerText = item.name || '';
+            document.getElementById('hero-desc').innerText = `Watch ${item.name} with multiple 1080p Ultra HD audio streams.`;
+            document.getElementById('btn-play-hero').onclick = (e) => {
+                e.stopPropagation();
+                openStreamSelector(item.type || 'movie', item.id, item.name);
+            };
+        }
+
+        function openHeroDetails() {
+            if (heroItem) {
+                openStreamSelector(heroItem.type || 'movie', heroItem.id, heroItem.name);
+            }
+        }
+
+        // Live TV Loader
+        async function loadLiveTV() {
+            const grid = document.getElementById('channels-grid');
+            try {
+                const res = await fetch(`${API_BASE}/catalog/tv/cnc_JIOTVIND_tv.json`);
+                const data = await res.json();
+                allChannels = Array.isArray(data?.metas) ? data.metas : [];
+
+                allChannels.forEach(c => {
+                    if (!searchIndex.some(s => s.id === c.id)) searchIndex.push(c);
+                });
+
+                renderLiveTV(allChannels.slice(0, 100));
+            } catch (err) {
+                console.error('Error loading Live TV:', err);
+                grid.innerHTML = '<div style="color: var(--text-sub); font-size: 12px;">Live TV channels offline</div>';
+            }
+        }
+
+        function renderLiveTV(list) {
             const grid = document.getElementById('channels-grid');
             grid.innerHTML = '';
             list.forEach(c => {
                 const div = document.createElement('div');
                 div.className = 'channel-card';
+                const posterImg = c.poster || 'https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg';
                 div.innerHTML = `
                     <div class="channel-logo-wrap">
-                        <img src="${c.logo}" class="channel-logo" alt="${c.name}">
+                        <img src="${posterImg}" alt="${c.name}" onerror="this.src='https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg'">
                     </div>
                     <div class="channel-name">${c.name}</div>
-                    <div class="channel-cat">${c.cat}</div>
                 `;
-                div.onclick = () => playDirectHls(c.url, c.name);
+                div.onclick = () => openStreamSelector('tv', c.id, c.name);
                 grid.appendChild(div);
             });
         }
 
-        function filterChannels(cat, el) {
-            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        function filterLiveTV(cat, el) {
+            document.querySelectorAll('#tab-livetv .chip').forEach(c => c.classList.remove('active'));
             el.classList.add('active');
+
             if (cat === 'ALL') {
-                renderChannels(CHANNELS_DATA);
+                renderLiveTV(allChannels.slice(0, 100));
             } else {
-                renderChannels(CHANNELS_DATA.filter(c => c.cat === cat));
+                const filtered = allChannels.filter(c => {
+                    const txt = (c.name + ' ' + (c.id || '')).toLowerCase();
+                    return txt.includes(cat.toLowerCase());
+                });
+                renderLiveTV(filtered.slice(0, 100));
             }
         }
 
-        function renderSports() {
+        // Live Sports Loader
+        async function loadLiveSports() {
             const container = document.getElementById('sports-container');
-            container.innerHTML = '';
-            SPORTS_DATA.forEach(s => {
+            try {
+                const res = await fetch(`${API_BASE}/catalog/tv/cnc_PlayFyLiveEvents_tv.json`);
+                const data = await res.json();
+                allSports = Array.isArray(data?.metas) ? data.metas : [];
+
+                allSports.forEach(s => {
+                    if (!searchIndex.some(i => i.id === s.id)) searchIndex.push(s);
+                });
+
+                if (allSports.length === 0) {
+                    container.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; padding: 10px;">No live sporting events right now. Check back during match hours!</div>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                allSports.forEach(s => {
+                    const div = document.createElement('div');
+                    div.className = 'sports-card';
+                    div.innerHTML = `
+                        <div class="sports-header">
+                            <span class="sports-tour">⚡ Live Sports</span>
+                            <span class="badge-live">LIVE</span>
+                        </div>
+                        <div class="sports-title">${s.name}</div>
+                        <div style="font-size: 11px; color: var(--text-sub); margin-bottom: 12px;">Ultra HD 60fps Broadcast Feed</div>
+                        <button class="btn-play-hero" style="padding: 7px 16px; font-size: 11px;">
+                            <i class="fas fa-play"></i> Watch Stream
+                        </button>
+                    `;
+                    div.onclick = () => openStreamSelector('tv', s.id, s.name);
+                    container.appendChild(div);
+                });
+            } catch (err) {
+                console.error('Error loading sports:', err);
+                container.innerHTML = '<div style="color: var(--text-sub); font-size: 12px;">Live sports schedule offline</div>';
+            }
+        }
+
+        // Search handling
+        function handleSearch(query) {
+            const results = document.getElementById('search-results');
+            const q = query.trim().toLowerCase();
+            if (!q) {
+                results.innerHTML = '';
+                return;
+            }
+
+            const matches = searchIndex.filter(item => (item.name || '').toLowerCase().includes(q));
+            results.innerHTML = '';
+            matches.slice(0, 40).forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'channel-card';
-                div.style.textAlign = 'left';
-                div.style.marginBottom = '12px';
                 div.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <span style="color: #00E5FF; font-size: 11px; font-weight: 800;">${s.tour}</span>
-                        <span style="background: #E50914; color: #FFF; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px;">LIVE</span>
+                    <div class="channel-logo-wrap">
+                        <img src="${item.poster || ''}" alt="${item.name}" onerror="this.src='https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg'">
                     </div>
-                    <div style="font-size: 15px; font-weight: 800; color: #FFF; margin-bottom: 10px;">${s.title}</div>
-                    <button class="btn-gold" style="padding: 7px 16px; font-size: 11px;" onclick="playDirectHls('${s.url}', '${s.title}')">
-                        <i class="fas fa-play"></i> Watch Stream
-                    </button>
+                    <div class="channel-name">${item.name}</div>
                 `;
-                container.appendChild(div);
+                div.onclick = () => openStreamSelector(item.type || 'movie', item.id, item.name);
+                results.appendChild(div);
             });
         }
 
-        let currentHls = null;
-        function playDirectHls(url, title) {
+        // Stream Selector Bottom Sheet Modal
+        async function openStreamSelector(type, id, title) {
+            document.getElementById('sheet-title').innerText = title;
+            const streamList = document.getElementById('stream-list');
+            streamList.innerHTML = '<div class="loader-box"><i class="fas fa-spinner fa-spin"></i></div>';
+            document.getElementById('stream-modal').classList.add('open');
+
+            try {
+                const streamUrl = `${API_BASE}/stream/${type}/${encodeURIComponent(id)}.json`;
+                const res = await fetch(streamUrl);
+                const data = await res.json();
+                const streams = Array.isArray(data?.streams) ? data.streams : [];
+
+                if (streams.length === 0) {
+                    streamList.innerHTML = '<div style="text-align: center; color: var(--text-sub); padding: 24px;">No streams found for this title right now.</div>';
+                    return;
+                }
+
+                streamList.innerHTML = '';
+                streams.forEach((s, idx) => {
+                    const item = document.createElement('div');
+                    item.className = 'stream-item';
+                    const name = s.name || `Server ${idx + 1}`;
+                    const sub = s.title ? s.title.split('\n')[0] : '1080p Ultra HD Direct Stream';
+
+                    item.innerHTML = `
+                        <div>
+                            <div class="stream-info-main">${name}</div>
+                            <div class="stream-info-sub">${sub}</div>
+                        </div>
+                        <i class="fas fa-play-circle stream-play-icon"></i>
+                    `;
+                    item.onclick = () => {
+                        closeStreamModal();
+                        playVideo(s.url, title);
+                    };
+                    streamList.appendChild(item);
+                });
+            } catch (err) {
+                console.error('Error fetching streams:', err);
+                streamList.innerHTML = '<div style="text-align: center; color: var(--text-sub); padding: 24px;">Failed to connect to stream resolver.</div>';
+            }
+        }
+
+        function closeStreamModal() {
+            document.getElementById('stream-modal').classList.remove('open');
+        }
+
+        // Native Video Player
+        function playVideo(url, title) {
             document.getElementById('player-title').innerText = title;
             const container = document.getElementById('player-container');
-            container.innerHTML = '<video controls autoplay playsinline></video>';
+            container.innerHTML = '<video controls autoplay playsinline webkit-playsinline></video>';
             const video = container.querySelector('video');
 
             if (currentHls) {
@@ -419,7 +1111,7 @@
                 currentHls.loadSource(url);
                 currentHls.attachMedia(video);
                 currentHls.on(Hls.Events.MANIFEST_PARSED, function () {
-                    video.play().catch(e => console.log(e));
+                    video.play().catch(e => console.log('Autoplay blocked:', e));
                 });
                 currentHls.on(Hls.Events.ERROR, function (event, data) {
                     if (data.fatal) {
@@ -437,9 +1129,11 @@
                     }
                 });
             } else {
+                // Native Safari / iOS HLS or MP4 playback
                 video.src = url;
-                video.play().catch(e => console.log(e));
+                video.play().catch(e => console.log('Autoplay blocked:', e));
             }
+
             document.getElementById('player-modal').classList.add('open');
         }
 
@@ -448,51 +1142,27 @@
                 currentHls.destroy();
                 currentHls = null;
             }
-            document.getElementById('player-container').innerHTML = '';
+            const container = document.getElementById('player-container');
+            const video = container.querySelector('video');
+            if (video) video.pause();
+            container.innerHTML = '';
             document.getElementById('player-modal').classList.remove('open');
         }
 
-        let searchTimeout;
-        function handleSearch(q) {
-            clearTimeout(searchTimeout);
-            if (!q.trim()) {
-                document.getElementById('search-grid').innerHTML = '';
-                return;
-            }
-            searchTimeout = setTimeout(async () => {
-                const res = await fetch(`https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(q)}&api_key=${API_KEY}`);
-                const data = await res.json();
-                const grid = document.getElementById('search-grid');
-                grid.innerHTML = '';
-                (data.results || []).forEach(item => {
-                    if (!item.poster_path) return;
-                    const title = item.title || item.name;
-                    const div = document.createElement('div');
-                    div.className = 'channel-card';
-                    div.innerHTML = `
-                        <div class="channel-logo-wrap" style="height: 120px;">
-                            <img src="${IMG_BASE}${item.poster_path}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;" alt="${title}">
-                        </div>
-                        <div class="channel-name">${title}</div>
-                    `;
-                    div.onclick = () => playDirectHls('https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8', title);
-                    grid.appendChild(div);
-                });
-            }, 300);
-        }
-
-        // Initialize on load
+        // Initialize App
         window.addEventListener('DOMContentLoaded', () => {
-            loadCategory('discover/movie?with_original_language=gu&sort_by=popularity.desc', 'row-gujarati');
-            loadCategory('discover/movie?with_original_language=hi&sort_by=popularity.desc', 'row-bollywood');
-            loadCategory('discover/tv?with_original_language=hi&sort_by=popularity.desc', 'row-series', true);
-            loadCategory('discover/tv?with_original_language=ko&sort_by=popularity.desc', 'row-kdrama', true);
-            loadCategory('discover/tv?with_original_language=en&sort_by=popularity.desc', 'row-hollywood-series', true);
-            renderChannels(CHANNELS_DATA);
-            renderSports();
+            loadCatalogRow('/catalog/movie/cnc_MoviesDrive_other.json', 'row-moviesdrive', 20);
+            loadCatalogRow('/catalog/movie/cnc_VegaMovies_other.json', 'row-vegamovies', 20);
+            loadCatalogRow('/catalog/movie/cnc_BollyFlix_other.json', 'row-bollyflix', 20);
+            loadCatalogRow('/catalog/movie/cnc_CastleTVUseVLC_other.json', 'row-castletv', 20);
+            loadLiveTV();
+            loadLiveSports();
+
+            // Service worker registration for PWA
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration error:', err));
+            }
         });
     </script>
 </body>
 </html>
-
-
