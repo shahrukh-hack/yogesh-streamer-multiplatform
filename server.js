@@ -382,6 +382,25 @@ function renderLandingHtml(host) {
             </ol>
             <div class="code-box">${manifestUrl}</div>
         </div>
+
+        <div class="guide" style="border-color: rgba(0, 229, 255, 0.35); margin-top: 14px;">
+            <h3>📺 Smart TV Quick Shortcuts (Samsung, Toshiba, LG, Android TV)</h3>
+            <p style="font-size: 13px; color: #b5b5c0; margin-bottom: 8px;">No need to type long URLs on your TV remote! Use these simple shortcuts:</p>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin: 12px 0;">
+                <div style="background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); border-radius: 10px; padding: 10px 14px; text-align: left;">
+                    <span style="font-size: 11px; color: #aaa; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">1. Direct TV Browser App (Zero Install):</span>
+                    <div style="font-size: 16px; font-weight: 800; color: #00F0FF; font-family: monospace; margin-top: 4px;">tinyurl.com/y-stream-tv</div>
+                </div>
+                <div style="background: rgba(255, 215, 0, 0.08); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 10px; padding: 10px 14px; text-align: left;">
+                    <span style="font-size: 11px; color: #aaa; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">2. Stremio TV Addon Manifest:</span>
+                    <div style="font-size: 16px; font-weight: 800; color: #FFD700; font-family: monospace; margin-top: 4px;">tinyurl.com/y-stremio-tv</div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 14px;">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https%3A%2F%2Ftinyurl.com%2Fy-stream-tv" alt="Scan to open on phone" style="width: 140px; height: 140px; border-radius: 12px; border: 2px solid #FFD700; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); display: inline-block;">
+                <div style="font-size: 11px; color: #888; margin-top: 6px;">📷 Scan with Phone Camera to Open Instantly</div>
+            </div>
+        </div>
     </div>
 </body>
 </html>`;
