@@ -1274,6 +1274,234 @@
             margin-left: 10px;
         }
 
+        /* 💡 Format Indicator Badges & External Player Controls */
+        .stream-format-notice {
+            background: rgba(0, 240, 255, 0.08);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            line-height: 1.45;
+            color: #d1d5db;
+        }
+
+        .stream-format-notice i {
+            color: var(--cyan);
+            font-size: 16px;
+            margin-top: 2px;
+        }
+
+        .stream-format-notice strong {
+            color: #FFF;
+            display: block;
+            margin-bottom: 2px;
+            font-size: 12.5px;
+        }
+
+        .badge-stream-format {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .badge-stream-web {
+            background: rgba(34, 197, 94, 0.18);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.4);
+        }
+
+        .badge-stream-mkv {
+            background: rgba(0, 240, 255, 0.15);
+            color: var(--cyan);
+            border: 1px solid rgba(0, 240, 255, 0.4);
+        }
+
+        .stream-actions-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-stream-action {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #FFF;
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .btn-stream-action:hover, .btn-stream-action.focused {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .btn-stream-action.btn-vlc {
+            background: linear-gradient(135deg, rgba(255, 165, 0, 0.25) 0%, rgba(255, 107, 0, 0.25) 100%);
+            border-color: rgba(255, 165, 0, 0.5);
+            color: #FFA500;
+        }
+
+        .btn-stream-action.btn-vlc:hover {
+            background: #FFA500;
+            color: #000;
+        }
+
+        /* 🚨 In-Player Format & Error Overlay */
+        .player-overlay-screen {
+            position: absolute;
+            inset: 0;
+            background: rgba(4, 6, 12, 0.94);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .player-overlay-card {
+            background: rgba(15, 23, 42, 0.96);
+            border: 1.5px solid var(--border-glow);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 215, 0, 0.15);
+            border-radius: 20px;
+            padding: 32px 28px;
+            max-width: 560px;
+            width: 100%;
+        }
+
+        .player-overlay-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-size: 26px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .player-overlay-card h2 {
+            font-size: 20px;
+            font-weight: 800;
+            color: #FFF;
+            margin-bottom: 10px;
+        }
+
+        .player-overlay-card p {
+            font-size: 13.5px;
+            color: var(--text-sub);
+            line-height: 1.55;
+            margin-bottom: 22px;
+        }
+
+        .player-overlay-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        @media (min-width: 520px) {
+            .player-overlay-btns {
+                flex-direction: row;
+                justify-content: center;
+            }
+        }
+
+        .btn-overlay-act {
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-overlay-act.gold {
+            background: var(--gold-gradient);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-overlay-act.gold:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .btn-overlay-act.outline {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #FFF;
+        }
+
+        .btn-overlay-act.outline:hover {
+            background: rgba(255, 255, 255, 0.16);
+            border-color: #FFF;
+        }
+
+        .overlay-tv-hint {
+            font-size: 11px;
+            color: var(--cyan);
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        /* 📋 Copy Link Toast Notification */
+        .toast-notify {
+            position: fixed;
+            bottom: calc(75px + env(safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%) translateY(50px);
+            background: rgba(15, 23, 42, 0.98);
+            border: 1px solid var(--gold);
+            color: #FFF;
+            padding: 10px 20px;
+            border-radius: 24px;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 215, 0, 0.3);
+            z-index: 100000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+        }
+
+        .toast-notify.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
         /* 📺 Fullscreen Cinema Player Modal */
         .player-modal {
             position: fixed;
@@ -1835,6 +2063,9 @@
         <div class="player-viewport" id="player-screen-wrap"></div>
     </div>
 
+    <!-- 📋 Floating Toast Notification -->
+    <div id="toast-notify" class="toast-notify"><i class="fas fa-check-circle" style="color:var(--gold);"></i> <span id="toast-text">Stream URL copied to clipboard!</span></div>
+
     <!-- 📱 Bottom Navigation Bar (Mobile / Handheld) -->
     <nav class="bottom-nav">
         <div class="bottom-nav-item active focusable" tabindex="0" onclick="switchNavTab('tab-home', 0)">
@@ -2162,15 +2393,54 @@
                     }
                 });
 
-                // 1. Home Tab: Show top Live Sports & Events first, followed by Movies & Series
-                let homeRank = 0;
+                // 🌟 Smart Prioritization: verified instant web-playable catalogs first
+                movieCatalogs.sort((a, b) => {
+                    if (a.id === 'cnc_CastleTVUseVLC_other') return -1;
+                    if (b.id === 'cnc_CastleTVUseVLC_other') return 1;
+                    if (a.id === 'cnc_Kisskh_other') return -1;
+                    if (b.id === 'cnc_Kisskh_other') return 1;
+                    if (a.id === 'cnc_Movix_other') return -1;
+                    if (b.id === 'cnc_Movix_other') return 1;
+                    return 0;
+                });
+
+                seriesCatalogs.sort((a, b) => {
+                    if (a.id === 'cnc_Kisskh_other') return -1;
+                    if (b.id === 'cnc_Kisskh_other') return 1;
+                    if (a.id === 'cnc_CastleTVUseVLC_other') return -1;
+                    if (b.id === 'cnc_CastleTVUseVLC_other') return 1;
+                    return 0;
+                });
+
+                sportsCatalogs.sort((a, b) => {
+                    if (a.id === 'cnc_SportzXLiveEvents_tv') return -1;
+                    if (b.id === 'cnc_SportzXLiveEvents_tv') return 1;
+                    return 0;
+                });
+
+                // 1. Home Tab: Verified Live Sports & Live TV first, then Instant Web Movies & Series
+                renderHomeVerifiedSportsRow(homeGrid);
+                renderHomeVerifiedLiveTVRow(homeGrid);
+
+                let homeRank = 2;
+                // Castle Cinema (100% Instant Web Play Movies)
+                movieCatalogs.slice(0, 1).forEach(cat => {
+                    buildCatalogRowElement(cat, homeGrid, 'home', true, homeRank++);
+                });
+                // Kisskh Series (100% Instant Web Play Web Series & Dramas)
+                seriesCatalogs.slice(0, 1).forEach(cat => {
+                    buildCatalogRowElement(cat, homeGrid, 'home', true, homeRank++);
+                });
+                // Cloud sports events
                 sportsCatalogs.slice(0, 2).forEach(cat => {
                     buildCatalogRowElement(cat, homeGrid, 'home', true, homeRank++);
                 });
-                movieCatalogs.slice(0, 15).forEach(cat => {
-                    buildCatalogRowElement(cat, homeGrid, 'home', homeRank < 4, homeRank++);
+                // Remaining movie catalogs
+                movieCatalogs.slice(1, 14).forEach(cat => {
+                    buildCatalogRowElement(cat, homeGrid, 'home', false, homeRank++);
                 });
-                seriesCatalogs.slice(0, 8).forEach(cat => {
+                // Remaining series catalogs
+                seriesCatalogs.slice(1, 8).forEach(cat => {
                     buildCatalogRowElement(cat, homeGrid, 'home', false, homeRank++);
                 });
 
@@ -2203,6 +2473,80 @@
             }
         }
 
+        // ⚡ Direct Live Sports row for Home
+        function renderHomeVerifiedSportsRow(container) {
+            const sec = document.createElement('div');
+            sec.className = 'catalog-row-section';
+            sec.id = 'row-section-home-live-sports';
+            sec.innerHTML = `
+                <div class="section-headline">
+                    <div class="section-title-text"><i class="fas fa-baseball-bat-ball" style="color: var(--gold);"></i> ⚡ Live Cricket & Sports Arena <span class="badge-stream-format" style="background:rgba(255,51,75,0.2); color:#FF334B; border:1px solid rgba(255,51,75,0.4);">🔴 LIVE • 60FPS</span></div>
+                    <span class="see-all-btn focusable" tabindex="0" onclick="switchNavTab('tab-sports', 4)">
+                        Sports Arena <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
+                    </span>
+                </div>
+                <div class="carousel-container">
+                    <button class="carousel-arrow left focusable" tabindex="0" onclick="scrollTrack('track-home-sports-verified', -480)"><i class="fas fa-chevron-left"></i></button>
+                    <div class="carousel-track" id="track-home-sports-verified"></div>
+                    <button class="carousel-arrow right focusable" tabindex="0" onclick="scrollTrack('track-home-sports-verified', 480)"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            `;
+            container.appendChild(sec);
+
+            const track = sec.querySelector('#track-home-sports-verified');
+            VERIFIED_SPORTS_EVENTS.forEach((s) => {
+                const card = document.createElement('div');
+                card.className = 'media-poster-card focusable landscape-card';
+                card.tabIndex = 0;
+                card.innerHTML = `
+                    <div class="poster-frame">
+                        <img src="https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg" alt="${s.title}">
+                        <div class="badge-card-quality" style="background:#FF334B;">🔴 LIVE 60FPS</div>
+                    </div>
+                    <div class="poster-title" title="${s.title}">⚡ ${s.title}</div>
+                `;
+                card.onclick = () => launchCinemaPlayer(s.url, s.title);
+                track.appendChild(card);
+            });
+        }
+
+        // 📺 Direct 24/7 Live Indian TV Channels row for Home
+        function renderHomeVerifiedLiveTVRow(container) {
+            const sec = document.createElement('div');
+            sec.className = 'catalog-row-section';
+            sec.id = 'row-section-home-live-tv';
+            sec.innerHTML = `
+                <div class="section-headline">
+                    <div class="section-title-text"><i class="fas fa-satellite-dish" style="color: var(--cyan);"></i> 📺 24/7 Live Indian TV Channels <span class="badge-stream-format badge-stream-web">⚡ Instant Web Play</span></div>
+                    <span class="see-all-btn focusable" tabindex="0" onclick="switchNavTab('tab-livetv', 3)">
+                        All Channels <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
+                    </span>
+                </div>
+                <div class="carousel-container">
+                    <button class="carousel-arrow left focusable" tabindex="0" onclick="scrollTrack('track-home-tv-verified', -480)"><i class="fas fa-chevron-left"></i></button>
+                    <div class="carousel-track" id="track-home-tv-verified"></div>
+                    <button class="carousel-arrow right focusable" tabindex="0" onclick="scrollTrack('track-home-tv-verified', 480)"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            `;
+            container.appendChild(sec);
+
+            const track = sec.querySelector('#track-home-tv-verified');
+            VERIFIED_LIVE_CHANNELS.forEach(c => {
+                const card = document.createElement('div');
+                card.className = 'media-poster-card focusable landscape-card';
+                card.tabIndex = 0;
+                card.innerHTML = `
+                    <div class="poster-frame">
+                        <img src="${c.logo}" alt="${c.name}" onerror="this.src='https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg'">
+                        <div class="badge-card-quality">${c.quality || '1080p HD'}</div>
+                    </div>
+                    <div class="poster-title" title="${c.name}">📺 ${c.name}</div>
+                `;
+                card.onclick = () => launchCinemaPlayer(c.url, c.name);
+                track.appendChild(card);
+            });
+        }
+
         function buildCatalogRowElement(cat, parentContainer, tabPrefix, loadImmediate, rankOffset) {
             const sec = document.createElement('div');
             sec.className = 'catalog-row-section';
@@ -2210,9 +2554,18 @@
             sec.setAttribute('data-id', cat.id);
             sec.setAttribute('data-name', cat.name);
 
+            let headlineHtml = cat.name;
+            if (cat.id === 'cnc_CastleTVUseVLC_other') {
+                headlineHtml = `🏰 Castle Cinema <span class="badge-stream-format badge-stream-web">⚡ Instant Web Play • 1080p</span>`;
+            } else if (cat.id === 'cnc_Kisskh_other') {
+                headlineHtml = `🌟 Kisskh Series & Cinema <span class="badge-stream-format badge-stream-web">⚡ Instant Web Play</span>`;
+            } else if ((cat.name || '').toLowerCase().includes('mkv') || (cat.name || '').toLowerCase().includes('vlc')) {
+                headlineHtml = `${cat.name} <span class="badge-stream-format badge-stream-mkv">🚀 MKV • VLC</span>`;
+            }
+
             sec.innerHTML = `
                 <div class="section-headline">
-                    <div class="section-title-text">${cat.name}</div>
+                    <div class="section-title-text">${headlineHtml}</div>
                     <span class="see-all-btn focusable" tabindex="0" onclick="openCatalogFullGrid('${cat.id}', '${escapeHtml(cat.name)}', '${cat.type}')">
                         See All <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
                     </span>
@@ -2585,6 +2938,88 @@
             });
         }
 
+        // 💡 Stream Format & Playability Detection Engine
+        function isWebPlayable(url) {
+            if (!url) return false;
+            const u = String(url).toLowerCase();
+            if (u.includes('.mkv') || u.includes('pub-') || u.includes('.r2.dev') || (u.includes('worker') && u.includes('.mkv'))) {
+                return false;
+            }
+            if (u.includes('.m3u8') || u.includes('.mp4') || u.includes('.webm') || u.includes('/proxy/stream')) {
+                return true;
+            }
+            if (u.includes('klnwm.com') || u.includes('hlscob.com') || u.includes('kwsvon.com') || u.includes('mlcoxn.com') || u.includes('cdnvideo11.shop')) {
+                return true;
+            }
+            return false;
+        }
+
+        // 🚀 1-Tap External Video Player Launcher (VLC, MX Player, Outplayer)
+        function openInExternalPlayer(streamUrl) {
+            if (!streamUrl) return;
+            const ua = navigator.userAgent || '';
+            const isAndroid = /Android/i.test(ua);
+            const isIOS = /iPhone|iPad|iPod/i.test(ua);
+
+            if (isAndroid) {
+                const vlcIntent = `intent:${streamUrl}#Intent;type=video/*;package=org.videolan.vlc;action=android.intent.action.VIEW;end`;
+                const genericIntent = `intent:${streamUrl}#Intent;type=video/*;action=android.intent.action.VIEW;end`;
+                window.location.href = vlcIntent;
+                setTimeout(() => {
+                    window.location.href = genericIntent;
+                }, 1500);
+            } else if (isIOS) {
+                window.location.href = `vlc://${streamUrl}`;
+                setTimeout(() => {
+                    window.location.href = `outplayer://${streamUrl}`;
+                }, 1200);
+            } else {
+                window.location.href = `vlc://${streamUrl}`;
+            }
+
+            copyToClipboard(streamUrl, '🚀 Stream URL copied! Opening in VLC / MX Player...');
+        }
+
+        function copyToClipboard(text, successMsg) {
+            if (!text) return;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast(successMsg || 'Stream link copied to clipboard!');
+                }).catch(() => {
+                    fallbackCopy(text, successMsg);
+                });
+            } else {
+                fallbackCopy(text, successMsg);
+            }
+        }
+
+        function fallbackCopy(text, successMsg) {
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.focus();
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast(successMsg || 'Stream link copied to clipboard!');
+            } catch (e) {
+                prompt('Copy stream URL for VLC:', text);
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-notify');
+            const toastText = document.getElementById('toast-text');
+            if (toast && toastText) {
+                toastText.innerText = msg;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3500);
+            }
+        }
+
         // 🎬 Stream Selection Bottom Sheet Modal
         async function openStreamPicker(type, id, title) {
             document.getElementById('sheet-title-text').innerText = cleanTitle(title);
@@ -2597,8 +3032,15 @@
                 const res = await fetch(streamUrl);
                 const data = await res.json();
                 const streams = Array.isArray(data?.streams) ? data.streams : [];
-                // Filter out empty streams and external donation ads
-                const validStreams = streams.filter(s => s && s.url && typeof s.url === 'string' && s.url.trim().length > 0 && !s.externalUrl);
+                // Filter out empty streams, external donation ads, and known defunct CDNs
+                const validStreams = streams.filter(s => {
+                    if (!s || !s.url || typeof s.url !== 'string' || s.externalUrl) return false;
+                    const u = s.url.toLowerCase();
+                    if (u.includes('nm-cdn23.top') || u.includes('freecdn4.top') || u.includes('140.238.244.130/proxy/mpd')) {
+                        return false;
+                    }
+                    return true;
+                });
 
                 if (validStreams.length === 0) {
                     container.innerHTML = '<div style="text-align: center; color: var(--text-sub); padding: 26px; font-size: 13px;">No playable streams active for this title right now.<br><span style="font-size:11px;opacity:0.8;">(Live match broadcasts go live shortly before start time)</span></div>';
@@ -2606,20 +3048,58 @@
                 }
 
                 container.innerHTML = '';
+
+                // If all streams are MKV, show prominent guide banner at the top
+                const allMkv = validStreams.every(s => !isWebPlayable(s.url));
+                if (allMkv) {
+                    const notice = document.createElement('div');
+                    notice.className = 'stream-format-notice';
+                    notice.innerHTML = `
+                        <i class="fas fa-info-circle"></i>
+                        <div>
+                            <strong>High-Definition MKV Streams</strong>
+                            <span>This title is in lossless MKV format. Tap <b>"VLC / MX"</b> below for 4K/1080p playback on Mobile, PC & Smart TVs, or explore Castle Cinema for 100% instant web playback.</span>
+                        </div>
+                    `;
+                    container.appendChild(notice);
+                }
+
                 validStreams.forEach((s, idx) => {
                     const entry = document.createElement('div');
                     entry.className = 'stream-entry focusable';
                     entry.tabIndex = 0;
                     const name = s.name || `Server ${idx + 1}`;
                     const sub = s.title ? s.title.split('\n')[0] : '1080p Ultra HD Direct Stream';
+                    const webPlayable = isWebPlayable(s.url);
+
+                    const formatBadge = webPlayable
+                        ? `<span class="badge-stream-format badge-stream-web"><i class="fas fa-bolt"></i> Web Play</span>`
+                        : `<span class="badge-stream-format badge-stream-mkv"><i class="fas fa-rocket"></i> MKV • VLC</span>`;
 
                     entry.innerHTML = `
-                        <div>
-                            <div class="stream-name-bold">${name}</div>
+                        <div style="flex:1; min-width:0; padding-right:10px;">
+                            <div style="display:flex; align-items:center; flex-wrap:wrap; gap:5px; margin-bottom:4px;">
+                                <span class="stream-name-bold">${name}</span>
+                                ${formatBadge}
+                            </div>
                             <div class="stream-detail-sub">${sub}</div>
                         </div>
-                        <i class="fas fa-play-circle stream-play-symbol"></i>
+                        <div class="stream-actions-group" onclick="event.stopPropagation()">
+                            ${!webPlayable ? `
+                                <button class="btn-stream-action btn-vlc focusable" tabindex="0" onclick="openInExternalPlayer('${escapeHtml(s.url)}')">
+                                    <i class="fas fa-play"></i> VLC / MX
+                                </button>
+                            ` : `
+                                <button class="btn-stream-action focusable" tabindex="0" style="background:var(--gold); color:#000;" onclick="closeStreamPicker(); launchCinemaPlayer('${escapeHtml(s.url)}', '${escapeHtml(title)}', validStreams, ${idx});">
+                                    <i class="fas fa-play"></i> Play
+                                </button>
+                            `}
+                            <button class="btn-stream-action focusable" tabindex="0" title="Copy Stream URL" onclick="copyToClipboard('${escapeHtml(s.url)}', 'Stream URL copied! Paste into VLC (Ctrl+N)')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
                     `;
+
                     entry.onclick = () => {
                         closeStreamPicker();
                         launchCinemaPlayer(s.url, title, validStreams, idx);
@@ -2640,33 +3120,98 @@
             document.getElementById('stream-picker-modal').classList.remove('open');
         }
 
-        // 🍿 Fullscreen Native Cinema Player with Multi-Server Switcher & Auto Failover
+        // 🍿 Fullscreen Native Cinema Player with Multi-Server Switcher, Auto Failover & MKV Detection
         let activeStreamList = [];
         let activeStreamIndex = 0;
         let activeStreamTitle = '';
+        let currentPlayingUrl = '';
 
         function launchCinemaPlayer(url, title, streamList = [], streamIndex = 0) {
             activeStreamList = streamList;
             activeStreamIndex = streamIndex;
             activeStreamTitle = title;
+            currentPlayingUrl = url;
             updateServerSwitchUI();
 
             document.getElementById('player-stream-title').innerText = cleanTitle(title);
             const container = document.getElementById('player-screen-wrap');
-            container.innerHTML = '<video controls autoplay playsinline webkit-playsinline></video>';
+            container.innerHTML = `
+                <video controls autoplay playsinline webkit-playsinline></video>
+                <div id="player-overlay-screen" class="player-overlay-screen" style="display:none;"></div>
+            `;
             const video = container.querySelector('video');
+
+            const webPlayable = isWebPlayable(url);
+            if (!webPlayable) {
+                showPlayerOverlay('mkv', url, title);
+            }
 
             playStreamUrl(url, video);
             document.getElementById('cinema-player-modal').classList.add('open');
         }
 
+        function showPlayerOverlay(mode, url, title) {
+            const overlay = document.getElementById('player-overlay-screen');
+            if (!overlay) return;
+
+            if (mode === 'mkv') {
+                overlay.innerHTML = `
+                    <div class="player-overlay-card">
+                        <div class="player-overlay-icon"><i class="fas fa-file-video"></i></div>
+                        <h2>High-Definition MKV Media</h2>
+                        <p><b>${cleanTitle(title)}</b> is encoded in lossless Matroska (.mkv) container. Standard web browsers cannot decode MKV video natively. Tap below to launch directly in VLC or MX Player.</p>
+                        <div class="player-overlay-btns">
+                            <button class="btn-overlay-act gold focusable" tabindex="0" onclick="openInExternalPlayer('${escapeHtml(url)}')">
+                                <i class="fas fa-external-link-alt"></i> Open in VLC / MX Player
+                            </button>
+                            <button class="btn-overlay-act outline focusable" tabindex="0" onclick="copyToClipboard('${escapeHtml(url)}', 'Stream URL copied! Paste into VLC')">
+                                <i class="fas fa-copy"></i> Copy Stream URL
+                            </button>
+                            <button class="btn-overlay-act outline focusable" tabindex="0" onclick="dismissPlayerOverlay()">
+                                <i class="fas fa-play"></i> Try In Browser
+                            </button>
+                        </div>
+                        <div class="overlay-tv-hint">📺 Smart TV (Samsung/Toshiba/LG): Copy stream URL & paste into VLC (Media ➔ Open Network Stream) or use Stremio!</div>
+                    </div>
+                `;
+                overlay.style.display = 'flex';
+            } else {
+                overlay.innerHTML = `
+                    <div class="player-overlay-card">
+                        <div class="player-overlay-icon" style="background:rgba(239,68,68,0.15); border-color:#ef4444; color:#ef4444;"><i class="fas fa-triangle-exclamation"></i></div>
+                        <h2>Browser Playback Error</h2>
+                        <p>Your web browser was unable to decode this stream directly. Tap below to launch smoothly in VLC / MX Player or switch to verified Castle Cinema movies.</p>
+                        <div class="player-overlay-btns">
+                            <button class="btn-overlay-act gold focusable" tabindex="0" onclick="openInExternalPlayer('${escapeHtml(url)}')">
+                                <i class="fas fa-external-link-alt"></i> Open in VLC / MX Player
+                            </button>
+                            <button class="btn-overlay-act outline focusable" tabindex="0" onclick="copyToClipboard('${escapeHtml(url)}', 'Stream URL copied! Paste into VLC')">
+                                <i class="fas fa-copy"></i> Copy Stream URL
+                            </button>
+                            <button class="btn-overlay-act outline focusable" tabindex="0" onclick="closeCinemaPlayer(); switchNavTab('tab-home', 0);">
+                                <i class="fas fa-home"></i> Back to Home
+                            </button>
+                        </div>
+                        <div class="overlay-tv-hint">🏰 Tip: Castle Cinema &amp; Live Sports play 100% instantly in browser without external players!</div>
+                    </div>
+                `;
+                overlay.style.display = 'flex';
+            }
+        }
+
+        function dismissPlayerOverlay() {
+            const overlay = document.getElementById('player-overlay-screen');
+            if (overlay) overlay.style.display = 'none';
+        }
+
         function playStreamUrl(url, video) {
+            currentPlayingUrl = url;
             if (currentHlsEngine) {
                 currentHlsEngine.destroy();
                 currentHlsEngine = null;
             }
 
-            if (Hls.isSupported() && (url.includes('.m3u8') || url.includes('/proxy/stream'))) {
+            if (Hls.isSupported() && (url.includes('.m3u8') || url.includes('/proxy/stream') || url.includes('klnwm.com') || url.includes('hlscob.com') || url.includes('cdnvideo11.shop'))) {
                 currentHlsEngine = new Hls({
                     enableWorker: true,
                     lowLatencyMode: true,
@@ -2676,6 +3221,7 @@
                 currentHlsEngine.loadSource(url);
                 currentHlsEngine.attachMedia(video);
                 currentHlsEngine.on(Hls.Events.MANIFEST_PARSED, function () {
+                    dismissPlayerOverlay();
                     video.play().catch(e => console.log('Autoplay blocked:', e));
                 });
                 currentHlsEngine.on(Hls.Events.ERROR, function (event, data) {
@@ -2683,31 +3229,35 @@
                         switch (data.type) {
                             case Hls.ErrorTypes.NETWORK_ERROR:
                                 console.warn('HLS Network error encountered:', data.details);
-                                if (activeStreamList.length > 1) {
+                                if (activeStreamList.length > 1 && activeStreamIndex < activeStreamList.length - 1) {
                                     tryNextStreamServer();
                                 } else {
-                                    currentHlsEngine.startLoad();
+                                    showPlayerOverlay('error', url, activeStreamTitle);
                                 }
                                 break;
                             case Hls.ErrorTypes.MEDIA_ERROR:
                                 currentHlsEngine.recoverMediaError();
                                 break;
                             default:
-                                if (activeStreamList.length > 1) {
+                                if (activeStreamList.length > 1 && activeStreamIndex < activeStreamList.length - 1) {
                                     tryNextStreamServer();
                                 } else {
                                     currentHlsEngine.destroy();
+                                    showPlayerOverlay('error', url, activeStreamTitle);
                                 }
                                 break;
                         }
                     }
                 });
             } else {
-                // Native Safari / iOS HLS or MP4 playback
+                // Native HTML5 / Safari / iOS HLS or MP4 playback
                 video.src = url;
-                video.onerror = () => {
-                    if (activeStreamList.length > 1) {
+                video.onerror = (e) => {
+                    console.warn('HTML5 Video error:', e);
+                    if (activeStreamList.length > 1 && activeStreamIndex < activeStreamList.length - 1) {
                         tryNextStreamServer();
+                    } else {
+                        showPlayerOverlay('error', url, activeStreamTitle);
                     }
                 };
                 video.play().catch(e => console.log('Autoplay blocked:', e));

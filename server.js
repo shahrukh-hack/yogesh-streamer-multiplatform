@@ -64,11 +64,60 @@ async function getRebrandedManifest() {
             const rebrandedCatalogs = upstream.catalogs.map(c => {
                 let clean = (c.name || '').replace(/•?\s*CNCVerse Bridge/gi, '').replace(/\(other\)|\(tv\)/g, '').trim();
                 let type = c.type === 'other' ? 'movie' : c.type;
+
+                if (c.id === 'cnc_CastleTVUseVLC_other') {
+                    clean = '🏰 Castle Cinema (Instant Web Play • 1080p)';
+                } else if (c.id === 'cnc_Kisskh_other') {
+                    clean = '🌟 Kisskh Series & Cinema (Instant Web Play)';
+                } else if (c.id === 'cnc_SportzXLiveEvents_tv') {
+                    clean = '⚡ SportzX Live Events & Cricket';
+                } else if (c.id === 'cnc_SportzXHighlights_tv') {
+                    clean = '🎬 SportzX Highlights';
+                } else if (c.id === 'cnc_VegaMovies_other') {
+                    clean = '🚀 VegaMovies (Ultra HD MKV • Use VLC)';
+                } else if (c.id === 'cnc_Rogmovies_other') {
+                    clean = '🚀 Rogmovies (Ultra HD MKV • Use VLC)';
+                } else if (c.id === 'cnc_4KHDHUB_other') {
+                    clean = '🚀 4K HDHUB (Ultra HD MKV • Use VLC)';
+                } else if (c.id === 'cnc_HDHub4U_other') {
+                    clean = '🚀 HDHub4U (Ultra HD MKV • Use VLC)';
+                } else if (c.id === 'cnc_Cinefreak_other') {
+                    clean = '🚀 Cinefreak (HD MKV • Use VLC)';
+                } else if (c.id === 'cnc_Movies4u_other') {
+                    clean = '🚀 Movies4u (HD MKV • Use VLC)';
+                } else if (c.id === 'cnc_RingZ_other') {
+                    clean = '🚀 RingZ (HD MKV • Use VLC)';
+                } else {
+                    clean = `🌟 ${clean}`;
+                }
+
                 return {
                     ...c,
                     type: type,
-                    name: `🌟 ${clean}`
+                    name: clean
                 };
+            });
+
+            // Priority sorting: verified web-ready HLS catalogs & live sports first
+            const priorityIds = [
+                'cnc_CastleTVUseVLC_other',
+                'cnc_Kisskh_other',
+                'cnc_SportzXLiveEvents_tv',
+                'cnc_SportzXHighlights_tv',
+                'cnc_PlayZTVLiveEvents_tv',
+                'cnc_LivXowLiveEvents_tv',
+                'cnc_MovieBoxIN_other',
+                'cnc_Movix_other',
+                'cnc_MultiMovies_other'
+            ];
+
+            rebrandedCatalogs.sort((a, b) => {
+                const idxA = priorityIds.indexOf(a.id);
+                const idxB = priorityIds.indexOf(b.id);
+                if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                if (idxA !== -1) return -1;
+                if (idxB !== -1) return 1;
+                return 0;
             });
 
             cachedManifest = {
@@ -619,18 +668,35 @@ const server = http.createServer(async (req, res) => {
             // 3. Filter out donation ads / externalUrl streams with no playable url
             streams = streams.filter(s => s && s.url && typeof s.url === 'string' && s.url.trim().length > 0 && !s.externalUrl);
 
-            // 4. Apply Luxury Yogesh Streamer Branding and Mixed Content Proxy
+            // Filter out known dead CDN hosts (return 404 upstream) and broken MPD proxy
+            streams = streams.filter(s => {
+                const u = (s.url || '').toLowerCase();
+                if (u.includes('nm-cdn23.top') || u.includes('freecdn4.top') || u.includes('140.238.244.130/proxy/mpd')) {
+                    return false;
+                }
+                return true;
+            });
+
+            // 4. Apply Luxury Yogesh Streamer Branding, format detection and Mixed Content Proxy
             const brandedStreams = streams.map(stream => {
                 let name = stream.name || 'Yogesh Streamer';
-                name = name.replace(/•?\s*CNCVerse Bridge/gi, '• Yogesh Streamer');
-                if (!name.includes('Yogesh Streamer')) {
-                    name = `🌟 [Yogesh Streamer] ${name}`;
-                }
+                name = name.replace(/•?\s*CNCVerse Bridge/gi, '').replace(/🌟/g, '').trim();
 
                 let title = stream.title || '';
                 title = title.replace(/CNCVerse Bridge/gi, 'Yogesh Streamer');
 
                 let streamUrl = (stream.url || '').trim();
+                const lowerUrl = streamUrl.toLowerCase();
+                const isMkv = lowerUrl.includes('.mkv') || lowerUrl.includes('pub-') || lowerUrl.includes('r2.dev');
+                const isHls = lowerUrl.includes('.m3u8') || lowerUrl.includes('klnwm.com') || lowerUrl.includes('hlscob.com') || lowerUrl.includes('kwsvon.com') || lowerUrl.includes('mlcoxn.com') || lowerUrl.includes('cdnvideo11.shop');
+
+                if (isMkv) {
+                    name = `🚀 [MKV / VLC] ${name}`;
+                } else if (isHls) {
+                    name = `⚡ [Web Play] ${name}`;
+                } else {
+                    name = `🎬 ${name}`;
+                }
 
                 const isSecure = !host.includes('localhost') && !host.includes('127.0.0.1');
                 const proto = isSecure ? 'https' : 'http';
@@ -645,7 +711,9 @@ const server = http.createServer(async (req, res) => {
                     ...stream,
                     url: streamUrl,
                     name,
-                    title
+                    title,
+                    isMkv,
+                    isWebPlayable: !isMkv
                 };
             });
 
