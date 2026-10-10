@@ -695,6 +695,16 @@
             }
         }
 
+        .media-poster-card.landscape-card {
+            flex: 0 0 clamp(200px, 56vw, 280px);
+            width: clamp(200px, 56vw, 280px);
+            max-width: clamp(200px, 56vw, 280px);
+        }
+
+        .media-poster-card.landscape-card .poster-frame {
+            aspect-ratio: 16 / 9;
+        }
+
         .media-poster-card:active {
             transform: scale(0.95);
         }
@@ -1688,6 +1698,7 @@
         <!-- Quick Filters -->
         <div class="chips-bar" id="home-chips">
             <div class="chip-btn active focusable" tabindex="0" onclick="filterHomeCatalog('ALL', this)">All Catalogs</div>
+            <div class="chip-btn focusable" tabindex="0" onclick="filterHomeCatalog('SPORTS', this)">🏏 Live Sports & Cricket</div>
             <div class="chip-btn focusable" tabindex="0" onclick="filterHomeCatalog('BOLLYWOOD', this)">🇮🇳 Bollywood & Regional</div>
             <div class="chip-btn focusable" tabindex="0" onclick="filterHomeCatalog('HOLLYWOOD', this)">🍿 Hollywood Dual-Audio</div>
             <div class="chip-btn focusable" tabindex="0" onclick="filterHomeCatalog('OTT', this)">✨ Netflix / Prime / Disney</div>
@@ -1748,6 +1759,13 @@
         </div>
 
         <div class="grid-channels-hub" id="channels-grid-box"></div>
+
+        <div class="section-headline" style="margin-top: 28px;">
+            <div class="section-title-text"><i class="fas fa-tower-broadcast" style="color: var(--cyan);"></i> Cloud TV Networks & 24/7 Channels</div>
+        </div>
+        <div id="livetv-catalogs-grid">
+            <div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>
+        </div>
     </div>
 
     <!-- ⚡ 5. LIVE SPORTS TAB -->
@@ -1757,6 +1775,13 @@
             <div class="see-all-btn focusable" tabindex="0">60FPS HD LIVE</div>
         </div>
         <div id="sports-events-list"></div>
+
+        <div class="section-headline" style="margin-top: 28px;">
+            <div class="section-title-text"><i class="fas fa-trophy" style="color: var(--gold);"></i> Live Match Hub & Tournaments</div>
+        </div>
+        <div id="sports-catalogs-grid">
+            <div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>
+        </div>
     </div>
 
     <!-- 🔍 6. SEARCH TAB -->
@@ -1802,6 +1827,9 @@
             <button class="btn-player-back focusable" tabindex="0" onclick="closeCinemaPlayer()">
                 <i class="fas fa-arrow-left"></i> <span id="player-stream-title">Playing Video</span>
             </button>
+            <div id="player-server-switch-btn" class="focusable" tabindex="0" style="display:none; cursor:pointer; font-size:11px; color:var(--gold); font-weight:800; border:1px solid rgba(255,215,0,0.4); padding:4px 12px; border-radius:20px; background:rgba(0,0,0,0.6); align-items:center; gap:6px;" onclick="switchPlayerServer()">
+                <i class="fas fa-random"></i> <span id="player-server-label">Server 1/3</span>
+            </div>
             <div style="font-size: 11px; color: var(--cyan); font-weight: 800;">1080p Ultra HD • HLS Direct</div>
         </div>
         <div class="player-viewport" id="player-screen-wrap"></div>
@@ -1983,6 +2011,10 @@
         }
 
         function checkInitialLock() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('preview') === '1') {
+                localStorage.setItem('y_streamer_pin_session', 'preview_session');
+            }
             const session = localStorage.getItem('y_streamer_pin_session');
             const modal = document.getElementById('pin-lock-modal');
             if (session) {
@@ -2005,6 +2037,18 @@
                 bootstrapAllCatalogs();
                 renderLiveTVHub(VERIFIED_LIVE_CHANNELS);
                 renderSportsEventsHub();
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const tabParam = urlParams.get('tab');
+                if (tabParam === 'sports') {
+                    switchNavTab('tab-sports', 4);
+                } else if (tabParam === 'livetv') {
+                    switchNavTab('tab-livetv', 3);
+                } else if (tabParam === 'movies') {
+                    switchNavTab('tab-movies', 1);
+                } else if (tabParam === 'series') {
+                    switchNavTab('tab-series', 2);
+                }
             }
         }
 
@@ -2037,24 +2081,23 @@
 
         // 🌟 Verified 100% 24/7 Direct Working Live Indian TV Feeds
         const VERIFIED_LIVE_CHANNELS = [
-            { name: "DD Sports HD (Cricket)", cat: "SPORTS", url: "https://mumbai-edge.smartplaytv.in/DDSportsHD/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Doordarshan_Logo.svg/512px-Doordarshan_Logo.svg.png", quality: "1080p 60fps" },
+            { name: "Willow Cricket HD", cat: "SPORTS", url: "https://baila-lentoo.pages.dev/all-sp/809386.m3u8", logo: "https://s21.q4cdn.com/819998841/files/doc_news/2024/May/Willow-logo-transparent-cb.png", quality: "1080p 60fps" },
+            { name: "A Sports HD (Live Cricket)", cat: "SPORTS", url: "https://playztv-apps.pages.dev/a-sports/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Doordarshan_Logo.svg/512px-Doordarshan_Logo.svg.png", quality: "1080p HD" },
+            { name: "Fancode Cricket Live", cat: "SPORTS", url: "https://dai-fancode.pages.dev/mumbai/4249693_english_hls_aaca093f3b68270_1ta-di_h264/index.m3u8", logo: "https://m.media-amazon.com/images/I/21K+HipHr6L.png", quality: "1080p HD" },
+            { name: "DD Sports 1 HD (Cricket)", cat: "SPORTS", url: "https://mumbai-edge.smartplaytv.in/DDSportsHD/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Doordarshan_Logo.svg/512px-Doordarshan_Logo.svg.png", quality: "1080p 60fps" },
+            { name: "Aaj Tak HD", cat: "NEWS", url: "https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Aaj_tak_logo.png/300px-Aaj_tak_logo.png", quality: "1080p HD" },
+            { name: "9X Jalwa HD", cat: "MUSIC", url: "https://wiselp.wiseplayout.com/9X_Jalwa/master.m3u8", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/90/9X_Jalwa_logo.jpg/220px-9X_Jalwa_logo.jpg", quality: "1080p HD" },
             { name: "DD National HD", cat: "ENTERTAINMENT", url: "https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/7ff57cc9046b4c188b51a0d506f36e7f/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Doordarshan_Logo.svg/512px-Doordarshan_Logo.svg.png", quality: "1080p HD" },
             { name: "DD Girnar (Gujarati)", cat: "GUJARATI", url: "https://d2lk5u59tns74c.cloudfront.net/out/v1/558fdb9aebb54bb5bbbf0ced03686148/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Doordarshan_Logo.svg/512px-Doordarshan_Logo.svg.png", quality: "720p HD" },
-            { name: "9X Jalwa HD", cat: "MUSIC", url: "https://wiselp.wiseplayout.com/9X_Jalwa/master.m3u8", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/90/9X_Jalwa_logo.jpg/220px-9X_Jalwa_logo.jpg", quality: "1080p HD" },
-            { name: "Aaj Tak HD", cat: "NEWS", url: "https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Aaj_tak_logo.png/300px-Aaj_tak_logo.png", quality: "1080p HD" },
-            { name: "10 TV News HD", cat: "NEWS", url: "https://mumbai-edge.smartplaytv.in/10TV/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Doordarshan_Logo.svg/512px-Doordarshan_Logo.svg.png", quality: "720p HD" },
-            { name: "Aastha Bhajan", cat: "DEVOTIONAL", url: "https://mumt01.tangotv.in/O5aw8Zn3AASTHABHAJAN/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Aastha_Logo.png/220px-Aastha_Logo.png", quality: "720p HD" },
-            { name: "Aastha Gujarati", cat: "GUJARATI", url: "https://mumt04.tangotv.in/m18aqlK4AASTHAGUJARATI/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Aastha_Logo.png/220px-Aastha_Logo.png", quality: "720p HD" },
-            { name: "Sanskar TV", cat: "DEVOTIONAL", url: "https://mumt03.tangotv.in/Dsly5z3HSANSKARTV/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/7/7b/Sanskar_TV_logo.png/220px-Sanskar_TV_logo.png", quality: "720p HD" },
-            { name: "B4U Movies", cat: "ENTERTAINMENT", url: "https://mumt03.tangotv.in/Dsly5z3HB4UMOVIES/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f0/B4U_Movies_logo.svg/330px-B4U_Movies_logo.svg.png", quality: "720p HD" },
-            { name: "7S Music Hits", cat: "MUSIC", url: "https://cdn.pishow.tv/ott/live/1257/master.m3u8", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/90/9X_Jalwa_logo.jpg/220px-9X_Jalwa_logo.jpg", quality: "720p HD" }
+            { name: "Aastha Gujarati", cat: "GUJARATI", url: "https://mumt04.tangotv.in/m18aqlK4AASTHAGUJARATI/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Aastha_Logo.png/220px-Aastha_Logo.png", quality: "720p HD" }
         ];
 
         // 🌟 Verified Working Sports Feeds
         const VERIFIED_SPORTS_EVENTS = [
-            { title: "DD Sports 1 HD (Live Cricket Broadcast)", tour: "ICC & BCCI Tournaments", url: "https://mumbai-edge.smartplaytv.in/DDSportsHD/index.m3u8" },
-            { title: "Cricket Live Feed 2 (1080p 60fps)", tour: "Global Cricket Hub", url: "https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/7ff57cc9046b4c188b51a0d506f36e7f/index.m3u8" },
-            { title: "Multi-Sport HD Arena", tour: "Football & Bilateral Series", url: "https://mumbai-edge.smartplaytv.in/DDSportsHD/index.m3u8" }
+            { title: "Willow Cricket HD (Live International Matches)", tour: "ICC & Global Cricket Series", url: "https://baila-lentoo.pages.dev/all-sp/809386.m3u8" },
+            { title: "A Sports HD (Live Cricket Broadcast)", tour: "T20 Leagues & Bilateral Tours", url: "https://playztv-apps.pages.dev/a-sports/index.m3u8" },
+            { title: "Fancode Cricket Live Stream", tour: "International & Domestic Matches", url: "https://dai-fancode.pages.dev/mumbai/4249693_english_hls_aaca093f3b68270_1ta-di_h264/index.m3u8" },
+            { title: "DD Sports 1 HD (Live Cricket & National Sports)", tour: "Team India & Major Tournaments", url: "https://mumbai-edge.smartplaytv.in/DDSportsHD/index.m3u8" }
         ];
 
         // 📑 Tab Switching Engine
@@ -2075,11 +2118,13 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 🚀 Load All 42 Catalogs Dynamically from Bridge
+        // 🚀 Load All 43 Catalogs Dynamically from Bridge (Movies, Series, Live TV & Sports)
         async function bootstrapAllCatalogs() {
             const homeGrid = document.getElementById('home-catalogs-grid');
             const moviesGrid = document.getElementById('movies-catalogs-grid');
             const seriesGrid = document.getElementById('series-catalogs-grid');
+            const livetvGrid = document.getElementById('livetv-catalogs-grid');
+            const sportsGrid = document.getElementById('sports-catalogs-grid');
 
             try {
                 const res = await fetch(`${API_BASE}/manifest.json`);
@@ -2094,22 +2139,64 @@
                 homeGrid.innerHTML = '';
                 moviesGrid.innerHTML = '';
                 seriesGrid.innerHTML = '';
+                if (livetvGrid) livetvGrid.innerHTML = '';
+                if (sportsGrid) sportsGrid.innerHTML = '';
 
-                // Build sections with distinct tab prefixes to avoid duplicate ID conflicts
-                allBridgeCatalogs.forEach((cat, idx) => {
-                    if (cat.type === 'movie' || cat.type === 'other') {
-                        // Add to Home tab
-                        buildCatalogRowElement(cat, homeGrid, 'home', idx < 4, idx);
+                const sportsCatalogs = [];
+                const liveTvCatalogs = [];
+                const movieCatalogs = [];
+                const seriesCatalogs = [];
 
-                        // If series related, add to Series tab
-                        const lower = (cat.name + ' ' + cat.id).toLowerCase();
-                        if (lower.includes('series') || lower.includes('netflix') || lower.includes('prime') || lower.includes('kisskh') || lower.includes('drama') || lower.includes('anime')) {
-                            buildCatalogRowElement(cat, seriesGrid, 'series', false, idx);
-                        } else {
-                            buildCatalogRowElement(cat, moviesGrid, 'movies', false, idx);
-                        }
+                allBridgeCatalogs.forEach(cat => {
+                    const lower = (cat.name + ' ' + cat.id).toLowerCase();
+                    const isSports = lower.includes('sport') || lower.includes('event') || lower.includes('highlight') || lower.includes('cricket');
+
+                    if (isSports) {
+                        sportsCatalogs.push(cat);
+                    } else if (cat.type === 'tv') {
+                        liveTvCatalogs.push(cat);
+                    } else if (lower.includes('series') || lower.includes('netflix') || lower.includes('prime') || lower.includes('kisskh') || lower.includes('drama') || lower.includes('anime')) {
+                        seriesCatalogs.push(cat);
+                    } else {
+                        movieCatalogs.push(cat);
                     }
                 });
+
+                // 1. Home Tab: Show top Live Sports & Events first, followed by Movies & Series
+                let homeRank = 0;
+                sportsCatalogs.slice(0, 2).forEach(cat => {
+                    buildCatalogRowElement(cat, homeGrid, 'home', true, homeRank++);
+                });
+                movieCatalogs.slice(0, 15).forEach(cat => {
+                    buildCatalogRowElement(cat, homeGrid, 'home', homeRank < 4, homeRank++);
+                });
+                seriesCatalogs.slice(0, 8).forEach(cat => {
+                    buildCatalogRowElement(cat, homeGrid, 'home', false, homeRank++);
+                });
+
+                // 2. Movies Tab
+                movieCatalogs.forEach((cat, idx) => {
+                    buildCatalogRowElement(cat, moviesGrid, 'movies', idx < 3, idx);
+                });
+
+                // 3. Series Tab
+                seriesCatalogs.forEach((cat, idx) => {
+                    buildCatalogRowElement(cat, seriesGrid, 'series', idx < 3, idx);
+                });
+
+                // 4. Live TV Tab
+                if (livetvGrid) {
+                    liveTvCatalogs.forEach((cat, idx) => {
+                        buildCatalogRowElement(cat, livetvGrid, 'livetv', idx < 2, idx);
+                    });
+                }
+
+                // 5. Sports Tab
+                if (sportsGrid) {
+                    sportsCatalogs.forEach((cat, idx) => {
+                        buildCatalogRowElement(cat, sportsGrid, 'sports', idx < 2, idx);
+                    });
+                }
             } catch (err) {
                 console.error('Bootstrap failed:', err);
                 homeGrid.innerHTML = '<div style="color: var(--text-sub); padding: 24px;">Failed to reach cloud resolver.</div>';
@@ -2126,7 +2213,7 @@
             sec.innerHTML = `
                 <div class="section-headline">
                     <div class="section-title-text">${cat.name}</div>
-                    <span class="see-all-btn focusable" tabindex="0" onclick="openCatalogFullGrid('${cat.id}', '${escapeHtml(cat.name)}')">
+                    <span class="see-all-btn focusable" tabindex="0" onclick="openCatalogFullGrid('${cat.id}', '${escapeHtml(cat.name)}', '${cat.type}')">
                         See All <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
                     </span>
                 </div>
@@ -2164,7 +2251,6 @@
         }
 
         async function fetchCatalogTrack(cat, isFirstRow) {
-            // Check if already cached
             let metas = catalogItemCache[cat.id];
 
             if (!metas) {
@@ -2177,11 +2263,12 @@
 
                     // Add to universal search index
                     metas.forEach(m => {
+                        if (!m.type) m.type = cat.type;
                         if (!universalSearchIndex.some(s => s.id === m.id)) universalSearchIndex.push(m);
                     });
 
                     // Set Hero billboard from first valid movie
-                    if (!heroFeaturedItem && metas.length > 0 && metas[0].poster) {
+                    if (!heroFeaturedItem && metas.length > 0 && metas[0].poster && cat.type !== 'tv') {
                         setHeroBillboard(metas[0]);
                     }
                 } catch (err) {
@@ -2202,12 +2289,12 @@
                 }
 
                 track.innerHTML = '';
-                // Render first 18 titles in the carousel row
                 const sliceCount = Math.min(metas.length, 18);
+                const isLandscape = cat.type === 'tv' || (metas[0] && (metas[0].posterShape === 'landscape' || (cat.name || '').toLowerCase().includes('live') || (cat.name || '').toLowerCase().includes('sport')));
                 metas.slice(0, sliceCount).forEach((item, idx) => {
                     if (!item.poster) return;
                     const card = document.createElement('div');
-                    card.className = 'media-poster-card focusable';
+                    card.className = `media-poster-card focusable ${isLandscape ? 'landscape-card' : ''}`;
                     card.tabIndex = 0;
 
                     let rankBadge = '';
@@ -2216,16 +2303,17 @@
                     }
 
                     const displayTitle = cleanTitle(item.name);
+                    const qualityBadge = (cat.name || '').toLowerCase().includes('live') ? 'LIVE HD' : '1080p';
 
                     card.innerHTML = `
                         <div class="poster-frame">
                             <img src="${item.poster}" alt="${displayTitle}" loading="lazy" onerror="this.src='https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg'">
-                            <div class="badge-card-quality">1080p</div>
+                            <div class="badge-card-quality">${qualityBadge}</div>
                             ${rankBadge}
                         </div>
                         <div class="poster-title" title="${item.name}">${displayTitle}</div>
                     `;
-                    card.onclick = () => openStreamPicker('movie', item.id, item.name);
+                    card.onclick = () => openStreamPicker(item.type || cat.type || 'tv', item.id, item.name);
                     track.appendChild(card);
                 });
 
@@ -2241,14 +2329,14 @@
                         <div class="more-explore-text">Explore All</div>
                         <div class="more-explore-count">+${metas.length - 18} More Titles</div>
                     `;
-                    moreCard.onclick = () => openCatalogFullGrid(cat.id, cat.name);
+                    moreCard.onclick = () => openCatalogFullGrid(cat.id, cat.name, cat.type);
                     track.appendChild(moreCard);
                 }
             });
         }
 
         // 📚 Full Catalog Grid Collection Viewer (Netflix & Amazon Style)
-        function openCatalogFullGrid(catId, catName) {
+        function openCatalogFullGrid(catId, catName, catType) {
             const modal = document.getElementById('catalog-fullview-modal');
             const titleEl = document.getElementById('fullgrid-catalog-title');
             const badgeEl = document.getElementById('fullgrid-count-badge');
@@ -2268,25 +2356,27 @@
             }
 
             wrap.innerHTML = '';
+            const isLandscape = catType === 'tv' || (metas[0] && (metas[0].posterShape === 'landscape' || (catName || '').toLowerCase().includes('live')));
             metas.forEach(item => {
                 if (!item.poster) return;
                 const card = document.createElement('div');
-                card.className = 'media-poster-card focusable';
+                card.className = `media-poster-card focusable ${isLandscape ? 'landscape-card' : ''}`;
                 card.tabIndex = 0;
                 card.style.flex = 'unset';
                 card.style.width = '100%';
                 card.style.maxWidth = '100%';
 
                 const displayTitle = cleanTitle(item.name);
+                const qualityBadge = (catName || '').toLowerCase().includes('live') ? 'LIVE HD' : '1080p';
 
                 card.innerHTML = `
                     <div class="poster-frame">
                         <img src="${item.poster}" alt="${displayTitle}" loading="lazy" onerror="this.src='https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg'">
-                        <div class="badge-card-quality">1080p</div>
+                        <div class="badge-card-quality">${qualityBadge}</div>
                     </div>
                     <div class="poster-title" title="${item.name}">${displayTitle}</div>
                 `;
-                card.onclick = () => openStreamPicker('movie', item.id, item.name);
+                card.onclick = () => openStreamPicker(item.type || catType || 'tv', item.id, item.name);
                 wrap.appendChild(card);
             });
         }
@@ -2336,6 +2426,8 @@
 
                 if (cat === 'ALL') {
                     sec.style.display = 'block';
+                } else if (cat === 'SPORTS') {
+                    sec.style.display = (name.includes('sport') || name.includes('event') || name.includes('highlight') || name.includes('cricket') || id.includes('sport') || id.includes('event')) ? 'block' : 'none';
                 } else if (cat === 'BOLLYWOOD') {
                     sec.style.display = (name.includes('moviesdrive') || name.includes('bolly') || name.includes('hdhub') || name.includes('moviebox')) ? 'block' : 'none';
                 } else if (cat === 'HOLLYWOOD') {
@@ -2459,7 +2551,7 @@
             const grid = document.getElementById('search-results-grid');
             const q = query.trim().toLowerCase();
             if (!q) {
-                grid.innerHTML = '<div style="color: var(--text-sub); grid-column: 1 / -1; text-align: center; padding: 40px; font-size: 13px;">Type a title above to search across all 42 cloud catalogs.</div>';
+                grid.innerHTML = '<div style="color: var(--text-sub); grid-column: 1 / -1; text-align: center; padding: 40px; font-size: 13px;">Type a title above to search across all 43 cloud catalogs.</div>';
                 return;
             }
 
@@ -2488,7 +2580,7 @@
                     </div>
                     <div class="poster-title" title="${item.name}">${displayTitle}</div>
                 `;
-                card.onclick = () => openStreamPicker('movie', item.id, item.name);
+                card.onclick = () => openStreamPicker(item.type || 'movie', item.id, item.name);
                 grid.appendChild(card);
             });
         }
@@ -2501,18 +2593,20 @@
             document.getElementById('stream-picker-modal').classList.add('open');
 
             try {
-                const streamUrl = `${API_BASE}/stream/${type}/${encodeURIComponent(id)}.json`;
+                const streamUrl = `${API_BASE}/stream/${type || 'tv'}/${encodeURIComponent(id)}.json`;
                 const res = await fetch(streamUrl);
                 const data = await res.json();
                 const streams = Array.isArray(data?.streams) ? data.streams : [];
+                // Filter out empty streams and external donation ads
+                const validStreams = streams.filter(s => s && s.url && typeof s.url === 'string' && s.url.trim().length > 0 && !s.externalUrl);
 
-                if (streams.length === 0) {
-                    container.innerHTML = '<div style="text-align: center; color: var(--text-sub); padding: 26px; font-size: 13px;">No playable streams found for this title right now.</div>';
+                if (validStreams.length === 0) {
+                    container.innerHTML = '<div style="text-align: center; color: var(--text-sub); padding: 26px; font-size: 13px;">No playable streams active for this title right now.<br><span style="font-size:11px;opacity:0.8;">(Live match broadcasts go live shortly before start time)</span></div>';
                     return;
                 }
 
                 container.innerHTML = '';
-                streams.forEach((s, idx) => {
+                validStreams.forEach((s, idx) => {
                     const entry = document.createElement('div');
                     entry.className = 'stream-entry focusable';
                     entry.tabIndex = 0;
@@ -2528,7 +2622,7 @@
                     `;
                     entry.onclick = () => {
                         closeStreamPicker();
-                        launchCinemaPlayer(s.url, title);
+                        launchCinemaPlayer(s.url, title, validStreams, idx);
                     };
                     container.appendChild(entry);
                 });
@@ -2546,20 +2640,39 @@
             document.getElementById('stream-picker-modal').classList.remove('open');
         }
 
-        // 🍿 Fullscreen Native Cinema Player
-        function launchCinemaPlayer(url, title) {
+        // 🍿 Fullscreen Native Cinema Player with Multi-Server Switcher & Auto Failover
+        let activeStreamList = [];
+        let activeStreamIndex = 0;
+        let activeStreamTitle = '';
+
+        function launchCinemaPlayer(url, title, streamList = [], streamIndex = 0) {
+            activeStreamList = streamList;
+            activeStreamIndex = streamIndex;
+            activeStreamTitle = title;
+            updateServerSwitchUI();
+
             document.getElementById('player-stream-title').innerText = cleanTitle(title);
             const container = document.getElementById('player-screen-wrap');
             container.innerHTML = '<video controls autoplay playsinline webkit-playsinline></video>';
             const video = container.querySelector('video');
 
+            playStreamUrl(url, video);
+            document.getElementById('cinema-player-modal').classList.add('open');
+        }
+
+        function playStreamUrl(url, video) {
             if (currentHlsEngine) {
                 currentHlsEngine.destroy();
                 currentHlsEngine = null;
             }
 
-            if (Hls.isSupported() && url.includes('.m3u8')) {
-                currentHlsEngine = new Hls({ enableWorker: true });
+            if (Hls.isSupported() && (url.includes('.m3u8') || url.includes('/proxy/stream'))) {
+                currentHlsEngine = new Hls({
+                    enableWorker: true,
+                    lowLatencyMode: true,
+                    manifestLoadingTimeOut: 15000,
+                    levelLoadingTimeOut: 15000
+                });
                 currentHlsEngine.loadSource(url);
                 currentHlsEngine.attachMedia(video);
                 currentHlsEngine.on(Hls.Events.MANIFEST_PARSED, function () {
@@ -2569,13 +2682,22 @@
                     if (data.fatal) {
                         switch (data.type) {
                             case Hls.ErrorTypes.NETWORK_ERROR:
-                                currentHlsEngine.startLoad();
+                                console.warn('HLS Network error encountered:', data.details);
+                                if (activeStreamList.length > 1) {
+                                    tryNextStreamServer();
+                                } else {
+                                    currentHlsEngine.startLoad();
+                                }
                                 break;
                             case Hls.ErrorTypes.MEDIA_ERROR:
                                 currentHlsEngine.recoverMediaError();
                                 break;
                             default:
-                                currentHlsEngine.destroy();
+                                if (activeStreamList.length > 1) {
+                                    tryNextStreamServer();
+                                } else {
+                                    currentHlsEngine.destroy();
+                                }
                                 break;
                         }
                     }
@@ -2583,10 +2705,40 @@
             } else {
                 // Native Safari / iOS HLS or MP4 playback
                 video.src = url;
+                video.onerror = () => {
+                    if (activeStreamList.length > 1) {
+                        tryNextStreamServer();
+                    }
+                };
                 video.play().catch(e => console.log('Autoplay blocked:', e));
             }
+        }
 
-            document.getElementById('cinema-player-modal').classList.add('open');
+        function tryNextStreamServer() {
+            if (!activeStreamList || activeStreamList.length <= 1) return;
+            activeStreamIndex = (activeStreamIndex + 1) % activeStreamList.length;
+            const nextStream = activeStreamList[activeStreamIndex];
+            const video = document.querySelector('#player-screen-wrap video');
+            if (video && nextStream && nextStream.url) {
+                updateServerSwitchUI();
+                playStreamUrl(nextStream.url, video);
+            }
+        }
+
+        function switchPlayerServer() {
+            tryNextStreamServer();
+        }
+
+        function updateServerSwitchUI() {
+            const btn = document.getElementById('player-server-switch-btn');
+            const label = document.getElementById('player-server-label');
+            if (!btn || !label) return;
+            if (activeStreamList && activeStreamList.length > 1) {
+                btn.style.display = 'inline-flex';
+                label.innerText = `Server ${activeStreamIndex + 1}/${activeStreamList.length}`;
+            } else {
+                btn.style.display = 'none';
+            }
         }
 
         function closeCinemaPlayer() {
@@ -2594,6 +2746,7 @@
                 currentHlsEngine.destroy();
                 currentHlsEngine = null;
             }
+            activeStreamList = [];
             const container = document.getElementById('player-screen-wrap');
             const video = container.querySelector('video');
             if (video) video.pause();
