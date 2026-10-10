@@ -6,14 +6,16 @@
 
 ### Luxury Cross-Platform Cinema App for Android, iOS PWA, Smart TVs & Web 🎬
 
-[![Release](https://img.shields.io/badge/Release-v1.0.0-FFD700.svg?style=for-the-badge&logo=android)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform)
+[![Release](https://img.shields.io/badge/Release-v1.4.2-FFD700.svg?style=for-the-badge&logo=android)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform/releases)
 [![Platforms](https://img.shields.io/badge/Platforms-Android%20%7C%20Smart%20TV%20%7C%20FireStick%20%7C%20iOS%20PWA-00E5FF.svg?style=for-the-badge)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform)
 [![Security](https://img.shields.io/badge/Access-6--Digit%20PIN%20Protected-00E676.svg?style=for-the-badge&logo=shield)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform)
-[![Video Engine](https://img.shields.io/badge/Streaming-4K%20UHD%20%2B%20HLS%20Direct-FF2E56.svg?style=for-the-badge)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform)
+[![Video Engine](https://img.shields.io/badge/Streaming-4K%20UHD%20%2B%20ExoPlayer-FF2E56.svg?style=for-the-badge)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform)
 
 ---
 
-### 📥 [Download Official Android APK](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform/releases/download/v1.0.0/YogeshStreamer-v1.0.0.apk) • 🌐 [Launch Web & iOS PWA App](index.html)
+### 📥 [Download Official Android APK (v1.4.2)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform/releases/download/v1.4.2/YogeshStreamer-v1.4.2.apk)
+#### 📺 TV Downloader Short Link: `tinyurl.com/y-streamer-apk`
+#### 🌐 [Launch Web & iOS PWA App](https://yogesh-streamer-bridge.onrender.com/app) • 📋 [View All Releases](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform/releases)
 
 </div>
 
