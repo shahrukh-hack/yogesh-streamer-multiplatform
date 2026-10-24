@@ -1,4 +1,4 @@
-﻿name: Build & Deploy Yogesh Streamer Multi-Platform APK
+name: Build & Deploy Yogesh Streamer Multi-Platform APK
 
 on:
   push:
@@ -71,16 +71,19 @@ jobs:
           tag_name: v${{ env.VERSION_NAME }}
           name: "Yogesh Streamer v${{ env.VERSION_NAME }} Multi-Platform Official Release"
           body: |
-            # 🚀 Yogesh Streamer v${{ env.VERSION_NAME }} — Professional Multi-Grade Release
+            # 🚀 Yogesh Streamer v${{ env.VERSION_NAME }} — Official Multi-Platform Release
             
-            Welcome to the upgraded **Yogesh Streamer v${{ env.VERSION_NAME }}**, built with pure native architecture!
+            Welcome to the upgraded **Yogesh Streamer v${{ env.VERSION_NAME }}**, featuring our next-generation cloud bridge architecture!
 
             ### 🌟 Key Highlights in this Build:
-            * **📺 Dedicated Live Indian TV Channels:** DD Girnar, ABP Asmita, Sandesh News, B4U Movies, Goldmines, DD National, Aaj Tak, 9X Jalwa, Sanskar TV.
-            * **🏏 Universal Live Sports Hub:** Direct 1-tap streams for Star Sports 1 Hindi HD, Willow Cricket HD, and Astro Cricket 60fps.
-            * **🪞 NetMirror Multi-CDN Engine:** Instant multi-audio streams for Bollywood, Gujarati blockbusters, and South Dubbed.
-            * **🕉️ Sacred Intro Audio:** Plays *Om Namah Shivaya* chant on startup.
-            * **🔐 Permanent Keystore:** Identical cryptographic signature ensures seamless in-app OTA updates forever.
+            * **⚡ Cloud-Connected Bridge Engine:** Seamless integration with the 24/7 Yogesh Streamer Bridge for instant stream resolution.
+            * **🏰 Castle Cinema (550+ Titles):** 100% instant web-playable 1080p movies and web series with multi-audio and subtitles.
+            * **🏏 Universal Live Sports Hub:** Direct 1-tap live streams for DD Sports 1 HD, PlayFy live cricket, Willow Cricket HD, and SportzX.
+            * **📺 Smart TV & FireStick Leanback Launcher:** Native D-Pad spatial navigation, auto-focus, and TV back key mapping.
+            * **🎬 Hardware-Accelerated Playback:** Smooth 60fps hardware decoding with automatic landscape fullscreen mode.
+            * **🚀 Native VLC & MX Player Launcher:** 1-tap launcher to stream directly in external players with lossless MKV support.
+            * **🕉️ Sacred Intro Audio:** Plays *Om Namah Shivaya* chant on app startup.
+            * **🔐 Permanent Keystore:** Identical cryptographic signature ensures seamless in-app OTA updates.
           draft: false
           prerelease: false
           files: output_apks/*.apk
