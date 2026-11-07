@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yogesh-streamer-v2.0.0-purge';
+const CACHE_NAME = 'yogesh-streamer-v2.1.0-official';
 const STATIC_ASSETS = [
     '/manifest.webmanifest',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
