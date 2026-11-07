@@ -2891,23 +2891,23 @@
         <div class="modal-dialog-large focusable" tabindex="0">
             <div class="modal-header">
                 <div style="display: flex; align-items: center; gap: 12px;">
-                    <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(255,215,0,0.15); border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--gold);">
-                        <i class="fas fa-puzzle-piece"></i>
+                    <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(229,169,59,0.15); border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--gold);">
+                        <i class="fas fa-gear"></i>
                     </div>
                     <div>
-                        <h2 style="font-size: 17px; font-weight: 800; color: #FFF; margin: 0;">Verified Cloud Extensions &amp; Scrapers</h2>
-                        <span style="font-size: 11px; color: var(--text-sub);">43 Verified Providers • Decompiled DEX to JSON • Direct HLS</span>
+                        <h2 style="font-size: 17px; font-weight: 800; color: #FFF; margin: 0;">Settings &amp; Cloud Streaming Hub</h2>
+                        <span style="font-size: 11px; color: var(--text-sub);">Yogesh Streamer • 43 Active Cloud Servers • Private PIN Vault</span>
                     </div>
                 </div>
-                <button class="btn-close-modal focusable" onclick="closeExtensionsModal()"><i class="fas fa-times"></i></button>
+                <button class="btn-close-modal focusable" onclick="closeSettingsModal()"><i class="fas fa-times"></i></button>
             </div>
             
-            <!-- Category Chips -->
-            <div class="chips-bar" id="extensions-filter-chips" style="padding: 10px 18px 0 18px; margin: 0;">
-                <div class="chip-btn active focusable" onclick="filterExtensions('ALL', this)">All Extensions (40)</div>
-                <div class="chip-btn focusable" onclick="filterExtensions('Live', this)">🏏 Live Sports</div>
-                <div class="chip-btn focusable" onclick="filterExtensions('Movie', this)">🎬 Cinema &amp; OTT</div>
-                <div class="chip-btn focusable" onclick="filterExtensions('Anime', this)">⚔️ Anime</div>
+            <!-- Settings Category Tabs -->
+            <div class="chips-bar" id="settings-filter-chips" style="padding: 10px 18px 0 18px; margin: 0;">
+                <div class="chip-btn active focusable" onclick="switchSettingsSection('servers', this)"><i class="fas fa-server"></i> 43 Cloud Servers</div>
+                <div class="chip-btn focusable" onclick="switchSettingsSection('security', this)"><i class="fas fa-shield-halved"></i> Family PIN &amp; Security</div>
+                <div class="chip-btn focusable" onclick="switchSettingsSection('audio', this)"><i class="fas fa-volume-high"></i> Audio &amp; Playback</div>
+                <div class="chip-btn focusable" onclick="switchSettingsSection('app', this)"><i class="fab fa-android"></i> Android Native App</div>
             </div>
 
             <div class="modal-body" style="padding: 14px 18px; max-height: 60vh; overflow-y: auto;">
@@ -3152,9 +3152,9 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const tabParam = urlParams.get('tab');
                 if (tabParam === 'sports') {
-                    switchNavTab('tab-sports', 4);
+                    switchNavTab('tab-sports', 3);
                 } else if (tabParam === 'livetv') {
-                    switchNavTab('tab-livetv', 3);
+                    switchNavTab('tab-livetv', 4);
                 } else if (tabParam === 'movies') {
                     switchNavTab('tab-movies', 1);
                 } else if (tabParam === 'series') {
@@ -3435,12 +3435,12 @@
                             <div style="font-size: 15px; font-weight: 800; color: #FFF;">Web Series Hub</div>
                             <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px;">Complete Seasons • Anime • Hindi &amp; English</div>
                         </div>
-                        <div class="hub-jump-card focusable" tabindex="0" onclick="switchNavTab('tab-sports', 4)" style="background: linear-gradient(135deg, rgba(239,68,68,0.15) 0%, rgba(15,23,42,0.8) 100%); border: 1px solid rgba(239,68,68,0.3);">
+                        <div class="hub-jump-card focusable" tabindex="0" onclick="switchNavTab('tab-sports', 3)" style="background: linear-gradient(135deg, rgba(239,68,68,0.15) 0%, rgba(15,23,42,0.8) 100%); border: 1px solid rgba(239,68,68,0.3);">
                             <div style="font-size: 24px; color: #f87171; margin-bottom: 8px;"><i class="fas fa-baseball-bat-ball"></i></div>
                             <div style="font-size: 15px; font-weight: 800; color: #FFF;">Live Sports Arena</div>
                             <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px;">0ms Cricket • Football • Highlights &amp; Events</div>
                         </div>
-                        <div class="hub-jump-card focusable" tabindex="0" onclick="switchNavTab('tab-livetv', 3)" style="background: linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(15,23,42,0.8) 100%); border: 1px solid rgba(16,185,129,0.3);">
+                        <div class="hub-jump-card focusable" tabindex="0" onclick="switchNavTab('tab-livetv', 4)" style="background: linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(15,23,42,0.8) 100%); border: 1px solid rgba(16,185,129,0.3);">
                             <div style="font-size: 24px; color: #34d399; margin-bottom: 8px;"><i class="fas fa-satellite-dish"></i></div>
                             <div style="font-size: 15px; font-weight: 800; color: #FFF;">24/7 Live TV Channels</div>
                             <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px;">Indian Channels • Regional • News &amp; Music</div>
@@ -3494,7 +3494,7 @@
             sec.innerHTML = `
                 <div class="section-headline">
                     <div class="section-title-text"><i class="fas fa-baseball-bat-ball" style="color: var(--gold);"></i> ⚡ Live Cricket & Sports Arena <span class="badge-stream-format" style="background:rgba(255,51,75,0.2); color:#FF334B; border:1px solid rgba(255,51,75,0.4);">🔴 LIVE • 60FPS</span></div>
-                    <span class="see-all-btn focusable" tabindex="0" onclick="switchNavTab('tab-sports', 4)">
+                    <span class="see-all-btn focusable" tabindex="0" onclick="switchNavTab('tab-sports', 3)">
                         Sports Arena <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
                     </span>
                 </div>
@@ -3558,7 +3558,7 @@
             sec.innerHTML = `
                 <div class="section-headline">
                     <div class="section-title-text"><i class="fas fa-satellite-dish" style="color: var(--cyan);"></i> 📺 24/7 Live Indian TV Channels <span class="badge-stream-format badge-stream-web">⚡ Instant Web Play</span></div>
-                    <span class="see-all-btn focusable" tabindex="0" onclick="switchNavTab('tab-livetv', 3)">
+                    <span class="see-all-btn focusable" tabindex="0" onclick="switchNavTab('tab-livetv', 4)">
                         All Channels <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
                     </span>
                 </div>
@@ -5767,8 +5767,8 @@
                 'home': { id: 'tab-home', index: 0 },
                 'movies': { id: 'tab-movies', index: 1 },
                 'series': { id: 'tab-series', index: 2 },
-                'livetv': { id: 'tab-livetv', index: 3 },
-                'sports': { id: 'tab-sports', index: 4 },
+                'sports': { id: 'tab-sports', index: 3 },
+                'livetv': { id: 'tab-livetv', index: 4 },
                 'search': { id: 'tab-search', index: 5 }
             };
 
@@ -5782,8 +5782,8 @@
             const TAB_MAP = {
                 'movies': { id: 'tab-movies', index: 1 },
                 'series': { id: 'tab-series', index: 2 },
-                'livetv': { id: 'tab-livetv', index: 3 },
-                'sports': { id: 'tab-sports', index: 4 },
+                'sports': { id: 'tab-sports', index: 3 },
+                'livetv': { id: 'tab-livetv', index: 4 },
                 'search': { id: 'tab-search', index: 5 }
             };
 
@@ -5999,6 +5999,78 @@
         // 🧩 EXTENSIONS DIRECTORY ENGINE
         // ==========================================
         let cachedPluginsList = [];
+
+        
+        function openSettingsModal() {
+            openExtensionsModal();
+        }
+        function closeSettingsModal() {
+            closeExtensionsModal();
+        }
+        function switchSettingsSection(section, btnElem) {
+            document.querySelectorAll('#settings-filter-chips .chip-btn').forEach(b => b.classList.remove('active'));
+            if (btnElem) btnElem.classList.add('active');
+            
+            const grid = document.getElementById('extensions-grid');
+            if (!grid) return;
+            
+            if (section === 'servers') {
+                filterExtensions('ALL');
+            } else if (section === 'security') {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid var(--border-dim);">
+                        <div style="font-size: 16px; font-weight: 800; color: var(--gold); margin-bottom: 8px;"><i class="fas fa-lock"></i> Family Private Security Vault</div>
+                        <p style="font-size: 12px; color: var(--text-sub); line-height: 1.6; margin-bottom: 16px;">
+                            Your streaming library is secured with a 6-digit Private Access PIN (Default: <strong>178757</strong>). Prevents unauthorized access on shared Smart TVs and family devices.
+                        </p>
+                        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                            <button class="btn-primary focusable" onclick="lockApp(); closeSettingsModal();" style="background: var(--gold); color: #000; padding: 10px 18px; border-radius: 8px; font-weight: 800; border: none; cursor: pointer;">
+                                <i class="fas fa-lock"></i> Lock App Immediately
+                            </button>
+                            <button class="btn-secondary focusable" onclick="localStorage.removeItem('y_streamer_pin_session'); alert('Session expired. Please enter PIN again.'); location.reload();" style="background: rgba(255,255,255,0.08); color: #FFF; padding: 10px 18px; border-radius: 8px; font-weight: 700; border: 1px solid var(--border-dim); cursor: pointer;">
+                                <i class="fas fa-key"></i> Reset Session Credentials
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else if (section === 'audio') {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid var(--border-dim);">
+                        <div style="font-size: 16px; font-weight: 800; color: #38bdf8; margin-bottom: 8px;"><i class="fas fa-volume-high"></i> Multi-Audio &amp; Streaming HUD</div>
+                        <p style="font-size: 12px; color: var(--text-sub); line-height: 1.6; margin-bottom: 16px;">
+                            Yogesh Streamer automatically extracts and prioritizes Multi-Audio streams (Hindi Dubbed, Gujarati, English, Tamil, Telugu). In the player, tap the audio icon to switch tracks on the fly.
+                        </p>
+                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                            <div style="padding:14px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                                <div style="font-size:11px; color:var(--text-sub);">Default Audio Track</div>
+                                <div style="font-size:14px; font-weight:800; color:#FFF; margin-top:4px;">🇮🇳 Hindi / Gujarati (Auto)</div>
+                            </div>
+                            <div style="padding:14px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                                <div style="font-size:11px; color:var(--text-sub);">Video Playback Engine</div>
+                                <div style="font-size:14px; font-weight:800; color:#4ade80; margin-top:4px;">⚡ Universal HLS &amp; Shaka</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (section === 'app') {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid var(--border-dim);">
+                        <div style="font-size: 16px; font-weight: 800; color: #4ade80; margin-bottom: 8px;"><i class="fab fa-android"></i> Official Yogesh Streamer Android App (v5.4.4)</div>
+                        <p style="font-size: 12px; color: var(--text-sub); line-height: 1.6; margin-bottom: 16px;">
+                            Built with Jetpack Compose Material 3 and Media3 ExoPlayer. 100% ad-free, 0% popups, native TV D-pad navigation, and direct 4K video playback.
+                        </p>
+                        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                            <a href="/apk" target="_blank" style="background: #4ade80; color: #000; padding: 12px 20px; border-radius: 8px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-download"></i> Download Native Android APK
+                            </a>
+                            <a href="https://github.com/shahrukh-hack/yogesh-streamer-multiplatform" target="_blank" style="background: rgba(255,255,255,0.08); color: #FFF; padding: 12px 20px; border-radius: 8px; font-weight: 700; text-decoration: none; border: 1px solid var(--border-dim); display: inline-flex; align-items: center; gap: 8px;">
+                                <i class="fab fa-github"></i> Multi-Platform Source Code
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+        }
 
         async function openExtensionsModal() {
             const modal = document.getElementById('extensions-modal');
