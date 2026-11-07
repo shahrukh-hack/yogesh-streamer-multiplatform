@@ -3098,7 +3098,7 @@
 
                 // 🌟 Smart Prioritization: verified working streaming catalogs first
                 movieCatalogs.sort((a, b) => {
-                    const topMovies = ['cnc_CastleTVUseVLC_other', 'cnc_HDHub4U_other', 'cnc_Rogmovies_other', 'cnc_VegaMovies_other', 'cnc_4KHDHUB_other', 'cnc_ReANIME_other', 'cnc_RingZ_other', 'cnc_MovieBoxIN_other', 'cnc_MultiMovies_other'];
+                    const topMovies = ['native_hdhub4u_movies', 'cnc_CastleTVUseVLC_other', 'cnc_HDHub4U_other', 'cnc_Rogmovies_other', 'cnc_VegaMovies_other', 'cnc_4KHDHUB_other', 'cnc_ReANIME_other', 'cnc_RingZ_other', 'cnc_MovieBoxIN_other', 'cnc_MultiMovies_other'];
                     const isDeadA = deadScraperIds.has(a.id);
                     const isDeadB = deadScraperIds.has(b.id);
                     if (isDeadA && !isDeadB) return 1;
@@ -3153,7 +3153,13 @@
                 const homeAddedIds = new Set();
                 let homeRank = 2;
 
-                // Priority 1: Instant Web Play Cinema (Castle Cinema)
+                // Priority 1: 💎 HDHub4u 4K UHD & 1080p (Native Engine)
+                movieCatalogs.filter(c => c.id === 'native_hdhub4u_movies').forEach(cat => {
+                    homeAddedIds.add(cat.id);
+                    buildCatalogRowElement(cat, homeGrid, 'home', true, homeRank++);
+                });
+
+                // Priority 2: Instant Web Play Cinema (Castle Cinema)
                 movieCatalogs.filter(c => c.id === 'cnc_CastleTVUseVLC_other').forEach(cat => {
                     homeAddedIds.add(cat.id);
                     buildCatalogRowElement(cat, homeGrid, 'home', true, homeRank++);
