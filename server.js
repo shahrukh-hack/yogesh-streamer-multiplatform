@@ -1247,24 +1247,26 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (pathname === '/api/debug/anime') {
-        try {
-            const domains = await getLiveDomains();
-            const baseDomain = domains.animeworld || 'https://watchanimeworld.one';
-            const html = await fetchHtml(baseDomain);
-            const articles = html.match(/<article[^>]*>[\s\S]*?<\/article>/gi) || [];
-            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*' });
-            res.end(JSON.stringify({
-                baseDomain,
-                htmlLength: html ? html.length : 0,
-                articlesCount: articles.length,
-                sampleArticle: articles[0] ? articles[0].slice(0, 300) : null
-            }));
-            return;
-        } catch(e) {
-            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*' });
-            res.end(JSON.stringify({ error: e.message, stack: e.stack }));
-            return;
+        const testUrls = [
+            'https://watchanimeworld.one/',
+            'https://watchanimeworld.top/',
+            'https://anikototv.to/',
+            'https://anisuge.tv/'
+        ];
+        const results = {};
+        for (const u of testUrls) {
+            try {
+                const html = await fetchHtml(u, {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+                }, 5000);
+                results[u] = { status: 200, length: html.length };
+            } catch(e) {
+                results[u] = { error: e.message };
+            }
         }
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*' });
+        res.end(JSON.stringify(results, null, 2));
+        return;
     }
 
     // ☁️ Universal Cross-Device Cloud Sync API (Watchlist & Continue Watching)
