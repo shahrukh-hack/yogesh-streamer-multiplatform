@@ -328,7 +328,7 @@
     "types": [
       "TvSeries"
     ],
-    "iconUrl": "https://www.google.com/s2/favicons?domain=desi-serials.to&sz=%size%",
+    "iconUrl": "https://www.google.com/s2/favicons?domain=desi-serials.to&sz=64",
     "description": "Desi Serials Tv Shows Provider",
     "fileSize": 59363,
     "cs3DownloadUrl": "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/DesiSerialsProvider.cs3",
@@ -438,7 +438,7 @@
     "types": [
       "Others"
     ],
-    "iconUrl": "https://www.google.com/s2/favicons?domain=goldenaudiobook.com/&sz=%size%",
+    "iconUrl": "https://www.google.com/s2/favicons?domain=goldenaudiobook.com/&sz=64",
     "description": "Audiobooks - Use Picture in Picture or VLC as external player",
     "fileSize": 38034,
     "cs3DownloadUrl": "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/GoldenAudiobook.cs3",
@@ -525,7 +525,7 @@
       "TvSeries",
       "Movie"
     ],
-    "iconUrl": "https://www.google.com/s2/favicons?domain=rezka.ag&sz=%size%",
+    "iconUrl": "https://www.google.com/s2/favicons?domain=rezka.ag&sz=64",
     "description": "High-speed HDrezkaProvider scraper stream provider",
     "fileSize": 66953,
     "cs3DownloadUrl": "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/HDrezkaProvider.cs3",
@@ -836,7 +836,7 @@
       "Movie",
       "TvSeries"
     ],
-    "iconUrl": "https://noirx.me/apple-touch-icon.png",
+    "iconUrl": "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/logo.jpg",
     "description": "NoirX - Movies & TV shows in HD (multi-language, multi-quality, subtitles)",
     "fileSize": 65249,
     "cs3DownloadUrl": "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/NoirX.cs3",
@@ -1066,7 +1066,7 @@
     "types": [
       "Movies"
     ],
-    "iconUrl": "https://www.google.com/s2/favicons?domain=tamilian.io&sz=%size%",
+    "iconUrl": "https://www.google.com/s2/favicons?domain=tamilian.io&sz=64",
     "description": "Movies (Tamil)",
     "fileSize": 38224,
     "cs3DownloadUrl": "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/Tamilian.cs3",

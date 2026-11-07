@@ -1263,17 +1263,23 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
-    // Static assets (PWA icons, Service Worker)
-    if (['/sw.js', '/favicon.ico', '/apple-touch-icon.png', '/icon-192.png', '/icon-512.png'].includes(pathname)) {
-        const assetPath = path.join(__dirname, pathname.substring(1));
+    // Static assets (PWA icons, Service Worker, Official Brand Logo)
+    if (['/sw.js', '/favicon.ico', '/apple-touch-icon.png', '/icon-192.png', '/icon-512.png', '/logo.jpg', '/logo.png'].includes(pathname) || pathname.startsWith('/assets/') || pathname.includes('logo')) {
+        let cleanFile = pathname.replace(/^\//, '');
+        if (pathname.includes('logo')) {
+            cleanFile = fs.existsSync(path.join(__dirname, cleanFile)) ? cleanFile : 'logo.jpg';
+        }
+        const assetPath = path.join(__dirname, cleanFile);
         if (fs.existsSync(assetPath)) {
-            const ext = path.extname(assetPath);
+            const ext = path.extname(assetPath).toLowerCase();
             const mimeTypes = {
                 '.js': 'application/javascript; charset=utf-8',
                 '.png': 'image/png',
                 '.jpg': 'image/jpeg',
+                '.jpeg': 'image/jpeg',
                 '.ico': 'image/x-icon',
-                '.svg': 'image/svg+xml'
+                '.svg': 'image/svg+xml',
+                '.json': 'application/json; charset=utf-8'
             };
             res.writeHead(200, {
                 'Content-Type': mimeTypes[ext] || 'application/octet-stream',
@@ -1348,7 +1354,13 @@ const server = http.createServer(async (req, res) => {
     // Universal Decompiled Scrapers API (Reverse Engineered from CS3)
     if (pathname === '/api/scrapers' || pathname === '/api/providers') {
         try {
-            const data = await fetchJson(SCRAPERS_MANIFEST_URL);
+            const localScrapers = path.join(__dirname, 'scrapers.json');
+            let data = null;
+            if (fs.existsSync(localScrapers)) {
+                data = JSON.parse(fs.readFileSync(localScrapers, 'utf8'));
+            } else {
+                data = await fetchJson(SCRAPERS_MANIFEST_URL);
+            }
             res.writeHead(200, {
                 'Content-Type': 'application/json; charset=utf-8',
                 'Access-Control-Allow-Origin': '*',
@@ -1388,7 +1400,13 @@ const server = http.createServer(async (req, res) => {
     // Official Yogesh Streamer Plugins Catalog API (from yogesh-streamer-plugins)
     if (pathname === '/api/plugins' || pathname === '/api/extensions') {
         try {
-            const plugins = await fetchJson(PLUGINS_MANIFEST_URL);
+            const localPlugins = path.join(__dirname, 'plugins.json');
+            let plugins = null;
+            if (fs.existsSync(localPlugins)) {
+                plugins = JSON.parse(fs.readFileSync(localPlugins, 'utf8'));
+            } else {
+                plugins = await fetchJson(PLUGINS_MANIFEST_URL);
+            }
             res.writeHead(200, {
                 'Content-Type': 'application/json; charset=utf-8',
                 'Access-Control-Allow-Origin': '*',

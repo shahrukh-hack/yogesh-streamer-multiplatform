@@ -1565,6 +1565,79 @@
             color: #000;
         }
 
+    
+        /* 🎬 TACTILE PLAY BUTTON ON POSTER CARDS */
+        .card-play-pill {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%) translateY(8px);
+            background: var(--gold);
+            color: #000000;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 11.5px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 15px var(--gold-glow);
+            opacity: 0;
+            transition: var(--transition-smooth);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .poster-card:hover .card-play-pill,
+        .poster-card:focus .card-play-pill,
+        .poster-card:active .card-play-pill {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* 📱 On Mobile touch devices, make play pill subtly visible */
+        @media (hover: none) {
+            .card-play-pill {
+                opacity: 0.95;
+                transform: translateX(-50%) translateY(0);
+                padding: 4px 10px;
+                font-size: 10px;
+            }
+        }
+
+        /* 📦 MKV EXTERNAL BANNER */
+        .mkv-banner-notice {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-stream-vlc-primary {
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            color: #FFFFFF;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 12.5px;
+            font-weight: 800;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+            transition: var(--transition-smooth);
+        }
+
+        .btn-stream-vlc-primary:hover {
+            transform: scale(1.04);
+            filter: brightness(1.1);
+        }
+
     </style>
 </head>
 <body>
@@ -1572,7 +1645,7 @@
     <!-- 🔒 6-DIGIT FAMILY PIN LOCK GATEWAY -->
     <div id="pin-lock-modal" class="pin-modal-overlay">
         <div class="pin-card">
-            <img src="https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg" alt="Logo" class="pin-logo-img">
+            <img src="/logo.jpg" onerror="this.src='https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/logo.jpg'" alt="Logo" class="pin-logo-img">
             <div class="pin-title">YOGESH STREAMER</div>
             <div style="font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 6px;"><i class="fas fa-shield-halved"></i> Family Private Access</div>
             <p class="pin-prompt">Enter 6-digit access code to unlock cinema</p>
@@ -1608,7 +1681,7 @@
     <!-- 🔝 LUXURY STICKY HEADER -->
     <header>
         <div class="brand-container focusable" tabindex="0" onclick="switchNavTab('tab-home', 0)">
-            <img src="https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg" alt="Logo" class="brand-logo">
+            <img src="/logo.jpg" onerror="this.src='https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/logo.jpg'" alt="Logo" class="brand-logo">
             <div class="brand-title-wrap">
                 <h1>YOGESH STREAMER</h1>
                 <span>ULTRA OTT CINEMA</span>
@@ -1794,15 +1867,15 @@
                 <div class="source-select-wrap">
                     <span style="font-size: 12px; font-weight: 700; color: var(--text-sub);">Source Engine:</span>
                     <select id="movies-source-select" class="source-select focusable" tabindex="0" onchange="changeMoviesSource(this.value)">
-                        <option value="ALL">🌐 All Verified Movie Engines (1,500+)</option>
-                        <option value="native_hdhub4u_movies">💎 HDHub4u 4K Direct Engine</option>
-                        <option value="native_vegamovies_movies">🍿 VegaMovies 4K HDR Direct</option>
-                        <option value="cnc_VegaMovies_other">🚀 VegaMovies Extended Cloud</option>
-                        <option value="cnc_Rogmovies_other">🚀 RogMovies Cinema</option>
-                        <option value="cnc_HDHub4U_other">🚀 HDHub4u Extended</option>
-                        <option value="cnc_4KHDHUB_other">🚀 4K HDHUB Ultra</option>
-                        <option value="cnc_Movies4u_other">🚀 Movies4U Extended</option>
-                        <option value="cnc_CastleTV_other">🏰 Castle Cinema (Instant Web Play)</option>
+                        <option value="cnc_CastleTV_other" selected>🏰 Castle Cinema (Instant Web Play • 611 Titles)</option>
+                        <option value="ALL">🌐 All Verified Movie Engines (1,500+ Titles)</option>
+                        <option value="native_hdhub4u_movies">💎 HDHub4u 4K (Requires VLC / MX)</option>
+                        <option value="native_vegamovies_movies">🍿 VegaMovies 4K HDR (Requires VLC / MX)</option>
+                        <option value="cnc_VegaMovies_other">🚀 VegaMovies Extended (Requires VLC / MX)</option>
+                        <option value="cnc_Rogmovies_other">🚀 RogMovies Cinema (Requires VLC / MX)</option>
+                        <option value="cnc_HDHub4U_other">🚀 HDHub4u Extended (Requires VLC / MX)</option>
+                        <option value="cnc_4KHDHUB_other">🚀 4K HDHUB Ultra (Requires VLC / MX)</option>
+                        <option value="cnc_Movies4u_other">🚀 Movies4U Extended (Requires VLC / MX)</option>
                     </select>
                 </div>
             </div>
@@ -2204,7 +2277,8 @@
         const DEFAULT_PIN = "178757";
         const PIN_STORAGE_KEY = "y_streamer_pin_unlocked";
         const CW_STORAGE_KEY = "y_streamer_continue_watching";
-        const BRAND_LOGO = "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg";
+        const BRAND_LOGO = "/logo.jpg";
+        const FALLBACK_LOGO = "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/logo.jpg";
 
         // Global Stores
         let allBridgeCatalogs = [];
@@ -2428,7 +2502,7 @@
                 loadHomePageCurations();
 
                 // Pre-populate page tabs
-                loadMoviesPage();
+                loadMoviesPage('cnc_CastleTV_other');
                 loadSeriesPage();
                 loadSportsPage();
                 loadLiveTVPage();
@@ -2442,24 +2516,24 @@
         // 🏠 1. HOME CURATED ROWS
         // ==========================================
         async function loadHomePageCurations() {
-            // 1. Top 10 Rail (Netflix Style) with Hero Billboard Auto-Rotation
+            // 1. Top 10 Rail (Netflix Style) — Prioritizes Castle TV (Instant Web Playable)
             try {
-                const res = await fetch(`${API_BASE}/catalog/movie/native_hdhub4u_movies.json`);
+                const res = await fetch(`${API_BASE}/catalog/movie/cnc_CastleTV_other.json`);
                 const data = await res.json();
                 const metas = Array.isArray(data?.metas) ? data.metas.slice(0, 10) : [];
                 renderTop10Rail(metas);
 
-                // Start Auto-Rotating Billboard with Top 5 Blockbusters
+                // Start Auto-Rotating Billboard with Top 5 Web-Playable Blockbusters
                 if (metas.length > 0) {
                     startHeroRotation(metas.slice(0, 5));
                 }
             } catch(e) {}
 
-            // 2. Curated Indian Cinema Rail
+            // 2. Curated Indian Cinema Rail (Instant Web Playable)
             try {
-                const res = await fetch(`${API_BASE}/catalog/movie/native_vegamovies_movies.json`);
+                const res = await fetch(`${API_BASE}/catalog/movie/cnc_CastleTV_other.json`);
                 const data = await res.json();
-                const metas = Array.isArray(data?.metas) ? data.metas.slice(0, 15) : [];
+                const metas = Array.isArray(data?.metas) ? data.metas.slice(10, 30) : [];
                 renderStandardRail(metas, 'home-trending-track', 'movie');
             } catch(e) {}
 
@@ -2705,6 +2779,7 @@
                     <div class="top10-poster-wrap">
                         <img src="${item.poster || BRAND_LOGO}" alt="${cleanTitle(item.name)}" loading="lazy">
                         <div class="card-overlay-play"><i class="fas fa-play"></i></div>
+                        <div class="card-play-pill"><i class="fas fa-play"></i> Watch Now</div>
                     </div>
                 `;
                 card.onclick = () => openStreamPicker(item.type || 'movie', item.id, item.name);
@@ -2728,6 +2803,7 @@
                         </div>
                         <img src="${item.poster || BRAND_LOGO}" alt="${cleanTitle(item.name)}" loading="lazy">
                         <div class="card-overlay-play"><i class="fas fa-play"></i></div>
+                        <div class="card-play-pill"><i class="fas fa-play"></i> Watch Now</div>
                     </div>
                     <div class="card-title">${cleanTitle(item.name)}</div>
                     <div class="card-meta"><span>Cinema</span><span>★ ${item.imdbRating || '9.0'}</span></div>
@@ -2750,6 +2826,7 @@
                         <div class="sports-live-tag"><span class="badge-live-pulse"><i class="fas fa-bolt"></i> LIVE</span></div>
                         <img src="${item.poster || BRAND_LOGO}" alt="${cleanTitle(item.name)}" loading="lazy">
                         <div class="card-overlay-play"><i class="fas fa-play"></i></div>
+                        <div class="card-play-pill"><i class="fas fa-play"></i> Watch Now</div>
                     </div>
                     <div class="card-title">${cleanTitle(item.name)}</div>
                     <div class="card-meta"><span>Direct Satellite</span><span style="color:var(--gold);">0ms Latency</span></div>
@@ -2837,6 +2914,7 @@
                         </div>
                         <img src="${item.poster || BRAND_LOGO}" alt="${cleanTitle(item.name)}" loading="lazy">
                         <div class="card-overlay-play"><i class="fas fa-play"></i></div>
+                        <div class="card-play-pill"><i class="fas fa-play"></i> Watch Now</div>
                     </div>
                     <div class="card-title">${cleanTitle(item.name)}</div>
                     <div class="card-meta"><span>${item.year || '2024'}</span><span>★ ${item.imdbRating || '8.8'}</span></div>
@@ -2953,6 +3031,7 @@
                         </div>
                         <img src="${item.poster || BRAND_LOGO}" alt="${cleanTitle(item.name)}" loading="lazy">
                         <div class="card-overlay-play"><i class="fas fa-play"></i></div>
+                        <div class="card-play-pill"><i class="fas fa-play"></i> Watch Now</div>
                     </div>
                     <div class="card-title">${cleanTitle(item.name)}</div>
                     <div class="card-meta"><span>Series</span><span>★ ${item.imdbRating || '8.9'}</span></div>
@@ -3064,6 +3143,7 @@
                         <div class="sports-live-tag"><span class="badge-live-pulse"><i class="fas fa-bolt"></i> LIVE</span></div>
                         <img src="${item.poster || BRAND_LOGO}" alt="${cleanTitle(item.name)}" loading="lazy">
                         <div class="card-overlay-play"><i class="fas fa-play"></i></div>
+                        <div class="card-play-pill"><i class="fas fa-play"></i> Watch Now</div>
                     </div>
                     <div class="card-title">${cleanTitle(item.name)}</div>
                     <div class="card-meta"><span>Direct Satellite</span><span style="color:var(--gold);">60FPS HD</span></div>
@@ -3346,6 +3426,7 @@
                     <div class="poster-image-box">
                         <img src="${item.poster || BRAND_LOGO}" alt="${cleanTitle(item.name)}" loading="lazy">
                         <div class="card-overlay-play"><i class="fas fa-play"></i></div>
+                        <div class="card-play-pill"><i class="fas fa-play"></i> Watch Now</div>
                     </div>
                     <div class="card-title">${cleanTitle(item.name)}</div>
                 `;
@@ -3398,7 +3479,7 @@
         async function openStreamPicker(type, id, title, episodeNum = 1) {
             document.getElementById('sheet-title-text').innerText = cleanTitle(title);
             const container = document.getElementById('stream-options-container');
-            
+
             // Render episode selector for anime / series
             let epSelectorHtml = '';
             if (type === 'series') {
@@ -3408,7 +3489,7 @@
                         <div style="font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 6px; text-transform: uppercase;">Episode Selection:</div>
                         <div style="display: flex; gap: 6px; overflow-x: auto; padding: 2px 0;">
                             ${[1, 2, 3, 4, 5, 6, 7, 8].map(ep => `
-                                <button class="chip-item ${ep === episodeNum ? 'active' : ''} focusable" style="padding: 4px 10px; font-size: 11px;" onclick="openStreamPicker('${type}', '${baseId}:1:${ep}', '${escapeHtml(title)}', ${ep})">Ep ${ep}</button>
+                                <button type="button" class="chip-pill ${ep === episodeNum ? 'active' : ''} focusable" style="padding: 4px 10px; font-size: 11px;" onclick="openStreamPicker('${type}', '${baseId}:1:${ep}', '${escapeHtml(title)}', ${ep})">Ep ${ep}</button>
                             `).join('')}
                             <input type="number" min="1" max="3000" placeholder="Ep #" style="width: 62px; background: rgba(0,0,0,0.6); border: 1px solid var(--border-gold); color: #fff; padding: 4px 8px; border-radius: 6px; font-size: 11px;" onkeydown="if(event.key==='Enter'&&this.value){openStreamPicker('${type}', '${baseId}:1:'+this.value, '${escapeHtml(title)}', parseInt(this.value));}">
                         </div>
@@ -3422,7 +3503,7 @@
             try {
                 const res = await fetch(`${API_BASE}/stream/${type || 'movie'}/${encodeURIComponent(id)}.json`);
                 const data = await res.json();
-                const streams = Array.isArray(data?.streams) ? data.streams : [];
+                let streams = Array.isArray(data?.streams) ? data.streams : [];
 
                 if (streams.length === 0) {
                     container.innerHTML = `
@@ -3435,43 +3516,113 @@
                     return;
                 }
 
-                container.innerHTML = '';
+                // Sort streams: Web Playable (HLS / CastleTV) at the top, MKV below
+                streams.sort((a, b) => {
+                    const aWeb = isWebPlayable(a.url, a.name);
+                    const bWeb = isWebPlayable(b.url, b.name);
+                    if (aWeb && !bWeb) return -1;
+                    if (!aWeb && bWeb) return 1;
+                    return 0;
+                });
+
+                container.innerHTML = epSelectorHtml;
+
+                const allMkv = streams.every(s => !isWebPlayable(s.url, s.name));
+                if (allMkv) {
+                    const banner = document.createElement('div');
+                    banner.className = 'mkv-banner-notice';
+                    banner.innerHTML = `
+                        <i class="fas fa-triangle-exclamation" style="color: #F59E0B; font-size: 20px; flex-shrink: 0;"></i>
+                        <div style="font-size: 12px; color: #FFFFFF; line-height: 1.45;">
+                            <b style="color: #F59E0B;">External Player Required:</b> These streams are 4K MKV files (not supported in web browsers). Tap <b>VLC / MX</b> to play in your media player app.
+                        </div>
+                    `;
+                    container.appendChild(banner);
+                }
+
                 streams.forEach((s, idx) => {
                     const card = document.createElement('div');
                     card.className = 'stream-entry-card focusable';
                     card.tabIndex = 0;
 
-                    const isWeb = isWebPlayable(s.url);
+                    const isWeb = isWebPlayable(s.url, s.name);
                     const langBadge = detectAudioLanguageBadge(s.title || s.name || '');
                     const cleanServerTitle = escapeHtml(s.name || ('Server ' + (idx + 1)));
-                    const cleanServerSub = escapeHtml(s.title ? s.title.split('\n')[0] : '1080p Ultra HD Direct Stream');
+                    const cleanServerSub = escapeHtml(s.title ? s.title.replace(/[\r\n].*/, '') : '1080p Ultra HD Direct Stream');
 
                     card.innerHTML = `
                         <div class="stream-info-col">
                             <div class="stream-server-title">
                                 <i class="fas fa-bolt" style="color:var(--gold);"></i>
                                 <span>${cleanServerTitle}</span>
-                                ${isWeb ? '<span class="badge-format-web"><i class="fas fa-circle-check"></i> Web Play</span>' : '<span class="badge-format-mkv"><i class="fas fa-file-video"></i> MKV • VLC</span>'}
+                                ${isWeb ? '<span class="badge-format-web"><i class="fas fa-circle-check"></i> Web Play (Browser Ready)</span>' : '<span class="badge-format-mkv"><i class="fas fa-triangle-exclamation"></i> 4K MKV (VLC / MX Required)</span>'}
                                 ${langBadge ? `<span class="badge-stream-lang">${langBadge}</span>` : ''}
                             </div>
                             <div class="stream-server-sub">${cleanServerSub}</div>
                         </div>
                         <div class="stream-actions-group">
-                            <button class="btn-stream-copy focusable" tabindex="0" title="Copy Stream URL" onclick="event.stopPropagation(); copyStreamUrl('${encodeURIComponent(s.url)}')">
+                            <button type="button" class="btn-stream-copy focusable" tabindex="0" title="Copy Stream Link">
                                 <i class="fas fa-copy"></i>
                             </button>
-                            <button class="btn-stream-ext focusable" tabindex="0" title="Play in VLC / External Player" onclick="event.stopPropagation(); openInExternalPlayer('${encodeURIComponent(s.url)}', '${encodeURIComponent(title)}')">
-                                <i class="fas fa-arrow-up-right-from-square"></i> VLC
+                            <button type="button" class="btn-stream-ext focusable" tabindex="0" title="Play in VLC or MX Player">
+                                <i class="fas fa-arrow-up-right-from-square"></i> VLC / MX
                             </button>
-                            <button class="btn-stream-play focusable" tabindex="0" onclick="event.stopPropagation(); closeStreamPicker(true); launchCinemaPlayer('${encodeURIComponent(s.url)}', '${encodeURIComponent(title)}', streams, ${idx});">
-                                <i class="fas fa-play"></i> Play
-                            </button>
+                            ${isWeb ? `
+                                <button type="button" class="btn-stream-play focusable" tabindex="0" title="Play in Browser">
+                                    <i class="fas fa-play"></i> Play
+                                </button>
+                            ` : `
+                                <button type="button" class="btn-stream-vlc-primary focusable" tabindex="0" title="Open in VLC / MX Player">
+                                    <i class="fas fa-play"></i> Play in VLC
+                                </button>
+                            `}
                         </div>
                     `;
-                    card.onclick = () => {
-                        closeStreamPicker(true);
-                        launchCinemaPlayer(s.url, title, streams, idx);
-                    };
+
+                    // Direct JavaScript Event Listeners — 100% bug-free, zero string evaluation errors!
+                    const playBtn = card.querySelector('.btn-stream-play');
+                    if (playBtn) {
+                        playBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            closeStreamPicker(true);
+                            launchCinemaPlayer(s.url, title, streams, idx);
+                        });
+                    }
+
+                    const vlcPrimaryBtn = card.querySelector('.btn-stream-vlc-primary');
+                    if (vlcPrimaryBtn) {
+                        vlcPrimaryBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            openInExternalPlayer(s.url, title);
+                        });
+                    }
+
+                    const extBtn = card.querySelector('.btn-stream-ext');
+                    if (extBtn) {
+                        extBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            openInExternalPlayer(s.url, title);
+                        });
+                    }
+
+                    const copyBtn = card.querySelector('.btn-stream-copy');
+                    if (copyBtn) {
+                        copyBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            copyStreamUrl(s.url);
+                        });
+                    }
+
+                    // Tapping anywhere on the row also executes the right action
+                    card.addEventListener('click', () => {
+                        if (isWeb) {
+                            closeStreamPicker(true);
+                            launchCinemaPlayer(s.url, title, streams, idx);
+                        } else {
+                            openInExternalPlayer(s.url, title);
+                        }
+                    });
+
                     container.appendChild(card);
                 });
             } catch (err) {
@@ -3646,6 +3797,7 @@
                         <div class="sports-thumb-box">
                             <img src="${item.poster || BRAND_LOGO}" alt="${item.title}">
                             <div class="card-overlay-play"><i class="fas fa-play"></i></div>
+                        <div class="card-play-pill"><i class="fas fa-play"></i> Watch Now</div>
                             <div style="position:absolute; bottom:0; left:0; right:0; height:4px; background:rgba(255,255,255,0.2);">
                                 <div style="height:100%; width:${percent}%; background:var(--gold);"></div>
                             </div>
@@ -3690,6 +3842,7 @@
                         <div class="card-badges"><span class="badge-quality">GUJARATI</span></div>
                         <img src="${item.poster || BRAND_LOGO}" alt="${item.name}">
                         <div class="card-overlay-play"><i class="fas fa-play"></i></div>
+                        <div class="card-play-pill"><i class="fas fa-play"></i> Watch Now</div>
                     </div>
                     <div class="card-title">${cleanTitle(item.name)}</div>
                     <div class="card-meta"><span>Regional</span><span>★ ${item.imdbRating || '8.0'}</span></div>
@@ -3809,11 +3962,14 @@
         // ==========================================
         // 🎬 EXTERNAL PLAYER & VLC LAUNCHER
         // ==========================================
-        function isWebPlayable(url) {
+        function isWebPlayable(url, name = '') {
             if (!url) return false;
             const u = url.toLowerCase();
-            if (u.includes('.mkv') || u.includes('ext=mkv') || u.includes('/mkv/') || u.includes('format=mkv')) return false;
-            return true;
+            const n = (name || '').toLowerCase();
+            if (n.includes('[web play]') || n.includes('castletv') || n.includes('moviebox')) return true;
+            if (u.includes('.m3u8') || u.includes('/proxy/stream') || u.includes('.mp4') || u.includes('.mpd')) return true;
+            if (u.includes('.mkv') || u.includes('googleusercontent') || u.includes('drive.google') || n.includes('[mkv') || n.includes('vlc')) return false;
+            return false;
         }
 
         function openInExternalPlayer(rawUrl, rawTitle = 'Stream') {

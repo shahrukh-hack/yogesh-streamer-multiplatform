@@ -507,7 +507,7 @@
       ],
       "language": "hi",
       "description": "Desi Serials Tv Shows Provider",
-      "iconUrl": "https://www.google.com/s2/favicons?domain=desi-serials.to&sz=%size%",
+      "iconUrl": "https://www.google.com/s2/favicons?domain=desi-serials.to&sz=64",
       "tvTypes": [
         "TvSeries"
       ],
@@ -678,7 +678,7 @@
       ],
       "language": "en",
       "description": "Audiobooks - Use Picture in Picture or VLC as external player",
-      "iconUrl": "https://www.google.com/s2/favicons?domain=goldenaudiobook.com/&sz=%size%",
+      "iconUrl": "https://www.google.com/s2/favicons?domain=goldenaudiobook.com/&sz=64",
       "tvTypes": [
         "Others"
       ],
@@ -789,7 +789,7 @@
       ],
       "language": "ru",
       "description": "",
-      "iconUrl": "https://www.google.com/s2/favicons?domain=rezka.ag&sz=%size%",
+      "iconUrl": "https://www.google.com/s2/favicons?domain=rezka.ag&sz=64",
       "tvTypes": [
         "AsianDrama",
         "Anime",
@@ -1191,7 +1191,7 @@
       ],
       "language": "en",
       "description": "NoirX - Movies & TV shows in HD (multi-language, multi-quality, subtitles)",
-      "iconUrl": "https://noirx.me/apple-touch-icon.png",
+      "iconUrl": "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/logo.jpg",
       "tvTypes": [],
       "isLive": false,
       "streamCapabilities": {
@@ -1525,7 +1525,7 @@
       ],
       "language": "ta",
       "description": "Movies (Tamil)",
-      "iconUrl": "https://www.google.com/s2/favicons?domain=tamilian.io&sz=%size%",
+      "iconUrl": "https://www.google.com/s2/favicons?domain=tamilian.io&sz=64",
       "tvTypes": [
         "Movies"
       ],
