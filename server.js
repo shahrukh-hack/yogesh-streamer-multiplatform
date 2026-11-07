@@ -4,6 +4,7 @@ const url = require('url');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const zlib = require('zlib');
 
 const PORT = process.env.PORT || 7000;
 const UPSTREAM_RESOLVERS = (process.env.UPSTREAM_RESOLVERS || process.env.UPSTREAM_RESOLVER || 'https://cncverse.dpdns.org')
@@ -29,6 +30,19 @@ const streamCache = new Map();
 const cloudSyncStore = new Map(); // ☁️ In-Memory Cross-Device Progress & Watchlist Sync
 const STREAM_CACHE_TTL = 300000; // 5 minutes
 
+
+function getDecompressedStream(res) {
+    const encoding = (res.headers['content-encoding'] || '').toLowerCase();
+    if (encoding === 'gzip') {
+        return res.pipe(zlib.createGunzip());
+    } else if (encoding === 'deflate') {
+        return res.pipe(zlib.createInflate());
+    } else if (encoding === 'br' && zlib.createBrotliDecompress) {
+        return res.pipe(zlib.createBrotliDecompress());
+    }
+    return res;
+}
+
 function fetchJson(targetUrl, extraHeaders = {}, timeoutMs = 10000) {
     return new Promise((resolve, reject) => {
         const parsed = url.parse(targetUrl);
@@ -36,8 +50,9 @@ function fetchJson(targetUrl, extraHeaders = {}, timeoutMs = 10000) {
 
         const req = client.get(targetUrl, {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
                 'Accept': 'application/json, text/plain, */*',
+                'Accept-Encoding': 'gzip, deflate, br',
                 ...extraHeaders
             },
             timeout: timeoutMs
@@ -49,15 +64,18 @@ function fetchJson(targetUrl, extraHeaders = {}, timeoutMs = 10000) {
             if (res.statusCode !== 200) {
                 return reject(new Error(`Upstream returned HTTP ${res.statusCode}`));
             }
+            const stream = getDecompressedStream(res);
             let body = '';
-            res.on('data', chunk => body += chunk);
-            res.on('end', () => {
+            stream.setEncoding('utf8');
+            stream.on('data', chunk => body += chunk);
+            stream.on('end', () => {
                 try {
                     resolve(body ? JSON.parse(body) : null);
                 } catch (e) {
-                    reject(e);
+                    reject(new Error(`JSON parse error: ${e.message} (body length: ${body.length})`));
                 }
             });
+            stream.on('error', reject);
         });
 
         req.on('error', reject);
@@ -130,8 +148,9 @@ function fetchHtml(targetUrl, extraHeaders = {}, timeoutMs = 8000) {
 
         const req = client.get(targetUrl, {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Encoding': 'gzip, deflate, br',
                 ...extraHeaders
             },
             timeout: timeoutMs
@@ -143,9 +162,12 @@ function fetchHtml(targetUrl, extraHeaders = {}, timeoutMs = 8000) {
             if (res.statusCode !== 200) {
                 return reject(new Error(`HTTP ${res.statusCode} from ${targetUrl}`));
             }
+            const stream = getDecompressedStream(res);
             let body = '';
-            res.on('data', chunk => body += chunk);
-            res.on('end', () => resolve(body));
+            stream.setEncoding('utf8');
+            stream.on('data', chunk => body += chunk);
+            stream.on('end', () => resolve(body));
+            stream.on('error', reject);
         });
 
         req.on('error', reject);
@@ -581,6 +603,7 @@ async function getNativeAniKotoCatalog() {
 const getNativeAnimeWorldCatalog = getNativeAniKotoCatalog;
 
 async function getNativeAniKotoStreams(rawSlug) {
+    console.log(`[AniKoto] Resolving stream for slug: ${rawSlug}`);
     try {
         const domains = await getLiveDomains();
         const baseDomain = domains.anikoto || 'https://anikototv.to';
