@@ -25,6 +25,7 @@ const MANIFEST_CACHE_TTL = 1800000; // 30 minutes
 
 // In-memory stream resolution cache (5 minutes TTL for instant response)
 const streamCache = new Map();
+const cloudSyncStore = new Map(); // ☁️ In-Memory Cross-Device Progress & Watchlist Sync
 const STREAM_CACHE_TTL = 300000; // 5 minutes
 
 function fetchJson(targetUrl) {
@@ -925,6 +926,52 @@ const server = http.createServer(async (req, res) => {
             res.end(JSON.stringify({ error: 'Failed to fetch plugins manifest: ' + e.message }));
         }
         return;
+    }
+
+    // ☁️ Universal Cross-Device Cloud Sync API (Watchlist & Continue Watching)
+    if (pathname.startsWith('/api/sync/')) {
+        const syncCode = pathname.replace('/api/sync/', '').trim().toUpperCase();
+        if (!syncCode || syncCode.length < 3) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Invalid sync code' }));
+            return;
+        }
+
+        if (req.method === 'GET') {
+            const data = cloudSyncStore.get(syncCode) || { continueWatching: [], favorites: [] };
+            res.writeHead(200, {
+                'Content-Type': 'application/json; charset=utf-8',
+                'Access-Control-Allow-Origin': '*'
+            });
+            res.end(JSON.stringify({ success: true, syncCode, data }));
+            return;
+        }
+
+        if (req.method === 'POST') {
+            let body = '';
+            req.on('data', chunk => body += chunk);
+            req.on('end', () => {
+                try {
+                    const parsed = JSON.parse(body || '{}');
+                    const existing = cloudSyncStore.get(syncCode) || { continueWatching: [], favorites: [] };
+                    const merged = {
+                        continueWatching: Array.isArray(parsed.continueWatching) ? parsed.continueWatching : existing.continueWatching,
+                        favorites: Array.isArray(parsed.favorites) ? parsed.favorites : existing.favorites,
+                        updatedAt: Date.now()
+                    };
+                    cloudSyncStore.set(syncCode, merged);
+                    res.writeHead(200, {
+                        'Content-Type': 'application/json; charset=utf-8',
+                        'Access-Control-Allow-Origin': '*'
+                    });
+                    res.end(JSON.stringify({ success: true, syncCode, updatedAt: merged.updatedAt }));
+                } catch(e) {
+                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ error: 'Invalid JSON payload' }));
+                }
+            });
+            return;
+        }
     }
 
     // Stremio Addon Manifest

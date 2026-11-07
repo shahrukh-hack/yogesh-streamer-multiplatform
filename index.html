@@ -2191,6 +2191,25 @@
         }
 
         /* 🧩 Extensions Modal & Cards */
+        .btn-sync-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: #38bdf8;
+            padding: 7px 13px;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-sync-header:hover, .btn-sync-header:focus {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: #38bdf8;
+            transform: scale(1.04);
+        }
         .btn-extensions-header {
             background: rgba(255, 215, 0, 0.1);
             border: 1px solid rgba(255, 215, 0, 0.35);
@@ -2403,6 +2422,9 @@
         </div>
 
         <div class="header-right-actions">
+            <button class="btn-sync-header focusable" tabindex="0" onclick="openSyncModal()" title="Cross-Device Cloud Sync">
+                <i class="fas fa-cloud"></i> <span>Sync</span>
+            </button>
             <button class="btn-extensions-header focusable" tabindex="0" onclick="openExtensionsModal()" title="View Verified Cloud Extensions">
                 <i class="fas fa-puzzle-piece"></i> <span>Extensions</span>
             </button>
@@ -2716,6 +2738,45 @@
 
     
     <!-- 🧩 EXTENSIONS & CLOUD PROVIDERS DIRECTORY MODAL -->
+    <!-- ☁️ CLOUD SYNC MODAL (CROSS-DEVICE WATCHLIST & PROGRESS) -->
+    <div id="sync-modal" class="modal-backdrop">
+        <div class="modal-dialog focusable" tabindex="0" style="max-width: 440px;">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #38bdf8;">
+                        <i class="fas fa-cloud"></i>
+                    </div>
+                    <div>
+                        <h2 style="font-size: 16px; font-weight: 800; color: #FFF; margin: 0;">Cross-Device Cloud Sync</h2>
+                        <span style="font-size: 11px; color: var(--text-sub);">Sync playback &amp; continue watching across devices</span>
+                    </div>
+                </div>
+                <button class="btn-close-modal focusable" onclick="closeSyncModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding: 16px 20px;">
+                <div style="margin-bottom: 16px;">
+                    <label style="font-size: 11px; color: var(--text-sub); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 6px;">Your Device Sync Code</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="sync-code-display" readonly style="flex: 1; background: #090E1A; border: 1px solid var(--border-dim); border-radius: 8px; color: #38bdf8; font-family: monospace; font-size: 15px; font-weight: 800; padding: 10px 14px; text-align: center; letter-spacing: 2px;">
+                        <button class="btn-secondary focusable" onclick="copySyncCode()" title="Copy Code" style="padding: 0 14px;"><i class="fas fa-copy"></i></button>
+                    </div>
+                    <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 6px;">Enter this code on your Smart TV or second device to sync your progress automatically.</p>
+                </div>
+                <div style="border-top: 1px solid var(--border-dim); padding-top: 14px;">
+                    <label style="font-size: 11px; color: var(--text-sub); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 6px;">Connect Another Device</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="sync-code-input" placeholder="e.g. YOG-8241" style="flex: 1; background: #090E1A; border: 1px solid var(--border-dim); border-radius: 8px; color: #FFF; font-family: monospace; font-size: 14px; font-weight: 700; padding: 10px 14px; text-transform: uppercase;">
+                        <button class="btn-primary focusable" onclick="connectSyncCode()" style="padding: 0 16px; background: linear-gradient(135deg, #0284c7, #0369a1); font-weight: 800; font-size: 12px;"><i class="fas fa-link"></i> Link</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 12px 20px; background: rgba(0,0,0,0.3); border-top: 1px solid var(--border-dim); display: flex; justify-content: space-between; align-items: center;">
+                <span id="sync-status-text" style="font-size: 11px; color: #4ade80;"><i class="fas fa-check-circle"></i> Cloud Active</span>
+                <button class="btn-secondary focusable" onclick="pushLocalProgressToCloud(true)" style="font-size: 11px; padding: 6px 12px;"><i class="fas fa-rotate"></i> Sync Now</button>
+            </div>
+        </div>
+    </div>
+
     <div id="extensions-modal" class="modal-backdrop">
         <div class="modal-dialog-large focusable" tabindex="0">
             <div class="modal-header">
@@ -5414,6 +5475,7 @@
                 if (list.length > 15) list = list.slice(0, 15);
                 localStorage.setItem(CW_STORAGE_KEY, JSON.stringify(list));
                 renderContinueWatching();
+                pushLocalProgressToCloud();
             } catch(e) {
                 console.error('Error saving watch progress:', e);
             }
@@ -5684,9 +5746,127 @@
             }
         }
 
+        // ==========================================
+        // ☁️ CROSS-DEVICE CLOUD SYNC ENGINE
+        // ==========================================
+        const SYNC_STORAGE_KEY = 'y_streamer_sync_code';
+
+        function getOrCreateSyncCode() {
+            let code = localStorage.getItem(SYNC_STORAGE_KEY);
+            if (!code) {
+                const randNum = Math.floor(1000 + Math.random() * 9000);
+                code = `YOG-${randNum}`;
+                localStorage.setItem(SYNC_STORAGE_KEY, code);
+            }
+            return code;
+        }
+
+        function openSyncModal() {
+            const modal = document.getElementById('sync-modal');
+            if (!modal) return;
+            const code = getOrCreateSyncCode();
+            const input = document.getElementById('sync-code-display');
+            if (input) input.value = code;
+            modal.classList.add('open');
+        }
+
+        function closeSyncModal() {
+            const modal = document.getElementById('sync-modal');
+            if (modal) modal.classList.remove('open');
+        }
+
+        function copySyncCode() {
+            const code = getOrCreateSyncCode();
+            navigator.clipboard.writeText(code).then(() => {
+                showToast(`📋 Sync Code ${code} copied!`);
+            }).catch(() => {
+                showToast(`Sync Code: ${code}`);
+            });
+        }
+
+        async function connectSyncCode() {
+            const input = document.getElementById('sync-code-input');
+            const target = (input?.value || '').trim().toUpperCase();
+            if (!target || target.length < 4) {
+                showToast('⚠️ Please enter a valid sync code (e.g. YOG-1234)');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/sync/${target}`);
+                const json = await res.json();
+                if (json && json.success) {
+                    localStorage.setItem(SYNC_STORAGE_KEY, target);
+                    const display = document.getElementById('sync-code-display');
+                    if (display) display.value = target;
+
+                    // Merge remote continue watching with local
+                    const remoteCW = json.data?.continueWatching || [];
+                    if (remoteCW.length > 0) {
+                        const localCW = getContinueWatchingList();
+                        const titles = new Set(localCW.map(x => x.title));
+                        remoteCW.forEach(r => {
+                            if (!titles.has(r.title)) localCW.push(r);
+                        });
+                        localStorage.setItem(CW_STORAGE_KEY, JSON.stringify(localCW));
+                        renderContinueWatching();
+                    }
+                    showToast(`☁️ Connected to ${target}! Synced progress.`);
+                    closeSyncModal();
+                } else {
+                    showToast('⚠️ Sync code not found on cloud.');
+                }
+            } catch(e) {
+                showToast('⚠️ Failed to connect sync code: ' + e.message);
+            }
+        }
+
+        async function pushLocalProgressToCloud(showFeedback = false) {
+            const code = getOrCreateSyncCode();
+            const cw = getContinueWatchingList();
+            try {
+                const res = await fetch(`${API_BASE}/api/sync/${code}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ continueWatching: cw })
+                });
+                const json = await res.json();
+                if (json?.success && showFeedback) {
+                    showToast('☁️ Cloud sync up-to-date!');
+                }
+            } catch(e) {}
+        }
+
+        async function pullRemoteProgressFromCloud() {
+            const code = getOrCreateSyncCode();
+            try {
+                const res = await fetch(`${API_BASE}/api/sync/${code}`);
+                const json = await res.json();
+                const remoteCW = json?.data?.continueWatching || [];
+                if (remoteCW.length > 0) {
+                    const localCW = getContinueWatchingList();
+                    const titles = new Set(localCW.map(x => x.title));
+                    let added = 0;
+                    remoteCW.forEach(r => {
+                        if (!titles.has(r.title)) {
+                            localCW.push(r);
+                            added++;
+                        }
+                    });
+                    if (added > 0) {
+                        localStorage.setItem(CW_STORAGE_KEY, JSON.stringify(localCW));
+                        renderContinueWatching();
+                    }
+                }
+            } catch(e) {}
+        }
+
         // Render Continue Watching on initial page load
         window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(renderContinueWatching, 300);
+            setTimeout(() => {
+                renderContinueWatching();
+                pullRemoteProgressFromCloud();
+            }, 300);
         });
 
     </script>
