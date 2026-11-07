@@ -2361,6 +2361,8 @@
             <button class="focusable" tabindex="0" onclick="closeCinemaPlayer()" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: #fff; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;"><i class="fas fa-arrow-left"></i></button>
             <div class="player-title" id="player-title-text">Playing Stream</div>
             <div class="player-actions-right">
+                <button class="btn-player-action focusable" tabindex="0" id="btn-player-prev-ep" onclick="playPreviousEpisode()" style="display: none;"><i class="fas fa-backward-step"></i> Prev Ep</button>
+                <button class="btn-player-action focusable" tabindex="0" id="btn-player-next-ep" onclick="playNextEpisode()" style="display: none;"><i class="fas fa-forward-step"></i> Next Ep</button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-audio" onclick="toggleAudioTrack()"><i class="fas fa-volume-high"></i> Audio</button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-server" onclick="tryNextStreamServer()"><i class="fas fa-server"></i> Switch Server</button>
                 <button class="btn-player-action focusable" tabindex="0" onclick="togglePlayerFullscreen()"><i class="fas fa-expand"></i></button>
@@ -3715,7 +3717,16 @@
         // ==========================================
         // 📋 STREAM PICKER & CINEMA PLAYER
         // ==========================================
-        async function openStreamPicker(type, id, title, episodeNum = 1) {
+        async let currentSeriesContext = null;
+
+        function openStreamPicker(type, id, title, episodeNum = 1, autoPlay = false) {
+            if (type === 'series') {
+                const parts = id.split(':');
+                const baseId = parts.length >= 3 ? `${parts[0]}:${parts[1]}:${parts[2]}` : id;
+                currentSeriesContext = { type, id, title, episodeNum, baseId };
+            } else {
+                currentSeriesContext = null;
+            }
             document.getElementById('sheet-title-text').innerText = cleanTitle(title);
             const container = document.getElementById('stream-options-container');
 
@@ -3763,6 +3774,13 @@
                     if (!aWeb && bWeb) return 1;
                     return 0;
                 });
+
+                if (autoPlay && streams.length > 0) {
+                    const webStream = streams.find(s => isWebPlayable(s.url, s.name)) || streams[0];
+                    closeStreamPicker(true);
+                    launchCinemaPlayer(webStream.url, `${title} - Ep ${episodeNum}`, streams, streams.indexOf(webStream));
+                    return;
+                }
 
                 container.innerHTML = epSelectorHtml;
 
@@ -3873,6 +3891,23 @@
             document.getElementById('stream-picker-modal').classList.remove('open');
         }
 
+        
+        function playNextEpisode() {
+            if (currentSeriesContext && currentSeriesContext.type === 'series') {
+                const nextEp = (currentSeriesContext.episodeNum || 1) + 1;
+                showToast(`Auto-Playing Episode ${nextEp}...`, 'fa-forward-step');
+                openStreamPicker(currentSeriesContext.type, `${currentSeriesContext.baseId}:1:${nextEp}`, currentSeriesContext.title, nextEp, true);
+            }
+        }
+
+        function playPreviousEpisode() {
+            if (currentSeriesContext && currentSeriesContext.type === 'series' && currentSeriesContext.episodeNum > 1) {
+                const prevEp = currentSeriesContext.episodeNum - 1;
+                showToast(`Loading Episode ${prevEp}...`, 'fa-backward-step');
+                openStreamPicker(currentSeriesContext.type, `${currentSeriesContext.baseId}:1:${prevEp}`, currentSeriesContext.title, prevEp, true);
+            }
+        }
+
         function launchCinemaPlayer(url, title, streamList = [], streamIndex = 0) {
             // URL decode if passed encoded
             try { url = decodeURIComponent(url); } catch(e) {}
@@ -3889,6 +3924,24 @@
             const video = container.querySelector('video');
 
             document.getElementById('cinema-player-modal').classList.add('open');
+
+            // Manage Next / Prev Episode button visibility
+            const nextBtn = document.getElementById('btn-player-next-ep');
+            const prevBtn = document.getElementById('btn-player-prev-ep');
+            if (currentSeriesContext && currentSeriesContext.type === 'series') {
+                if (nextBtn) nextBtn.style.display = 'inline-flex';
+                if (prevBtn) prevBtn.style.display = (currentSeriesContext.episodeNum > 1) ? 'inline-flex' : 'none';
+            } else {
+                if (nextBtn) nextBtn.style.display = 'none';
+                if (prevBtn) prevBtn.style.display = 'none';
+            }
+
+            // Auto-advance on video completion
+            video.addEventListener('ended', () => {
+                if (currentSeriesContext && currentSeriesContext.type === 'series') {
+                    playNextEpisode();
+                }
+            });
 
             // Landscape orientation lock for mobile devices
             try {
