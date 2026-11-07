@@ -3347,7 +3347,7 @@
                 });
 
                 seriesCatalogs.sort((a, b) => {
-                    const topSeries = ['cnc_CastleTVUseVLC_other', 'cnc_Rogmovies_other', 'cnc_HDHub4U_other', 'cnc_ReANIME_other', 'cnc_MultiMovies_other', 'cnc_MovieBoxIN_other'];
+                    const topSeries = ['native_anikoto_series', 'native_animeworld_series', 'cnc_CastleTVUseVLC_other', 'cnc_Rogmovies_other', 'cnc_HDHub4U_other', 'cnc_ReANIME_other', 'cnc_MultiMovies_other', 'cnc_MovieBoxIN_other'];
                     const isDeadA = deadScraperIds.has(a.id);
                     const isDeadB = deadScraperIds.has(b.id);
                     if (isDeadA && !isDeadB) return 1;
@@ -3925,11 +3925,19 @@
                     badgeClass: 'badge-stream-web'
                 };
             }
-            if (id === 'cnc_VegaMovies_other' || id.includes('Vega')) {
+            if (id === 'native_anikoto_series' || id === 'native_animeworld_series' || id.includes('AniKoto') || id.includes('AnimeWorld')) {
                 return {
-                    title: '🍿 Hollywood in Hindi & 4K UHD',
-                    subtitle: '2160p HDR • Multi-Audio Dual Dubs',
-                    badge: '💎 2160p HDR',
+                    title: '⚔️ AniKoto & Anime Universe',
+                    subtitle: '1080p Direct HLS • Japanese SUB & English DUB Master Streams',
+                    badge: '⚡ Direct HLS',
+                    badgeClass: 'badge-stream-web'
+                };
+            }
+            if (id === 'native_vegamovies_movies' || id === 'cnc_VegaMovies_other' || id.includes('Vega')) {
+                return {
+                    title: '🍿 VegaMovies 4K UHD & Dual Audio',
+                    subtitle: '2160p HDR • Google Direct High-Speed • Multi-Audio',
+                    badge: '💎 4K HDR',
                     badgeClass: 'badge-stream-web'
                 };
             }
@@ -6294,8 +6302,8 @@
                 'jiotv': { id: 'cnc_JIOTVIND_tv', name: '📺 24/7 JioTV Live Channels', type: 'tv' },
                 'jiohotstar': { id: 'cnc_JioHotstar2_tv', name: '📺 JioHotstar Channels', type: 'tv' },
                 'sunnxt': { id: 'cnc_SUNNXT_SKTechProvider_tv', name: '📺 SUN NXT South TV', type: 'tv' },
-                'anikoto': { id: 'cnc_ReANIME_other', name: '⚔️ AniKoto Anime Universe', type: 'movie' },
-                'animesuge': { id: 'cnc_ReANIME_other', name: '⚔️ AnimeSuge Sub/Dub', type: 'movie' },
+                'anikoto': { id: 'native_anikoto_series', name: '⚔️ AniKoto Anime Universe', type: 'series' },
+                'animesuge': { id: 'native_anikoto_series', name: '⚔️ AnimeSuge Sub/Dub', type: 'series' },
                 'animeworldindia': { id: 'cnc_ReANIME_other', name: '⚔️ Anime World India (Hindi Dub)', type: 'movie' },
                 'reanime': { id: 'cnc_ReANIME_other', name: '⚔️ Re:ANIME', type: 'movie' },
                 'toonix': { id: 'cnc_Toonix_other', name: '🌟 Toonix Animation', type: 'movie' },

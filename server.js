@@ -3,6 +3,7 @@ const https = require('https');
 const url = require('url');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const PORT = process.env.PORT || 7000;
 const UPSTREAM_RESOLVERS = (process.env.UPSTREAM_RESOLVERS || process.env.UPSTREAM_RESOLVER || 'https://cncverse.dpdns.org')
@@ -28,7 +29,7 @@ const streamCache = new Map();
 const cloudSyncStore = new Map(); // ☁️ In-Memory Cross-Device Progress & Watchlist Sync
 const STREAM_CACHE_TTL = 300000; // 5 minutes
 
-function fetchJson(targetUrl) {
+function fetchJson(targetUrl, extraHeaders = {}, timeoutMs = 10000) {
     return new Promise((resolve, reject) => {
         const parsed = url.parse(targetUrl);
         const client = parsed.protocol === 'https:' ? https : http;
@@ -36,12 +37,14 @@ function fetchJson(targetUrl) {
         const req = client.get(targetUrl, {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept': 'application/json, text/plain, */*'
+                'Accept': 'application/json, text/plain, */*',
+                ...extraHeaders
             },
-            timeout: 10000
+            timeout: timeoutMs
         }, (res) => {
             if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-                return fetchJson(res.headers.location).then(resolve).catch(reject);
+                const nextUrl = res.headers.location.startsWith('http') ? res.headers.location : url.resolve(targetUrl, res.headers.location);
+                return fetchJson(nextUrl, extraHeaders, timeoutMs).then(resolve).catch(reject);
             }
             if (res.statusCode !== 200) {
                 return reject(new Error(`Upstream returned HTTP ${res.statusCode}`));
@@ -175,7 +178,8 @@ async function getLiveDomains() {
         themoviesflix: 'https://themoviesflix.forum/',
         multimovies: 'https://m1.multimovies.courses/',
         cinestream: 'https://cinestream.kje.us/',
-        animeworld: 'https://watchanimeworld.one/'
+        animeworld: 'https://watchanimeworld.one/',
+        anikoto: 'https://anikototv.to'
     };
     try {
         const d = await fetchJson(DOMAINS_API_URL);
@@ -492,45 +496,71 @@ async function getNativeVegaMoviesStreams(slug) {
     }
 }
 
-// ⚔️ Native In-House Scraper: AnimeWorld Multi-Audio Direct HLS Extractor (Zero Bridge Dependency)
-let cachedAnimeCatalog = null;
-let lastAnimeCatalogFetch = 0;
+// ========================================================
+// ⚔️ Native In-House Scraper: AniKoto Multi-Audio Direct HLS Extractor (Reverse-Engineered from CS3 & MegaPlay AES)
+// ========================================================
+function decryptMegaPlay(enc) {
+    if (!enc || typeof enc !== 'string') return null;
+    try {
+        let b64 = enc.replace(/-/g, '+').replace(/_/g, '/');
+        const rem = b64.length % 4;
+        if (rem) {
+            b64 += '='.repeat(4 - rem);
+        }
+        const ciphertext = Buffer.from(b64, 'base64');
+        const key = Buffer.alloc(32);
+        Buffer.from("i?LMTAx0Q6,:}50U", 'utf8').copy(key);
+        const iv = Buffer.from("W0;27ToaUpl_P%'c", 'utf8');
+        const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+        decipher.setAutoPadding(true);
+        let decrypted = decipher.update(ciphertext, null, 'utf8');
+        decrypted += decipher.final('utf8');
+        return JSON.parse(decrypted);
+    } catch (err) {
+        console.error('MegaPlay decryption error:', err.message);
+        return null;
+    }
+}
 
-async function getNativeAnimeWorldCatalog() {
+let cachedAniKotoCatalog = null;
+let lastAniKotoCatalogFetch = 0;
+
+async function getNativeAniKotoCatalog() {
     const now = Date.now();
-    if (cachedAnimeCatalog && (now - lastAnimeCatalogFetch < 900000)) { // 15 mins cache
-        return cachedAnimeCatalog;
+    if (cachedAniKotoCatalog && (now - lastAniKotoCatalogFetch < 900000)) { // 15 mins cache
+        return cachedAniKotoCatalog;
     }
 
     try {
         const domains = await getLiveDomains();
-        const baseDomain = domains.animeworld || 'https://watchanimeworld.one';
-        const html = await fetchHtml(baseDomain);
+        const baseDomain = domains.anikoto || 'https://anikototv.to';
+        const homeHtml = await fetchHtml(`${baseDomain}/home`);
 
-        const articles = html.match(/<article[^>]*>[\s\S]*?<\/article>/gi) || [];
         const items = [];
         const seenSlugs = new Set();
 
-        for (const art of articles) {
-            const hMatch = /href="([^"]*\/series\/[^"]+)"/i.exec(art);
-            const pMatch = /src="([^"]+)"/i.exec(art);
-            const tMatch = /title="([^"]+)"/i.exec(art) || /alt="([^"]+)"/i.exec(art);
+        const cardMatches = homeHtml.match(/<div class="item">[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/gi) || [];
+        for (const card of cardMatches) {
+            const aMatch = /href="https?:\/\/[^\/]+\/watch\/([^"/?]+)(?:\/[^"]*)?"/i.exec(card);
+            let imgMatch = /src="([^"]+)"\s*alt="([^"]+)"/i.exec(card);
+            if (!imgMatch) {
+                imgMatch = /alt="([^"]+)"\s*src="([^"]+)"/i.exec(card);
+            }
 
-            if (hMatch && tMatch) {
-                const href = hMatch[1];
-                const rawTitle = tMatch[1].replace(/^Image\s+/i, '').trim();
-                const slug = href.replace(/^https?:\/\/[^\/]+/, '').replace('/series/', '').replace(/^\//, '').replace(/\/$/, '');
-                const poster = pMatch ? (pMatch[1].startsWith('http') ? pMatch[1] : `${baseDomain}${pMatch[1]}`) : '';
+            if (aMatch && imgMatch) {
+                const slug = aMatch[1].trim();
+                let title = (imgMatch[2] || imgMatch[1]).replace(/&#039;/g, "'").replace(/&amp;/g, '&').trim();
+                let poster = imgMatch[1].startsWith('http') ? imgMatch[1] : imgMatch[2];
 
                 if (slug && !seenSlugs.has(slug)) {
                     seenSlugs.add(slug);
                     items.push({
-                        id: `native:anime:${slug}`,
-                        name: rawTitle,
+                        id: `native:anikoto:${slug}`,
+                        name: title,
                         type: 'series',
                         poster: poster,
                         background: poster,
-                        description: `${rawTitle} • Multi-Audio Anime with Japanese, English & Hindi direct HLS streams.`,
+                        description: `${title} • Multi-Audio Anime with Japanese SUB & English DUB direct HLS master streams.`,
                         genres: ['Anime', 'Animation', 'Action']
                     });
                 }
@@ -538,68 +568,160 @@ async function getNativeAnimeWorldCatalog() {
         }
 
         if (items.length > 0) {
-            cachedAnimeCatalog = items;
-            lastAnimeCatalogFetch = now;
+            cachedAniKotoCatalog = items;
+            lastAniKotoCatalogFetch = now;
             return items;
         }
     } catch(err) {
-        console.error('Error fetching native AnimeWorld catalog:', err.message);
+        console.error('Error fetching native AniKoto catalog:', err.message);
     }
-    return cachedAnimeCatalog || [];
+    return cachedAniKotoCatalog || [];
 }
 
-async function getNativeAnimeWorldStreams(slug) {
+const getNativeAnimeWorldCatalog = getNativeAniKotoCatalog;
+
+async function getNativeAniKotoStreams(rawSlug) {
     try {
         const domains = await getLiveDomains();
-        const baseDomain = domains.animeworld || 'https://watchanimeworld.one';
-        
-        let targetEpisodeUrl = '';
-        if (slug.includes('-1x') || slug.includes('episode/')) {
-            targetEpisodeUrl = `${baseDomain}/episode/${slug.replace(/^episode\//, '')}/`;
-        } else {
-            const seriesUrl = `${baseDomain}/series/${slug}/`;
-            const seriesHtml = await fetchHtml(seriesUrl);
-            const epMatch = /href="([^"]*\/episode\/[^"]+)"/i.exec(seriesHtml);
+        const baseDomain = domains.anikoto || 'https://anikototv.to';
+
+        let animeSlug = rawSlug || '';
+        let epNum = '1';
+        if (animeSlug.includes(':')) {
+            const parts = animeSlug.split(':');
+            animeSlug = parts[0];
+            if (parts.length >= 3) {
+                epNum = parts[2];
+            } else if (parts.length === 2) {
+                epNum = parts[1];
+            }
+        } else if (animeSlug.includes('/ep-')) {
+            const parts = animeSlug.split('/ep-');
+            animeSlug = parts[0];
+            epNum = parts[1];
+        }
+        animeSlug = animeSlug.replace(/\.json$/, '').replace(/^\//, '').replace(/\/$/, '');
+
+        const watchUrl = `${baseDomain}/watch/${animeSlug}`;
+        const watchHtml = await fetchHtml(watchUrl);
+        const idMatch = /data-id="([0-9]+)"/i.exec(watchHtml);
+        if (!idMatch) {
+            console.warn(`[AniKoto] data-id not found for ${watchUrl}`);
+            return { streams: [] };
+        }
+        const animeId = idMatch[1];
+
+        const epListRes = await fetchJson(`${baseDomain}/ajax/episode/list/${animeId}`, {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Referer': watchUrl
+        });
+        const epHtml = epListRes?.result || '';
+
+        let targetIds = '';
+        let foundEpNum = epNum;
+        const epRegex = new RegExp(`<a href="#"[^>]*data-num="${epNum}"[^>]*data-ids="([^"]+)"`, 'i');
+        let epMatch = epRegex.exec(epHtml);
+        if (!epMatch) {
+            epMatch = /<a href="#"[^>]*data-num="([^"]+)"[^>]*data-ids="([^"]+)"/i.exec(epHtml);
             if (epMatch) {
-                targetEpisodeUrl = epMatch[1].startsWith('http') ? epMatch[1] : `${baseDomain}${epMatch[1]}`;
+                foundEpNum = epMatch[1];
+                targetIds = epMatch[2];
+            }
+        } else {
+            targetIds = epMatch[1];
+        }
+
+        if (!targetIds) {
+            console.warn(`[AniKoto] No episode items found for animeId ${animeId}`);
+            return { streams: [] };
+        }
+
+        const serverListRes = await fetchJson(`${baseDomain}/ajax/server/list?servers=${encodeURIComponent(targetIds)}`, {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Referer': watchUrl
+        });
+        const serverHtml = serverListRes?.result || '';
+
+        const servers = [];
+        for (const mode of ['sub', 'dub']) {
+            const modeRegex = new RegExp(`data-type="${mode}"[\s\S]*?<ul>([\s\S]*?)<\/ul>`, 'i');
+            const modeMatch = modeRegex.exec(serverHtml);
+            if (modeMatch) {
+                const itemRegex = /<li[^>]*data-link-id="([^"]+)"[^>]*>([^<]+)<\/li>/gi;
+                let itemMatch;
+                while ((itemMatch = itemRegex.exec(modeMatch[1])) !== null) {
+                    servers.push({
+                        mode: mode.toUpperCase(),
+                        server: itemMatch[2].trim(),
+                        linkId: itemMatch[1]
+                    });
+                }
             }
         }
 
-        if (!targetEpisodeUrl) return { streams: [] };
-
-        const epHtml = await fetchHtml(targetEpisodeUrl);
-        const zephyrMatch = /src="([^"]*zephyrix\.org\/video\/([^"\/]+))"/i.exec(epHtml);
-
-        if (!zephyrMatch) return { streams: [] };
-
-        const videoId = zephyrMatch[2];
-        const apiUrl = `https://play.zephyrix.org/player/index.php?data=${videoId}&do=getVideo`;
-        const res = await postData(apiUrl, {
-            hash: videoId,
-            r: baseDomain
-        }, {
-            'Referer': `https://play.zephyrix.org/video/${videoId}`,
-            'Origin': 'https://play.zephyrix.org'
-        }, 5000);
-
         const streams = [];
-        if (res && res.securedLink) {
-            streams.push({
-                name: '⚔️ AnimeWorld Multi-Audio',
-                title: 'Direct HLS Master (Japanese, English, Hindi)',
-                url: res.securedLink,
-                behaviorHints: {
-                    notWebReady: false
-                }
-            });
+        const selectedServers = [];
+        let subCount = 0;
+        let dubCount = 0;
+        for (const s of servers) {
+            if (s.mode === 'SUB' && subCount < 2) {
+                selectedServers.push(s);
+                subCount++;
+            } else if (s.mode === 'DUB' && dubCount < 2) {
+                selectedServers.push(s);
+                dubCount++;
+            }
+        }
+
+        for (const s of selectedServers) {
+            try {
+                const sIframe = await fetchJson(`${baseDomain}/ajax/server?get=${encodeURIComponent(s.linkId)}`, {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Referer': watchUrl
+                });
+                const embedUrl = sIframe?.result?.url || '';
+                const streamIdMatch = /\/stream\/[^\/]+\/([^/?]+)/.exec(embedUrl);
+                if (!streamIdMatch) continue;
+                const streamId = streamIdMatch[1];
+
+                const srcData = await fetchJson(`https://megaplay.buzz/stream/getSources?id=${streamId}`, {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Referer': embedUrl
+                });
+
+                if (!srcData || !srcData.enc) continue;
+
+                const decrypted = decryptMegaPlay(srcData.enc);
+                if (!decrypted || !decrypted.file) continue;
+
+                const subTracks = (srcData.tracks || []).map(t => ({
+                    id: t.file,
+                    url: t.file,
+                    lang: t.label || 'English'
+                }));
+
+                streams.push({
+                    name: `⚔️ AniKoto ${s.mode} • ${s.server}`,
+                    title: `Episode ${foundEpNum} • Direct HLS Master (1080p Multi-Track)`,
+                    url: decrypted.file,
+                    behaviorHints: {
+                        notWebReady: false
+                    },
+                    subtitles: subTracks
+                });
+            } catch (sErr) {
+                console.warn(`[AniKoto] Server error ${s.mode} ${s.server}:`, sErr.message);
+            }
         }
 
         return { streams };
     } catch(err) {
-        console.error(`Error resolving AnimeWorld stream for ${slug}:`, err.message);
+        console.error(`Error resolving AniKoto stream for ${rawSlug}:`, err.message);
         return { streams: [] };
     }
 }
+
+const getNativeAnimeWorldStreams = getNativeAniKotoStreams;
 
 async function getRebrandedManifest() {
     const now = Date.now();
@@ -719,8 +841,8 @@ async function getRebrandedManifest() {
             };
             const nativeAnimeCatalog = {
                 type: 'series',
-                id: 'native_animeworld_series',
-                name: '⚔️ AnimeWorld (Multi-Audio HD Anime)',
+                id: 'native_anikoto_series',
+                name: '⚔️ AniKoto & Anime (Multi-Audio HD Anime)',
                 extra: [
                     { name: 'search', isRequired: false },
                     { name: 'skip', isRequired: false }
@@ -1246,28 +1368,7 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
-    if (pathname === '/api/debug/anime') {
-        const testUrls = [
-            'https://watchanimeworld.one/',
-            'https://watchanimeworld.top/',
-            'https://anikototv.to/',
-            'https://anisuge.tv/'
-        ];
-        const results = {};
-        for (const u of testUrls) {
-            try {
-                const html = await fetchHtml(u, {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
-                }, 5000);
-                results[u] = { status: 200, length: html.length };
-            } catch(e) {
-                results[u] = { error: e.message };
-            }
-        }
-        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*' });
-        res.end(JSON.stringify(results, null, 2));
-        return;
-    }
+
 
     // ☁️ Universal Cross-Device Cloud Sync API (Watchlist & Continue Watching)
     if (pathname.startsWith('/api/sync/')) {
@@ -1522,9 +1623,9 @@ const server = http.createServer(async (req, res) => {
             return;
         }
 
-        if (rawId.startsWith('native:anime:')) {
-            const slug = rawId.replace('native:anime:', '');
-            const result = await getNativeAnimeWorldStreams(slug);
+        if (rawId.startsWith('native:anime:') || rawId.startsWith('native:anikoto:')) {
+            const slug = rawId.replace('native:anime:', '').replace('native:anikoto:', '');
+            const result = await getNativeAniKotoStreams(slug);
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify(result));
             return;
@@ -1714,8 +1815,8 @@ const server = http.createServer(async (req, res) => {
             res.end(JSON.stringify({ metas }));
             return;
         }
-        if (pathname.includes('native_animeworld_series')) {
-            const metas = await getNativeAnimeWorldCatalog();
+        if (pathname.includes('native_animeworld_series') || pathname.includes('native_anikoto_series')) {
+            const metas = await getNativeAniKotoCatalog();
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify({ metas }));
             return;
@@ -1777,10 +1878,12 @@ const server = http.createServer(async (req, res) => {
             res.end(JSON.stringify({ meta: item || null }));
             return;
         }
-        if (pathname.includes('native:anime:')) {
-            const slug = pathname.split('native:anime:')[1].replace('.json', '');
-            const catalog = await getNativeAnimeWorldCatalog();
-            const item = catalog.find(m => m.id === `native:anime:${slug}`);
+        if (pathname.includes('native:anime:') || pathname.includes('native:anikoto:')) {
+            const slug = pathname.includes('native:anime:')
+                ? pathname.split('native:anime:')[1].replace('.json', '')
+                : pathname.split('native:anikoto:')[1].replace('.json', '');
+            const catalog = await getNativeAniKotoCatalog();
+            const item = catalog.find(m => m.id === `native:anikoto:${slug}` || m.id === `native:anime:${slug}`);
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify({ meta: item || null }));
             return;
