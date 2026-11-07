@@ -81,6 +81,45 @@ async function fetchJsonWithFailover(apiPath) {
     throw lastError || new Error(`All upstream resolvers failed for ${cleanPath}`);
 }
 
+function postData(targetUrl, postBody, extraHeaders = {}, timeoutMs = 8000) {
+    return new Promise((resolve, reject) => {
+        const parsed = url.parse(targetUrl);
+        const client = parsed.protocol === 'https:' ? https : http;
+        const postDataStr = typeof postBody === 'string' ? postBody : Object.keys(postBody).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(postBody[k])}`).join('&');
+
+        const req = client.request(targetUrl, {
+            method: 'POST',
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'Content-Length': Buffer.byteLength(postDataStr),
+                'X-Requested-With': 'XMLHttpRequest',
+                ...extraHeaders
+            },
+            timeout: timeoutMs
+        }, (res) => {
+            let body = '';
+            res.on('data', chunk => body += chunk);
+            res.on('end', () => {
+                try {
+                    resolve(body ? JSON.parse(body) : null);
+                } catch(e) {
+                    resolve(body);
+                }
+            });
+        });
+
+        req.on('error', reject);
+        req.on('timeout', () => {
+            req.destroy();
+            reject(new Error('Request timeout'));
+        });
+
+        req.write(postDataStr);
+        req.end();
+    });
+}
+
 function fetchHtml(targetUrl, extraHeaders = {}, timeoutMs = 8000) {
     return new Promise((resolve, reject) => {
         const parsed = url.parse(targetUrl);
@@ -453,6 +492,115 @@ async function getNativeVegaMoviesStreams(slug) {
     }
 }
 
+// ⚔️ Native In-House Scraper: AnimeWorld Multi-Audio Direct HLS Extractor (Zero Bridge Dependency)
+let cachedAnimeCatalog = null;
+let lastAnimeCatalogFetch = 0;
+
+async function getNativeAnimeWorldCatalog() {
+    const now = Date.now();
+    if (cachedAnimeCatalog && (now - lastAnimeCatalogFetch < 900000)) { // 15 mins cache
+        return cachedAnimeCatalog;
+    }
+
+    try {
+        const domains = await getLiveDomains();
+        const baseDomain = domains.animeworld || 'https://watchanimeworld.one';
+        const html = await fetchHtml(baseDomain);
+
+        const articles = html.match(/<article[^>]*>[\s\S]*?<\/article>/gi) || [];
+        const items = [];
+        const seenSlugs = new Set();
+
+        for (const art of articles) {
+            const hMatch = /href="([^"]*\/series\/[^"]+)"/i.exec(art);
+            const pMatch = /src="([^"]+)"/i.exec(art);
+            const tMatch = /title="([^"]+)"/i.exec(art) || /alt="([^"]+)"/i.exec(art);
+
+            if (hMatch && tMatch) {
+                const href = hMatch[1];
+                const rawTitle = tMatch[1].replace(/^Image\s+/i, '').trim();
+                const slug = href.replace(/^https?:\/\/[^\/]+/, '').replace('/series/', '').replace(/^\//, '').replace(/\/$/, '');
+                const poster = pMatch ? (pMatch[1].startsWith('http') ? pMatch[1] : `${baseDomain}${pMatch[1]}`) : '';
+
+                if (slug && !seenSlugs.has(slug)) {
+                    seenSlugs.add(slug);
+                    items.push({
+                        id: `native:anime:${slug}`,
+                        name: rawTitle,
+                        type: 'series',
+                        poster: poster,
+                        background: poster,
+                        description: `${rawTitle} • Multi-Audio Anime with Japanese, English & Hindi direct HLS streams.`,
+                        genres: ['Anime', 'Animation', 'Action']
+                    });
+                }
+            }
+        }
+
+        if (items.length > 0) {
+            cachedAnimeCatalog = items;
+            lastAnimeCatalogFetch = now;
+            return items;
+        }
+    } catch(err) {
+        console.error('Error fetching native AnimeWorld catalog:', err.message);
+    }
+    return cachedAnimeCatalog || [];
+}
+
+async function getNativeAnimeWorldStreams(slug) {
+    try {
+        const domains = await getLiveDomains();
+        const baseDomain = domains.animeworld || 'https://watchanimeworld.one';
+        
+        let targetEpisodeUrl = '';
+        if (slug.includes('-1x') || slug.includes('episode/')) {
+            targetEpisodeUrl = `${baseDomain}/episode/${slug.replace(/^episode\//, '')}/`;
+        } else {
+            const seriesUrl = `${baseDomain}/series/${slug}/`;
+            const seriesHtml = await fetchHtml(seriesUrl);
+            const epMatch = /href="([^"]*\/episode\/[^"]+)"/i.exec(seriesHtml);
+            if (epMatch) {
+                targetEpisodeUrl = epMatch[1].startsWith('http') ? epMatch[1] : `${baseDomain}${epMatch[1]}`;
+            }
+        }
+
+        if (!targetEpisodeUrl) return { streams: [] };
+
+        const epHtml = await fetchHtml(targetEpisodeUrl);
+        const zephyrMatch = /src="([^"]*zephyrix\.org\/video\/([^"\/]+))"/i.exec(epHtml);
+
+        if (!zephyrMatch) return { streams: [] };
+
+        const videoId = zephyrMatch[2];
+        const apiUrl = `https://play.zephyrix.org/player/index.php?data=${videoId}&do=getVideo`;
+        const res = await postData(apiUrl, {
+            hash: videoId,
+            r: baseDomain
+        }, {
+            'Referer': `https://play.zephyrix.org/video/${videoId}`,
+            'Origin': 'https://play.zephyrix.org'
+        }, 5000);
+
+        const streams = [];
+        if (res && res.securedLink) {
+            streams.push({
+                name: '⚔️ AnimeWorld Multi-Audio',
+                title: 'Direct HLS Master (Japanese, English, Hindi)',
+                url: res.securedLink,
+                behaviorHints: {
+                    notWebReady: false
+                }
+            });
+        }
+
+        return { streams };
+    } catch(err) {
+        console.error(`Error resolving AnimeWorld stream for ${slug}:`, err.message);
+        return { streams: [] };
+    }
+}
+
 async function getRebrandedManifest() {
     const now = Date.now();
     if (cachedManifest && (now - lastManifestFetch) < MANIFEST_CACHE_TTL) {
@@ -569,7 +717,16 @@ async function getRebrandedManifest() {
                     { name: 'skip', isRequired: false }
                 ]
             };
-            const finalCatalogs = [nativeSportsCatalog, nativeHDHubCatalog, nativeVegaCatalog, ...filteredCatalogs];
+            const nativeAnimeCatalog = {
+                type: 'series',
+                id: 'native_animeworld_series',
+                name: '⚔️ AnimeWorld (Multi-Audio HD Anime)',
+                extra: [
+                    { name: 'search', isRequired: false },
+                    { name: 'skip', isRequired: false }
+                ]
+            };
+            const finalCatalogs = [nativeSportsCatalog, nativeAnimeCatalog, nativeHDHubCatalog, nativeVegaCatalog, ...filteredCatalogs];
             cachedManifest = {
                 id: 'org.yogeshstreamer.addon',
                 version: '1.2.1',
@@ -1342,6 +1499,14 @@ const server = http.createServer(async (req, res) => {
             return;
         }
 
+        if (rawId.startsWith('native:anime:')) {
+            const slug = rawId.replace('native:anime:', '');
+            const result = await getNativeAnimeWorldStreams(slug);
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify(result));
+            return;
+        }
+
         // ⚡ In-Memory Stream Cache Check (0ms Instant Delivery with smart TTL)
         const isLive = type === 'tv' || rawId.includes('Live') || rawId.includes('tv') || rawId.includes('Sports');
         const effectiveTtl = isLive ? 30000 : STREAM_CACHE_TTL; // 30s for live sports to ensure fresh signatures, 5m for on-demand movies
@@ -1526,6 +1691,12 @@ const server = http.createServer(async (req, res) => {
             res.end(JSON.stringify({ metas }));
             return;
         }
+        if (pathname.includes('native_animeworld_series')) {
+            const metas = await getNativeAnimeWorldCatalog();
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ metas }));
+            return;
+        }
         try {
             // If Stremio is requesting /catalog/movie/cnc_..._other.json, map to /catalog/other/cnc_..._other.json upstream
             let mappedPath = pathname;
@@ -1577,6 +1748,14 @@ const server = http.createServer(async (req, res) => {
             const slug = pathname.split('native:vega:')[1].replace('.json', '');
             const catalog = await getNativeVegaMoviesCatalog();
             const item = catalog.find(m => m.id === `native:vega:${slug}`);
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ meta: item || null }));
+            return;
+        }
+        if (pathname.includes('native:anime:')) {
+            const slug = pathname.split('native:anime:')[1].replace('.json', '');
+            const catalog = await getNativeAnimeWorldCatalog();
+            const item = catalog.find(m => m.id === `native:anime:${slug}`);
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify({ meta: item || null }));
             return;

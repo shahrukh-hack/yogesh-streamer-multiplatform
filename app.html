@@ -3347,7 +3347,7 @@
                 });
 
                 seriesCatalogs.sort((a, b) => {
-                    const topSeries = ['cnc_CastleTVUseVLC_other', 'cnc_Rogmovies_other', 'cnc_HDHub4U_other', 'cnc_ReANIME_other', 'cnc_MultiMovies_other', 'cnc_MovieBoxIN_other'];
+                    const topSeries = ['native_animeworld_series', 'cnc_CastleTVUseVLC_other', 'cnc_Rogmovies_other', 'cnc_HDHub4U_other', 'cnc_ReANIME_other', 'cnc_MultiMovies_other', 'cnc_MovieBoxIN_other'];
                     const isDeadA = deadScraperIds.has(a.id);
                     const isDeadB = deadScraperIds.has(b.id);
                     if (isDeadA && !isDeadB) return 1;
@@ -3925,11 +3925,19 @@
                     badgeClass: 'badge-stream-web'
                 };
             }
-            if (id === 'cnc_VegaMovies_other' || id.includes('Vega')) {
+            if (id === 'native_animeworld_series' || id.includes('AnimeWorld')) {
                 return {
-                    title: '🍿 Hollywood in Hindi & 4K UHD',
-                    subtitle: '2160p HDR • Multi-Audio Dual Dubs',
-                    badge: '💎 2160p HDR',
+                    title: '⚔️ AnimeWorld Multi-Audio',
+                    subtitle: '1080p Direct HLS • Japanese, English & Hindi Dubs',
+                    badge: '⚡ Direct HLS',
+                    badgeClass: 'badge-stream-web'
+                };
+            }
+            if (id === 'native_vegamovies_movies' || id === 'cnc_VegaMovies_other' || id.includes('Vega')) {
+                return {
+                    title: '🍿 VegaMovies 4K UHD & Dual Audio',
+                    subtitle: '2160p HDR • Google Direct High-Speed • Multi-Audio',
+                    badge: '💎 4K HDR',
                     badgeClass: 'badge-stream-web'
                 };
             }
