@@ -1971,12 +1971,12 @@
             <div class="rail-track" id="top10-track"></div>
         </div>
 
-        <!-- Curated 4K Cinema Rail (HDHub4u & VegaMovies) -->
+        <!-- Curated 4K Cinema Rail (Native HDHub4u & VegaMovies Scrapers) -->
         <div class="rail-section">
             <div class="rail-header">
                 <div class="rail-title-group">
-                    <i class="fas fa-crown"></i>
-                    <h3 class="rail-title">Trending Indian Cinema (4K UHD)</h3>
+                    <i class="fas fa-crown" style="color: var(--gold);"></i>
+                    <h3 class="rail-title">💎 Native 4K UHD Cinema (HDHub4u & VegaMovies In-House Engine)</h3>
                 </div>
                 <span class="rail-see-all focusable" tabindex="0" onclick="switchNavTab('tab-movies', 1)">Explore All <i class="fas fa-arrow-right"></i></span>
             </div>
@@ -2073,10 +2073,10 @@
                 <div class="source-select-wrap">
                     <span style="font-size: 12px; font-weight: 700; color: var(--text-sub);">Source Engine:</span>
                     <select id="movies-source-select" class="source-select focusable" tabindex="0" onchange="changeMoviesSource(this.value)">
-                        <option value="cnc_CastleTV_other" selected>🏰 Castle Cinema (Instant Web Play • 611 Titles)</option>
-                        <option value="ALL">🌐 All Verified Movie Engines (1,500+ Titles)</option>
-                        <option value="native_hdhub4u_movies">💎 HDHub4u 4K (Requires VLC / MX)</option>
-                        <option value="native_vegamovies_movies">🍿 VegaMovies 4K HDR (Requires VLC / MX)</option>
+                        <option value="ALL" selected>⚡ All Verified Engines (Native HDHub4u + VegaMovies + Castle Cinema • 1,500+ Titles)</option>
+                        <option value="native_hdhub4u_movies">💎 Native HDHub4u 4K (Reverse-Engineered Direct Scraper)</option>
+                        <option value="native_vegamovies_movies">🍿 Native VegaMovies 4K HDR (Reverse-Engineered Direct Scraper)</option>
+                        <option value="cnc_CastleTV_other">🏰 Castle Cinema (Instant Web Play • 611 Titles)</option>
                         <option value="cnc_VegaMovies_other">🚀 VegaMovies Extended (Requires VLC / MX)</option>
                         <option value="cnc_Rogmovies_other">🚀 RogMovies Cinema (Requires VLC / MX)</option>
                         <option value="cnc_HDHub4U_other">🚀 HDHub4u Extended (Requires VLC / MX)</option>
@@ -2169,19 +2169,28 @@
             <div class="page-title-row">
                 <h2 class="page-headline"><i class="fas fa-dragon" style="color: #ec4899;"></i> AniKoto Multi-Audio Anime Hub</h2>
                 <div class="source-select-wrap">
-                    <span style="font-size: 12px; font-weight: 700; color: var(--text-sub);">Audio:</span>
-                    <span class="badge-row-tag badge-stream-web">SUB & DUB 1080p</span>
+                    <span style="font-size: 12px; font-weight: 700; color: var(--text-sub);">Engine:</span>
+                    <span class="badge-row-tag badge-stream-web">⚡ Native In-House Scraper • SUB & DUB 1080p</span>
                 </div>
             </div>
-            <div class="chips-bar">
-                <button class="chip-item active focusable" tabindex="0" onclick="filterAnimeCategory('ALL')">All Trending</button>
-                <button class="chip-item focusable" tabindex="0" onclick="filterAnimeCategory('ACTION')">Action</button>
-                <button class="chip-item focusable" tabindex="0" onclick="filterAnimeCategory('FANTASY')">Fantasy</button>
-                <button class="chip-item focusable" tabindex="0" onclick="filterAnimeCategory('ADVENTURE')">Adventure</button>
-                <button class="chip-item focusable" tabindex="0" onclick="filterAnimeCategory('DUB')">English DUB</button>
+            <!-- Anime Category Chips -->
+            <div class="chips-bar" id="anime-chips">
+                <button class="chip-pill active focusable" tabindex="0" onclick="filterAnimeCategory('ALL', this)">All Trending</button>
+                <button class="chip-pill focusable" tabindex="0" onclick="filterAnimeCategory('ACTION', this)">Action</button>
+                <button class="chip-pill focusable" tabindex="0" onclick="filterAnimeCategory('FANTASY', this)">Fantasy</button>
+                <button class="chip-pill focusable" tabindex="0" onclick="filterAnimeCategory('ADVENTURE', this)">Adventure</button>
+                <button class="chip-pill focusable" tabindex="0" onclick="filterAnimeCategory('DUB', this)">English DUB</button>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 6px;">
+                <div class="search-inline-bar">
+                    <i class="fas fa-search" style="color: var(--text-muted);"></i>
+                    <input type="text" id="anime-search-input" placeholder="Filter anime series or movies..." oninput="filterAnimeBySearch(this.value)">
+                </div>
+                <div id="anime-count-badge" style="font-size: 12px; font-weight: 700; color: var(--gold); white-space: nowrap;">Loading anime...</div>
             </div>
         </div>
-        <div class="media-grid-container" id="anime-grid">
+        <!-- Anime Grid: 100% Consistent with Home & Movies Portrait Cards -->
+        <div class="content-grid-wrap" id="anime-grid">
             <div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>
         </div>
     </div>
@@ -2713,9 +2722,10 @@
                 'home': { id: 'tab-home', idx: 0 },
                 'movies': { id: 'tab-movies', idx: 1 },
                 'series': { id: 'tab-series', idx: 2 },
-                'sports': { id: 'tab-sports', idx: 3 },
-                'livetv': { id: 'tab-livetv', idx: 4 },
-                'search': { id: 'tab-search', idx: 5 }
+                'anime': { id: 'tab-anime', idx: 3 },
+                'sports': { id: 'tab-sports', idx: 4 },
+                'livetv': { id: 'tab-livetv', idx: 5 },
+                'search': { id: 'tab-search', idx: 7 }
             };
 
             const tabInfo = validRoutes[route] || validRoutes['home'];
@@ -2756,6 +2766,19 @@
                 try {
                     history.pushState({ tab: tabId, index: index }, '', targetHash || window.location.pathname);
                 } catch(e) {}
+            }
+
+            // Lazy load pages on tab activation
+            if (tabId === 'tab-anime') {
+                loadAnimePage();
+            } else if (tabId === 'tab-movies' && allLoadedMovies.length === 0) {
+                loadMoviesPage('ALL');
+            } else if (tabId === 'tab-series' && allLoadedSeries.length === 0) {
+                loadSeriesPage('ALL');
+            } else if (tabId === 'tab-sports' && allLoadedSports.length === 0) {
+                loadSportsPage();
+            } else if (tabId === 'tab-livetv' && allLoadedLiveChannels.length === 0) {
+                loadLiveTVPage();
             }
         }
 
@@ -2807,9 +2830,10 @@
                 // Load Initial Home Page Rows (Curated only, under 2 viewport heights)
                 loadHomePageCurations();
 
-                // Pre-populate page tabs
-                loadMoviesPage('cnc_CastleTV_other');
-                loadSeriesPage();
+                // Pre-populate page tabs (prioritize native in-house scrapers)
+                loadMoviesPage('ALL');
+                loadSeriesPage('ALL');
+                loadAnimePage();
                 loadSportsPage();
                 loadLiveTVPage();
 
@@ -2835,12 +2859,22 @@
                 }
             } catch(e) {}
 
-            // 2. Curated Indian Cinema Rail (Instant Web Playable)
+            // 2. 💎 Native In-House Scrapers: HDHub4u & VegaMovies 4K Cinema Rail
             try {
-                const res = await fetch(`${API_BASE}/catalog/movie/cnc_CastleTV_other.json`);
-                const data = await res.json();
-                const metas = Array.isArray(data?.metas) ? data.metas.slice(10, 30) : [];
-                renderStandardRail(metas, 'home-trending-track', 'movie');
+                const [hdhubRes, vegaRes] = await Promise.allSettled([
+                    fetch(`${API_BASE}/catalog/movie/native_hdhub4u_movies.json`).then(r => r.json()),
+                    fetch(`${API_BASE}/catalog/movie/native_vegamovies_movies.json`).then(r => r.json())
+                ]);
+                const hdhubMetas = (hdhubRes.status === 'fulfilled' && Array.isArray(hdhubRes.value?.metas)) ? hdhubRes.value.metas : [];
+                const vegaMetas = (vegaRes.status === 'fulfilled' && Array.isArray(vegaRes.value?.metas)) ? vegaRes.value.metas : [];
+                
+                const combinedNative = [];
+                const maxLen = Math.max(hdhubMetas.length, vegaMetas.length);
+                for (let i = 0; i < maxLen; i++) {
+                    if (hdhubMetas[i]) combinedNative.push(hdhubMetas[i]);
+                    if (vegaMetas[i]) combinedNative.push(vegaMetas[i]);
+                }
+                renderStandardRail(combinedNative.slice(0, 24), 'home-trending-track', 'movie');
             } catch(e) {}
 
             // 3. Live Sports Rail
@@ -3010,36 +3044,67 @@
             });
         }
 
+        let allLoadedAnime = [];
+
+        async function loadAnimePage() {
+            const grid = document.getElementById('anime-grid');
+            if (!grid) return;
+            if (allLoadedAnime && allLoadedAnime.length > 0) {
+                const badge = document.getElementById('anime-count-badge');
+                if (badge) badge.innerText = `${allLoadedAnime.length} Shows Found`;
+                renderAnimeGrid(allLoadedAnime);
+                return;
+            }
+            grid.innerHTML = '<div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>';
+            try {
+                const res = await fetch(`${API_BASE}/catalog/series/native_anikoto_series.json`);
+                const data = await res.json();
+                allLoadedAnime = Array.isArray(data?.metas) ? data.metas : [];
+                window.cachedAniKotoMetas = allLoadedAnime;
+                const badge = document.getElementById('anime-count-badge');
+                if (badge) badge.innerText = `${allLoadedAnime.length} Shows Found`;
+                renderAnimeGrid(allLoadedAnime);
+            } catch(e) {
+                grid.innerHTML = '<div style="color:var(--text-muted); padding:30px; text-align:center;">Failed to load anime.</div>';
+            }
+        }
+
         function renderAnimeGrid(metas) {
             const grid = document.getElementById('anime-grid');
             if (!grid) return;
             if (!metas || metas.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-sub); padding: 40px;">No anime series loaded.</div>';
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-sub); padding: 40px;">No anime series match your filter.</div>';
                 return;
             }
             grid.innerHTML = '';
             metas.forEach(item => {
                 const card = document.createElement('div');
-                card.className = 'media-card focusable';
+                card.className = 'poster-card focusable';
                 card.tabIndex = 0;
                 card.innerHTML = `
-                    <div class="poster-wrap">
-                        <img class="poster-img" src="${item.poster || BRAND_LOGO}" onerror="this.src='${BRAND_LOGO}'" alt="${item.name}">
-                        <span class="badge-stream-web" style="position: absolute; top: 8px; right: 8px; font-size: 9px; padding: 2px 6px;">1080p HLS</span>
-                        <div class="card-play-overlay"><i class="fas fa-play"></i></div>
+                    <div class="poster-image-box">
+                        <div class="card-badges">
+                            <span class="badge-quality">1080p HLS</span>
+                            <span class="badge-audio">SUB & DUB</span>
+                        </div>
+                        <img src="${item.poster || BRAND_LOGO}" onerror="this.src='${BRAND_LOGO}'" alt="${cleanTitle(item.name)}" loading="lazy">
+                        <div class="card-overlay-play"><i class="fas fa-play"></i></div>
+                        <div class="card-play-pill"><i class="fas fa-play"></i> Watch Now</div>
                     </div>
-                    <div class="card-meta">
-                        <div class="card-title">${cleanTitle(item.name)}</div>
-                        <div class="card-sub">Multi-Audio SUB & DUB</div>
-                    </div>
+                    <div class="card-title">${cleanTitle(item.name)}</div>
+                    <div class="card-meta"><span>Anime Series</span><span style="color:var(--gold);">★ ${item.imdbRating || '8.9'}</span></div>
                 `;
                 card.onclick = () => openStreamPicker('series', item.id, item.name);
                 grid.appendChild(card);
             });
         }
 
-        function filterAnimeCategory(genre) {
-            const metas = window.cachedAniKotoMetas || [];
+        function filterAnimeCategory(genre, btn) {
+            if (btn) {
+                document.querySelectorAll('#anime-chips .chip-pill').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
+            const metas = allLoadedAnime || [];
             if (genre === 'ALL') {
                 renderAnimeGrid(metas);
                 return;
@@ -3048,6 +3113,17 @@
                 const text = `${m.name} ${m.description || ''}`.toLowerCase();
                 return text.includes(genre.toLowerCase());
             });
+            renderAnimeGrid(filtered);
+        }
+
+        function filterAnimeBySearch(query) {
+            const q = query.toLowerCase().trim();
+            const metas = allLoadedAnime || [];
+            if (!q) {
+                renderAnimeGrid(metas);
+                return;
+            }
+            const filtered = metas.filter(m => (m.name || '').toLowerCase().includes(q));
             renderAnimeGrid(filtered);
         }
 
