@@ -3778,9 +3778,9 @@
         // ==========================================
         // 📋 STREAM PICKER & CINEMA PLAYER
         // ==========================================
-        async let currentSeriesContext = null;
+        let currentSeriesContext = null;
 
-        function openStreamPicker(type, id, title, episodeNum = 1, autoPlay = false) {
+        async function openStreamPicker(type, id, title, episodeNum = 1, autoPlay = false) {
             if (type === 'series') {
                 const parts = id.split(':');
                 const baseId = parts.length >= 3 ? `${parts[0]}:${parts[1]}:${parts[2]}` : id;
