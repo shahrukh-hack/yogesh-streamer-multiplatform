@@ -1246,6 +1246,27 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
+    if (pathname === '/api/debug/anime') {
+        try {
+            const domains = await getLiveDomains();
+            const baseDomain = domains.animeworld || 'https://watchanimeworld.one';
+            const html = await fetchHtml(baseDomain);
+            const articles = html.match(/<article[^>]*>[\s\S]*?<\/article>/gi) || [];
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*' });
+            res.end(JSON.stringify({
+                baseDomain,
+                htmlLength: html ? html.length : 0,
+                articlesCount: articles.length,
+                sampleArticle: articles[0] ? articles[0].slice(0, 300) : null
+            }));
+            return;
+        } catch(e) {
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*' });
+            res.end(JSON.stringify({ error: e.message, stack: e.stack }));
+            return;
+        }
+    }
+
     // ☁️ Universal Cross-Device Cloud Sync API (Watchlist & Continue Watching)
     if (pathname.startsWith('/api/sync/')) {
         const syncCode = pathname.replace('/api/sync/', '').trim().toUpperCase();
@@ -1698,26 +1719,7 @@ const server = http.createServer(async (req, res) => {
             return;
         }
 
-        if (pathname === '/api/debug/anime') {
-            try {
-                const domains = await getLiveDomains();
-                const baseDomain = domains.animeworld || 'https://watchanimeworld.one';
-                const html = await fetchHtml(baseDomain);
-                const articles = html.match(/<article[^>]*>[\s\S]*?<\/article>/gi) || [];
-                res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-                res.end(JSON.stringify({
-                    baseDomain,
-                    htmlLength: html.length,
-                    articlesCount: articles.length,
-                    sampleArticle: articles[0] ? articles[0].slice(0, 300) : null
-                }));
-                return;
-            } catch(e) {
-                res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-                res.end(JSON.stringify({ error: e.message }));
-                return;
-            }
-        }
+
         try {
             // If Stremio is requesting /catalog/movie/cnc_..._other.json, map to /catalog/other/cnc_..._other.json upstream
             let mappedPath = pathname;
