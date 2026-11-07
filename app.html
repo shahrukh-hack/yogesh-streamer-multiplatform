@@ -2447,7 +2447,10 @@
         <div class="brand-container focusable" tabindex="0" onclick="switchNavTab('tab-home', 0)">
             <img src="https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg" alt="Logo" class="brand-logo">
             <div class="brand-title-wrap">
-                <h1>YOGESH STREAMER</h1>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <h1 style="margin: 0;">YOGESH STREAMER</h1>
+                    <span style="background: rgba(229,169,59,0.2); color: #E5A93B; border: 1px solid rgba(229,169,59,0.4); font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 999px; letter-spacing: 0.5px;">v2.0 • HUB</span>
+                </div>
                 <span>UNIVERSAL SMART CINEMA</span>
             </div>
         </div>
@@ -5682,7 +5685,9 @@
             checkInitialLock();
 
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));
+                navigator.serviceWorker.register('/sw.js').then(reg => {
+                    reg.update();
+                }).catch(err => console.log('SW error:', err));
             }
         });
     
