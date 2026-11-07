@@ -911,6 +911,29 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
+    // 🧩 Reverse-Engineered CS3-to-JSON Catalog API
+    if (pathname === '/api/plugins/catalog' || pathname === '/api/plugins/reverse-engineered' || pathname === '/plugins_catalog.json') {
+        try {
+            const localCatPath = path.join(__dirname, 'plugins_catalog.json');
+            let catalogData = null;
+            if (fs.existsSync(localCatPath)) {
+                catalogData = JSON.parse(fs.readFileSync(localCatPath, 'utf8'));
+            } else {
+                catalogData = await fetchJson('https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/plugins_catalog.json');
+            }
+            res.writeHead(200, {
+                'Content-Type': 'application/json; charset=utf-8',
+                'Access-Control-Allow-Origin': '*',
+                'Cache-Control': 'public, max-age=1800'
+            });
+            res.end(JSON.stringify(catalogData || []));
+        } catch (e) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Failed to load plugins catalog: ' + e.message }));
+        }
+        return;
+    }
+
     // Official Yogesh Streamer Plugins Catalog API (from yogesh-streamer-plugins)
     if (pathname === '/api/plugins' || pathname === '/api/extensions') {
         try {

@@ -1907,7 +1907,7 @@
         /* 🏆 Top Provider Brand Tiles (Disney+ / Apple TV Style) */
         .brand-tiles-bar {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 12px;
             margin-bottom: 22px;
             padding: 0 4px;
@@ -2498,6 +2498,46 @@
                         <span class="brand-tag">0ms Live Cricket</span>
                     </div>
                     <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(239,68,68,0.25) 0%, transparent 70%);"></div>
+                </div>
+            </div>
+            <div class="brand-tile focusable" tabindex="0" onclick="filterByBrandTile('hotstar')" title="Disney+ Hotstar Hub">
+                <div class="brand-tile-inner">
+                    <div class="brand-icon" style="color:#38bdf8; background:rgba(56,189,248,0.12); border-color:rgba(56,189,248,0.25);"><i class="fas fa-star"></i></div>
+                    <div class="brand-info">
+                        <span class="brand-name">Hotstar</span>
+                        <span class="brand-tag">Disney &amp; Marvel</span>
+                    </div>
+                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(56,189,248,0.25) 0%, transparent 70%);"></div>
+                </div>
+            </div>
+            <div class="brand-tile focusable" tabindex="0" onclick="filterByBrandTile('netflix')" title="Netflix Originals">
+                <div class="brand-tile-inner">
+                    <div class="brand-icon" style="color:#e50914; background:rgba(229,9,20,0.12); border-color:rgba(229,9,20,0.25);"><i class="fas fa-circle-play"></i></div>
+                    <div class="brand-info">
+                        <span class="brand-name">Netflix</span>
+                        <span class="brand-tag">Global Originals</span>
+                    </div>
+                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(229,9,20,0.25) 0%, transparent 70%);"></div>
+                </div>
+            </div>
+            <div class="brand-tile focusable" tabindex="0" onclick="filterByBrandTile('prime')" title="Amazon Prime Video">
+                <div class="brand-tile-inner">
+                    <div class="brand-icon" style="color:#00a8e1; background:rgba(0,168,225,0.12); border-color:rgba(0,168,225,0.25);"><i class="fas fa-tv"></i></div>
+                    <div class="brand-info">
+                        <span class="brand-name">Prime Video</span>
+                        <span class="brand-tag">Amazon Originals</span>
+                    </div>
+                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(0,168,225,0.25) 0%, transparent 70%);"></div>
+                </div>
+            </div>
+            <div class="brand-tile focusable" tabindex="0" onclick="filterByBrandTile('jiocinema')" title="JioCinema &amp; HBO Hub">
+                <div class="brand-tile-inner">
+                    <div class="brand-icon" style="color:#ec4899; background:rgba(236,72,153,0.12); border-color:rgba(236,72,153,0.25);"><i class="fas fa-bolt"></i></div>
+                    <div class="brand-info">
+                        <span class="brand-name">JioCinema</span>
+                        <span class="brand-tag">HBO &amp; T20 Live</span>
+                    </div>
+                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(236,72,153,0.25) 0%, transparent 70%);"></div>
                 </div>
             </div>
             <div class="brand-tile focusable" tabindex="0" onclick="filterByBrandTile('vegamovies')" title="VegaMovies (2160p Multi)">
@@ -3817,9 +3857,17 @@
                         if (!universalSearchIndex.some(s => s.id === m.id)) universalSearchIndex.push(m);
                     });
 
-                    // Set Hero billboard from first valid movie
-                    if (!heroFeaturedItem && metas.length > 0 && metas[0].poster && cat.type !== 'tv') {
-                        setHeroBillboard(metas[0]);
+                    // Populate trending list and start hero auto-rotator
+                    if (metas.length > 0 && cat.type === 'movie' && !cat.name.toLowerCase().includes('xxx')) {
+                        metas.slice(0, 4).forEach(m => {
+                            if (m.poster && !heroTrendingList.some(h => h.id === m.id)) {
+                                heroTrendingList.push(m);
+                            }
+                        });
+                        if (!heroFeaturedItem && heroTrendingList.length > 0) {
+                            setHeroBillboard(heroTrendingList[0]);
+                            startHeroRotator();
+                        }
                     }
                 } catch (err) {
                     console.error(`Error loading catalog ${cat.id}:`, err);
@@ -4009,7 +4057,28 @@
             }
         }
 
-        function setHeroBillboard(item) {
+        const heroTrendingList = [];
+        let heroRotatorInterval = null;
+        let currentHeroIdx = 0;
+
+        function startHeroRotator() {
+            if (heroRotatorInterval) return;
+            heroRotatorInterval = setInterval(() => {
+                if (heroTrendingList.length > 1) {
+                    currentHeroIdx = (currentHeroIdx + 1) % heroTrendingList.length;
+                    setHeroBillboard(heroTrendingList[currentHeroIdx]);
+                }
+            }, 7500);
+        }
+
+        function stopHeroRotator() {
+            if (heroRotatorInterval) {
+                clearInterval(heroRotatorInterval);
+                heroRotatorInterval = null;
+            }
+        }
+
+                function setHeroBillboard(item) {
             heroFeaturedItem = item;
             const ambient = document.getElementById('hero-ambient-bg');
             const poster = document.getElementById('hero-poster-img');
@@ -4086,6 +4155,22 @@
                     }
                 });
                 if (found) found.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else if (['hotstar', 'netflix', 'prime', 'jiocinema'].includes(providerKey)) {
+                // Switch to search and pre-filter by studio brand
+                const brandLabels = {
+                    hotstar: 'Hotstar',
+                    netflix: 'Netflix',
+                    prime: 'Prime',
+                    jiocinema: 'Jio'
+                };
+                const term = brandLabels[providerKey] || providerKey;
+                switchNavTab('tab-search', 5);
+                const searchInp = document.getElementById('search-input');
+                if (searchInp) {
+                    searchInp.value = term;
+                    handleUniversalSearch(term);
+                }
+                showToast(`🎬 Browsing ${term} content`);
             }
         }
 
