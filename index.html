@@ -2722,6 +2722,16 @@
             switchNavTab(tabInfo.id, tabInfo.idx, pushHistory);
         }
 
+        function navigateToPage(pageName) {
+            if (pageName === 'movies') switchNavTab('tab-movies', 1);
+            else if (pageName === 'series') switchNavTab('tab-series', 2);
+            else if (pageName === 'anime') switchNavTab('tab-anime', 3);
+            else if (pageName === 'sports') switchNavTab('tab-sports', 4);
+            else if (pageName === 'livetv') switchNavTab('tab-livetv', 5);
+            else if (pageName === 'search') switchNavTab('tab-search', 7);
+            else switchNavTab('tab-home', 0);
+        }
+
         function switchNavTab(tabId, index, pushHistory = true) {
             document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
