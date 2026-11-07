@@ -2300,6 +2300,26 @@
             align-items: center;
             gap: 4px;
         }
+        .ext-stream-btn {
+            background: linear-gradient(135deg, #E5A93B 0%, #D4881A 100%);
+            color: #000;
+            border: none;
+            cursor: pointer;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            text-decoration: none;
+        }
+        .ext-stream-btn:hover, .ext-stream-btn:focus {
+            transform: scale(1.05);
+            box-shadow: 0 0 12px rgba(229, 169, 59, 0.6);
+            outline: none;
+        }
         .ext-download-btn {
             background: linear-gradient(135deg, #10B981 0%, #059669 100%);
             color: #fff;
@@ -3806,7 +3826,71 @@
         }
 
         // 📚 Full Catalog Grid Collection Viewer (Netflix & Amazon Style)
-        function openCatalogFullGrid(catId, catName, catType) {
+        async function openCatalogFullGrid(catId, catName, catType) {
+            const modal = document.getElementById('catalog-fullview-modal');
+            const titleEl = document.getElementById('fullgrid-catalog-title');
+            const badgeEl = document.getElementById('fullgrid-count-badge');
+            const wrap = document.getElementById('fullgrid-items-wrap');
+
+            if (window.location.hash !== '#catalog-grid') {
+                history.pushState({ modal: 'catalog-grid' }, '', '#catalog-grid');
+            }
+
+            titleEl.innerText = catName || 'Catalog Collection';
+            wrap.innerHTML = '<div class="spinner-gold" style="grid-column: 1 / -1;"><i class="fas fa-spinner fa-spin"></i> Loading catalog titles...</div>';
+            modal.classList.add('open');
+            modal.scrollTo({ top: 0 });
+
+            let metas = catalogItemCache[catId] || [];
+
+            // On-demand fetch if not cached yet
+            if (metas.length === 0) {
+                try {
+                    const res = await fetch(`${API_BASE}/catalog/${catType || 'movie'}/${catId}.json`);
+                    const data = await res.json();
+                    metas = Array.isArray(data?.metas) ? data.metas : [];
+                    metas = metas.filter(m => m && m.name && m.name.trim() !== '');
+                    catalogItemCache[catId] = metas;
+                } catch(e) {
+                    console.warn('Catalog on-demand fetch failed:', e);
+                }
+            }
+
+            badgeEl.innerText = `${metas.length} Titles`;
+
+            if (metas.length === 0) {
+                wrap.innerHTML = '<div style="color: var(--text-sub); grid-column: 1 / -1; text-align: center; padding: 40px; font-size: 13px;">No titles found in this catalog currently.</div>';
+                return;
+            }
+
+            wrap.innerHTML = '';
+            const isLandscape = catType === 'tv' || (metas[0] && (metas[0].posterShape === 'landscape' || (catName || '').toLowerCase().includes('live') || (catName || '').toLowerCase().includes('sport')));
+            metas.forEach(item => {
+                if (!item.poster) return;
+                const card = document.createElement('div');
+                card.className = `media-poster-card focusable ${isLandscape ? 'landscape-card' : ''}`;
+                card.tabIndex = 0;
+                card.style.flex = 'unset';
+                card.style.width = '100%';
+                card.style.maxWidth = '100%';
+
+                const displayTitle = cleanTitle(item.name);
+                const qualityBadge = (catName || '').toLowerCase().includes('live') ? 'LIVE HD' : '1080p';
+
+                card.innerHTML = `
+                    <div class="poster-frame">
+                        <img src="${item.poster}" alt="${displayTitle}" loading="lazy" onerror="this.src='${BRAND_LOGO}'">
+                        <div class="badge-card-quality">${qualityBadge}</div>
+                    </div>
+                    <div class="poster-title" title="${displayTitle}">${displayTitle}</div>
+                `;
+                card.onclick = () => openStreamPicker(item.type || catType || 'movie', item.id, item.name);
+                wrap.appendChild(card);
+            });
+            return;
+        }
+
+        function _legacy_openCatalogFullGrid_skip(catId, catName, catType) {
             const modal = document.getElementById('catalog-fullview-modal');
             const titleEl = document.getElementById('fullgrid-catalog-title');
             const badgeEl = document.getElementById('fullgrid-count-badge');
@@ -5478,14 +5562,26 @@
                 ? BRAND_LOGO 
                 : 'https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg';
 
+            const isAndroid = /Android/i.test(navigator.userAgent);
+
             grid.innerHTML = plugins.map(p => {
                 const icon = (p && p.iconUrl) ? p.iconUrl : defaultLogo;
                 const types = Array.isArray(p.tvTypes) ? p.tvTypes.join(' • ') : 'Streaming';
                 const ver = p.version ? `v${p.version}` : 'v1.0';
+                const provName = p.internalName || p.name || 'Provider';
+                const safeName = escapeHtml(provName);
+
+                // Android gets direct .cs3 download button; Safari/Chrome/Smart TV get 1080p Cloud Web Play
+                const androidDownload = isAndroid ? `
+                    <a href="${escapeHtml(p.url || '#')}" download class="ext-download-btn focusable" title="Download .cs3 plugin for Android App" onclick="event.stopPropagation()">
+                        <i class="fab fa-android"></i> .cs3
+                    </a>
+                ` : ``;
+
                 return `
-                    <div class="ext-card focusable" tabindex="0">
+                    <div class="ext-card focusable" tabindex="0" onclick="browseProviderCatalog('${safeName}')" title="Click to watch ${safeName} movies and shows in web">
                         <div class="ext-card-header">
-                            <img src="${escapeHtml(icon)}" class="ext-icon" alt="${escapeHtml(p.name || 'Extension')}" onerror="this.onerror=null; this.src='${defaultLogo}';">
+                            <img src="${escapeHtml(icon)}" class="ext-icon" alt="${safeName}" onerror="this.onerror=null; this.src='${defaultLogo}';">
                             <div class="ext-title-wrap">
                                 <div class="ext-name">${escapeHtml(p.name || 'Provider')}</div>
                                 <div class="ext-meta-tags">
@@ -5498,14 +5594,77 @@
                             ${escapeHtml(p.description || 'High-speed video link resolver and catalog provider for movies, series, and live streaming.')}
                         </div>
                         <div class="ext-card-actions">
-                            <span class="ext-cloud-status"><i class="fas fa-check-circle" style="color:#4ade80;"></i> Cloud Active</span>
-                            <a href="${escapeHtml(p.url || '#')}" download class="ext-download-btn focusable" title="Download .cs3 for Android App">
-                                <i class="fab fa-android"></i> .cs3
-                            </a>
+                            <span class="ext-cloud-status"><i class="fas fa-check-circle" style="color:#4ade80;"></i> Cloud 1080p Web</span>
+                            <div style="display:flex; gap:6px; align-items:center;">
+                                <button type="button" class="ext-stream-btn focusable" onclick="event.stopPropagation(); browseProviderCatalog('${safeName}')" title="Watch in Browser">
+                                    <i class="fas fa-play"></i> Watch in Web
+                                </button>
+                                ${androidDownload}
+                            </div>
                         </div>
                     </div>
                 `;
             }).join('');
+        }
+
+        // 🎬 1-Click Provider Catalog Launcher (Connects Reverse-Engineered CS3/JSON to Safari, Chrome & Smart TVs)
+        function browseProviderCatalog(providerName) {
+            closeExtensionsModal();
+            const low = (providerName || '').toLowerCase();
+
+            // Direct mapping of CS3 providers to cloud streaming catalog IDs
+            const PROVIDER_MAP = {
+                'castletv': { id: 'cnc_CastleTVUseVLC_other', name: '🏰 Castle Cinema (Instant Web 1080p)', type: 'movie' },
+                'castletvprovider': { id: 'cnc_CastleTVUseVLC_other', name: '🏰 Castle Cinema (Instant Web 1080p)', type: 'movie' },
+                'hdhub4u': { id: 'cnc_HDHub4U_other', name: '💎 HDHub4u (4K UHD Dubbed)', type: 'movie' },
+                'vegamovies': { id: 'cnc_VegaMovies_other', name: '🍿 VegaMovies (2160p Multi)', type: 'movie' },
+                'rogmovies': { id: 'cnc_Rogmovies_other', name: '🚀 Rogmovies (Ultra HD)', type: 'movie' },
+                'moviebox': { id: 'cnc_MovieBoxIN_other', name: '🌟 MovieBoxIN', type: 'movie' },
+                'movieboxprovider': { id: 'cnc_MovieBoxIN_other', name: '🌟 MovieBoxIN', type: 'movie' },
+                'movieboxproviderin': { id: 'cnc_MovieBoxIN_other', name: '🌟 MovieBoxIN', type: 'movie' },
+                'movies4u': { id: 'cnc_Movies4u_other', name: '🚀 Movies4u (HD Cinema)', type: 'movie' },
+                'moviesmod': { id: 'cnc_Movies4u_other', name: '🚀 Moviesmod Collection', type: 'movie' },
+                'bollyflix': { id: 'cnc_Movies4u_other', name: '🇮🇳 Bollyflix Bollywood', type: 'movie' },
+                'publicsportsiptv': { id: 'native_live_sports_tv', name: '⚡ Live Cricket & Sports (0ms FanCode)', type: 'tv' },
+                'cricifyprovider': { id: 'native_live_sports_tv', name: '⚡ Live Cricket & Sports (0ms FanCode)', type: 'tv' },
+                'sportzxprovider': { id: 'cnc_SportzXLiveEvents_tv', name: '⚡ SportzX Live Events', type: 'tv' },
+                'playztvprovider': { id: 'cnc_PlayZTVLiveEvents_tv', name: '⚡ PlayZTV Live Events', type: 'tv' },
+                'playfy': { id: 'cnc_PlayFyLiveEvents_tv', name: '⚡ PlayFy Live Events', type: 'tv' },
+                'jiotv': { id: 'cnc_JIOTVIND_tv', name: '📺 24/7 JioTV Live Channels', type: 'tv' },
+                'jiohotstar': { id: 'cnc_JioHotstar2_tv', name: '📺 JioHotstar Channels', type: 'tv' },
+                'sunnxt': { id: 'cnc_SUNNXT_SKTechProvider_tv', name: '📺 SUN NXT South TV', type: 'tv' },
+                'anikoto': { id: 'cnc_ReANIME_other', name: '⚔️ AniKoto Anime Universe', type: 'movie' },
+                'animesuge': { id: 'cnc_ReANIME_other', name: '⚔️ AnimeSuge Sub/Dub', type: 'movie' },
+                'animeworldindia': { id: 'cnc_ReANIME_other', name: '⚔️ Anime World India (Hindi Dub)', type: 'movie' },
+                'reanime': { id: 'cnc_ReANIME_other', name: '⚔️ Re:ANIME', type: 'movie' },
+                'toonix': { id: 'cnc_Toonix_other', name: '🌟 Toonix Animation', type: 'movie' },
+                'gotaku': { id: 'cnc_GoTaku_other', name: '🌟 GoTaku Anime', type: 'movie' },
+                'allott': { id: 'cnc_MultiMovies_other', name: '✨ All OTT Hits Collection', type: 'movie' },
+                'cinestream': { id: 'cnc_MultiMovies_other', name: '✨ CineStream Multi-OTT', type: 'movie' },
+                'streamflixprovider': { id: 'cnc_MultiMovies_other', name: '✨ StreamFlix Movies', type: 'movie' },
+                'desicinemas': { id: 'cnc_Rogmovies_other', name: '🇮🇳 DesiCinemas Collection', type: 'movie' },
+                'desiserialsprovider': { id: 'cnc_Rogmovies_other', name: '📺 Desi Serials TV', type: 'series' }
+            };
+
+            let match = null;
+            for (const key of Object.keys(PROVIDER_MAP)) {
+                if (low.includes(key) || key.includes(low)) {
+                    match = PROVIDER_MAP[key];
+                    break;
+                }
+            }
+
+            if (match) {
+                openCatalogFullGrid(match.id, match.name, match.type);
+            } else {
+                // If not directly mapped, trigger universal search for provider name
+                const searchInput = document.getElementById('search-input');
+                if (searchInput) {
+                    switchNavTab('tab-search', 4);
+                    searchInput.value = providerName;
+                    handleSearchInput(providerName);
+                }
+            }
         }
 
         function filterExtensions(category, el) {
