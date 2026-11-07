@@ -120,6 +120,7 @@ function fetchHtml(targetUrl, extraHeaders = {}, timeoutMs = 8000) {
 // ========================================================
 const FANCODE_API_URL = 'https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.json';
 const DOMAINS_API_URL = 'https://raw.githubusercontent.com/phisher98/TVVVV/refs/heads/main/domains.json';
+const FIREBASE_DOMAINS_URL = 'https://cloudstreampluginhelper-default-rtdb.firebaseio.com/.json';
 
 let cachedDomains = null;
 let lastDomainsFetch = 0;
@@ -129,15 +130,31 @@ async function getLiveDomains() {
     if (cachedDomains && (now - lastDomainsFetch < 3600000)) {
         return cachedDomains;
     }
+    const merged = {
+        HDHUB4u: 'https://new11.hdhub4u.cl',
+        vegamovies: 'https://vegamovies.lease',
+        themoviesflix: 'https://themoviesflix.forum/',
+        multimovies: 'https://m1.multimovies.courses/',
+        cinestream: 'https://cinestream.kje.us/',
+        animeworld: 'https://watchanimeworld.one/'
+    };
     try {
         const d = await fetchJson(DOMAINS_API_URL);
-        if (d && typeof d === 'object') {
-            cachedDomains = d;
-            lastDomainsFetch = now;
-            return cachedDomains;
+        if (d && typeof d === 'object') Object.assign(merged, d);
+    } catch(e) {}
+    try {
+        const fb = await fetchJson(FIREBASE_DOMAINS_URL);
+        if (fb && typeof fb === 'object') {
+            if (fb.themoviesflix_url) merged.themoviesflix = fb.themoviesflix_url;
+            if (fb.multimovies_url) merged.multimovies = fb.multimovies_url;
+            if (fb.cinestream_url) merged.cinestream = fb.cinestream_url;
+            if (fb.animeworldindia_url) merged.animeworld = fb.animeworldindia_url;
+            if (fb.anikoto_url) merged.anikoto = fb.anikoto_url;
         }
     } catch(e) {}
-    return { HDHUB4u: 'https://new11.hdhub4u.cl', vegamovies: 'https://vegamovies.lease' };
+    cachedDomains = merged;
+    lastDomainsFetch = now;
+    return cachedDomains;
 }
 
 async function getNativeSportsCatalog() {
