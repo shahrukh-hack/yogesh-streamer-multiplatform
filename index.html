@@ -5674,8 +5674,10 @@
             grid.innerHTML = '<div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i> Loading verified plugins...</div>';
 
             const endpoints = [
+                `${API_BASE}/api/plugins/catalog`,
                 `${API_BASE}/api/plugins`,
-                'https://yogesh-streamer-bridge.onrender.com/api/plugins',
+                'https://yogesh-streamer-bridge.onrender.com/api/plugins/catalog',
+                'https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/plugins_catalog.json',
                 'https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/plugins.json'
             ];
 
@@ -5720,7 +5722,7 @@
 
                 // Android gets direct .cs3 download button; Safari/Chrome/Smart TV get 1080p Cloud Web Play
                 const androidDownload = isAndroid ? `
-                    <a href="${escapeHtml(p.url || '#')}" download class="ext-download-btn focusable" title="Download .cs3 plugin for Android App" onclick="event.stopPropagation()">
+                    <a href="${escapeHtml(p.cs3DownloadUrl || p.url || '#')}" download class="ext-download-btn focusable" title="Download .cs3 plugin for Android App" onclick="event.stopPropagation()">
                         <i class="fab fa-android"></i> .cs3
                     </a>
                 ` : ``;
@@ -5734,6 +5736,7 @@
                                 <div class="ext-meta-tags">
                                     <span class="ext-badge-ver">${ver}</span>
                                     <span class="ext-badge-type">${escapeHtml(types)}</span>
+                                    ${p.discoveredEndpoints && p.discoveredEndpoints.length > 0 ? `<span class="ext-badge-ver" style="background:rgba(56,189,248,0.15); border-color:#38bdf8; color:#38bdf8;" title="Live APIs: ${escapeHtml(p.discoveredEndpoints.join(', '))}"><i class="fas fa-network-wired"></i> ${p.discoveredEndpoints.length} JSON APIs</span>` : ''}
                                 </div>
                             </div>
                         </div>
