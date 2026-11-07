@@ -1904,6 +1904,27 @@
             }
         }
     
+        /* 🚀 Studio Hub Quick-Jump Cards (Curated Home Redesign) */
+        .hub-jump-card {
+            border-radius: 14px;
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            outline: none;
+            user-select: none;
+            touch-action: manipulation;
+        }
+        .hub-jump-card:hover, .hub-jump-card:focus, .hub-jump-card.focused {
+            transform: translateY(-4px) scale(1.02);
+            border-color: var(--gold) !important;
+            box-shadow: 0 10px 28px rgba(229, 169, 59, 0.35);
+        }
+        .nav-pill, .bottom-nav-item, .chip-btn, .brand-tile, .media-poster-card, .btn-play-primary, .btn-details, .btn-close-modal, .hub-jump-card {
+            cursor: pointer !important;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
         /* 🏆 Top Provider Brand Tiles (Disney+ / Apple TV Style) */
         .brand-tiles-bar {
             display: grid;
@@ -2412,13 +2433,13 @@
         </div>
 
         <div class="header-nav-pills">
-            <a class="nav-pill active focusable" tabindex="0" onclick="switchNavTab('tab-home', 0)"><i class="fas fa-home"></i> Home</a>
-            <a class="nav-pill focusable" tabindex="0" onclick="switchNavTab('tab-movies', 1)"><i class="fas fa-film"></i> Movies</a>
-            <a class="nav-pill focusable" tabindex="0" onclick="switchNavTab('tab-series', 2)"><i class="fas fa-tv"></i> Series</a>
-            <a class="nav-pill focusable" tabindex="0" onclick="switchNavTab('tab-livetv', 3)"><i class="fas fa-satellite-dish"></i> Live TV</a>
-            <a class="nav-pill focusable" tabindex="0" onclick="switchNavTab('tab-sports', 4)"><i class="fas fa-baseball-bat-ball"></i> Sports</a>
-            <a class="nav-pill focusable" tabindex="0" onclick="openExtensionsModal()"><i class="fas fa-puzzle-piece" style="color: var(--gold);"></i> Extensions</a>
-            <a class="nav-pill focusable" tabindex="0" onclick="switchNavTab('tab-search', 5)"><i class="fas fa-search"></i> Search</a>
+            <a href="#home" class="nav-pill active focusable" tabindex="0" role="button" onclick="event.preventDefault(); switchNavTab('tab-home', 0)"><i class="fas fa-home"></i> Home</a>
+            <a href="#movies" class="nav-pill focusable" tabindex="0" role="button" onclick="event.preventDefault(); switchNavTab('tab-movies', 1)"><i class="fas fa-film"></i> Movies</a>
+            <a href="#series" class="nav-pill focusable" tabindex="0" role="button" onclick="event.preventDefault(); switchNavTab('tab-series', 2)"><i class="fas fa-tv"></i> Series</a>
+            <a href="#livetv" class="nav-pill focusable" tabindex="0" role="button" onclick="event.preventDefault(); switchNavTab('tab-livetv', 3)"><i class="fas fa-satellite-dish"></i> Live TV</a>
+            <a href="#sports" class="nav-pill focusable" tabindex="0" role="button" onclick="event.preventDefault(); switchNavTab('tab-sports', 4)"><i class="fas fa-baseball-bat-ball"></i> Sports</a>
+            <a href="#extensions" class="nav-pill focusable" tabindex="0" role="button" onclick="event.preventDefault(); openExtensionsModal()"><i class="fas fa-puzzle-piece" style="color: var(--gold);"></i> 43+ Scrapers</a>
+            <a href="#search" class="nav-pill focusable" tabindex="0" role="button" onclick="event.preventDefault(); switchNavTab('tab-search', 5)"><i class="fas fa-search"></i> Search</a>
         </div>
 
         <div class="header-right-actions">
@@ -2867,27 +2888,27 @@
 
     <!-- 📱 Bottom Navigation Bar (Mobile / Handheld) -->
     <nav class="bottom-nav">
-        <div class="bottom-nav-item active focusable" tabindex="0" onclick="switchNavTab('tab-home', 0)">
+        <div class="bottom-nav-item active focusable" tabindex="0" role="button" onclick="switchNavTab('tab-home', 0)">
             <i class="fas fa-home"></i>
             <span>Home</span>
         </div>
-        <div class="bottom-nav-item focusable" tabindex="0" onclick="switchNavTab('tab-movies', 1)">
+        <div class="bottom-nav-item focusable" tabindex="0" role="button" onclick="switchNavTab('tab-movies', 1)">
             <i class="fas fa-film"></i>
             <span>Movies</span>
         </div>
-        <div class="bottom-nav-item focusable" tabindex="0" onclick="switchNavTab('tab-series', 2)">
+        <div class="bottom-nav-item focusable" tabindex="0" role="button" onclick="switchNavTab('tab-series', 2)">
             <i class="fas fa-tv"></i>
             <span>Series</span>
         </div>
-        <div class="bottom-nav-item focusable" tabindex="0" onclick="switchNavTab('tab-livetv', 3)">
+        <div class="bottom-nav-item focusable" tabindex="0" role="button" onclick="switchNavTab('tab-livetv', 3)">
             <i class="fas fa-satellite-dish"></i>
             <span>Live TV</span>
         </div>
-        <div class="bottom-nav-item focusable" tabindex="0" onclick="switchNavTab('tab-sports', 4)">
+        <div class="bottom-nav-item focusable" tabindex="0" role="button" onclick="switchNavTab('tab-sports', 4)">
             <i class="fas fa-baseball-bat-ball"></i>
             <span>Sports</span>
         </div>
-        <div class="bottom-nav-item focusable" tabindex="0" onclick="switchNavTab('tab-search', 5)">
+        <div class="bottom-nav-item focusable" tabindex="0" role="button" onclick="switchNavTab('tab-search', 5)">
             <i class="fas fa-search"></i>
             <span>Search</span>
         </div>
@@ -3142,8 +3163,8 @@
             { title: "DD Sports 1 HD (National Sports & Cricket)", tour: "Team India Bilateral & National Games", url: "https://mumbai-edge.smartplaytv.in/DDSportsHD/index.m3u8", logo: "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg", quality: "1080p 60FPS" }
         ];
 
-        // 📑 Tab Switching Engine
-        function switchNavTab(tabId, index) {
+        // 📑 Tab Switching & Multi-Page History Engine (Supports Browser Back & Forward on All Devices)
+        function switchNavTab(tabId, index, pushHistory = true) {
             document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
@@ -3156,6 +3177,28 @@
 
             const pills = document.querySelectorAll('.nav-pill');
             if (pills[index]) pills[index].classList.add('active');
+
+            const tabShort = tabId.replace('tab-', '');
+            const targetHash = tabShort === 'home' ? '' : '#' + tabShort;
+
+            if (pushHistory && window.location.hash !== targetHash) {
+                if (targetHash === '') {
+                    try {
+                        history.pushState({ tab: tabId, index: index }, '', window.location.pathname + window.location.search);
+                    } catch(e) {}
+                } else {
+                    try {
+                        history.pushState({ tab: tabId, index: index }, '', targetHash);
+                    } catch(e) {}
+                }
+            }
+
+            if (tabId === 'tab-search') {
+                setTimeout(() => {
+                    const inp = document.getElementById('search-input');
+                    if (inp) inp.focus();
+                }, 120);
+            }
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -3272,65 +3315,80 @@
                     return 0;
                 });
 
-                // 1. Home Tab: Verified Live Sports, Live TV & Gujarati Movies Row
+                // 1. 🌟 Curated Executive Home Tab (Curated Top 6 Spotlight Rows + Hub Launchers)
+                // Prevents infinite-scroll lag, crashes on low-end Smart TVs, and battery drain
                 renderHomeVerifiedSportsRow(homeGrid);
-                renderHomeVerifiedLiveTVRow(homeGrid);
                 renderHomeGujaratiRow(homeGrid);
+                renderHomeVerifiedLiveTVRow(homeGrid);
 
                 const homeAddedIds = new Set();
                 let homeRank = 2;
 
-                // Priority 1: 💎 HDHub4u 4K UHD & 1080p (Native Engine)
-                movieCatalogs.filter(c => c.id === 'native_hdhub4u_movies').forEach(cat => {
-                    homeAddedIds.add(cat.id);
-                    buildCatalogRowElement(cat, homeGrid, 'home', true, homeRank++);
-                });
-
-                // Priority 2: Instant Web Play Cinema (Castle Cinema)
+                // Spotlight 1: 🏰 Castle Cinema (Instant Web 1080p - Zero Buffer)
                 movieCatalogs.filter(c => c.id === 'cnc_CastleTVUseVLC_other').forEach(cat => {
                     homeAddedIds.add(cat.id);
                     buildCatalogRowElement(cat, homeGrid, 'home', true, homeRank++);
                 });
 
-                // Priority 2: Top Web Series (Rogmovies & HDHub4U)
-                seriesCatalogs.filter(c => c.id === 'cnc_Rogmovies_other' || c.id === 'cnc_HDHub4U_other').forEach(cat => {
+                // Spotlight 2: 💎 HDHub4u (4K UHD Dubbed & Multi-Audio Hits)
+                movieCatalogs.filter(c => c.id === 'cnc_HDHub4U_other').forEach(cat => {
                     if (!homeAddedIds.has(cat.id)) {
                         homeAddedIds.add(cat.id);
                         buildCatalogRowElement(cat, homeGrid, 'home', true, homeRank++);
                     }
                 });
 
-                // Priority 3: Live Sports & Cricket Events
-                sportsCatalogs.forEach(cat => {
+                // Spotlight 3: 🚀 Rogmovies (Top Trending Web Series)
+                seriesCatalogs.filter(c => c.id === 'cnc_Rogmovies_other').forEach(cat => {
                     if (!homeAddedIds.has(cat.id)) {
                         homeAddedIds.add(cat.id);
-                        buildCatalogRowElement(cat, homeGrid, 'home', homeRank <= 6, homeRank++);
+                        buildCatalogRowElement(cat, homeGrid, 'home', true, homeRank++);
                     }
                 });
 
-                // Priority 4: All Movie Catalogs (Full Collection)
-                movieCatalogs.forEach(cat => {
+                // Spotlight 4: 🍿 VegaMovies (2160p HDR Multi-Audio Cinema)
+                movieCatalogs.filter(c => c.id === 'cnc_VegaMovies_other').forEach(cat => {
                     if (!homeAddedIds.has(cat.id)) {
                         homeAddedIds.add(cat.id);
-                        buildCatalogRowElement(cat, homeGrid, 'home', false, homeRank++);
+                        buildCatalogRowElement(cat, homeGrid, 'home', true, homeRank++);
                     }
                 });
 
-                // Priority 5: All Series Catalogs (Full Collection)
-                seriesCatalogs.forEach(cat => {
-                    if (!homeAddedIds.has(cat.id)) {
-                        homeAddedIds.add(cat.id);
-                        buildCatalogRowElement(cat, homeGrid, 'home', false, homeRank++);
-                    }
-                });
-
-                // Priority 6: All Live TV Catalogs (Full Collection)
-                liveTvCatalogs.forEach(cat => {
-                    if (!homeAddedIds.has(cat.id)) {
-                        homeAddedIds.add(cat.id);
-                        buildCatalogRowElement(cat, homeGrid, 'home', false, homeRank++);
-                    }
-                });
+                // 🚀 Curated Studio Hubs Quick-Jump Section (Clean Netflix/Apple TV Grid at bottom of Home)
+                const hubsSection = document.createElement('div');
+                hubsSection.className = 'home-explore-hubs-section';
+                hubsSection.style.cssText = 'padding: 24px 16px 36px 16px; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.06);';
+                hubsSection.innerHTML = `
+                    <div style="font-size: 17px; font-weight: 800; color: #FFF; margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-compass" style="color: var(--gold);"></i> Explore Complete Libraries
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 16px;">
+                        Browse 43 verified cloud providers and thousands of on-demand titles
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
+                        <div class="hub-jump-card focusable" tabindex="0" onclick="switchNavTab('tab-movies', 1)" style="background: linear-gradient(135deg, rgba(37,99,235,0.15) 0%, rgba(15,23,42,0.8) 100%); border: 1px solid rgba(37,99,235,0.3);">
+                            <div style="font-size: 24px; color: #60a5fa; margin-bottom: 8px;"><i class="fas fa-film"></i></div>
+                            <div style="font-size: 15px; font-weight: 800; color: #FFF;">All Movies Hub</div>
+                            <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px;">4K UHD • Bollywood • Hollywood • South Dubbed</div>
+                        </div>
+                        <div class="hub-jump-card focusable" tabindex="0" onclick="switchNavTab('tab-series', 2)" style="background: linear-gradient(135deg, rgba(168,85,247,0.15) 0%, rgba(15,23,42,0.8) 100%); border: 1px solid rgba(168,85,247,0.3);">
+                            <div style="font-size: 24px; color: #c084fc; margin-bottom: 8px;"><i class="fas fa-tv"></i></div>
+                            <div style="font-size: 15px; font-weight: 800; color: #FFF;">Web Series Hub</div>
+                            <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px;">Complete Seasons • Anime • Hindi &amp; English</div>
+                        </div>
+                        <div class="hub-jump-card focusable" tabindex="0" onclick="switchNavTab('tab-sports', 4)" style="background: linear-gradient(135deg, rgba(239,68,68,0.15) 0%, rgba(15,23,42,0.8) 100%); border: 1px solid rgba(239,68,68,0.3);">
+                            <div style="font-size: 24px; color: #f87171; margin-bottom: 8px;"><i class="fas fa-baseball-bat-ball"></i></div>
+                            <div style="font-size: 15px; font-weight: 800; color: #FFF;">Live Sports Arena</div>
+                            <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px;">0ms Cricket • Football • Highlights &amp; Events</div>
+                        </div>
+                        <div class="hub-jump-card focusable" tabindex="0" onclick="switchNavTab('tab-livetv', 3)" style="background: linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(15,23,42,0.8) 100%); border: 1px solid rgba(16,185,129,0.3);">
+                            <div style="font-size: 24px; color: #34d399; margin-bottom: 8px;"><i class="fas fa-satellite-dish"></i></div>
+                            <div style="font-size: 15px; font-weight: 800; color: #FFF;">24/7 Live TV Channels</div>
+                            <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px;">Indian Channels • Regional • News &amp; Music</div>
+                        </div>
+                    </div>
+                `;
+                homeGrid.appendChild(hubsSection);
 
                 // 2. Movies Tab
                 movieCatalogs.forEach((cat, idx) => {
@@ -5475,10 +5533,12 @@
 
         // 🔄 Universal Browser Back Button & Mobile Swipe-Back Gesture Interceptor
         // Seamlessly closes active Cinema Player, Stream Picker, Player Options or Fullview Catalog without exiting the app
+        // 🏁 Universal History & Back Button Controller (Supports Chrome, Safari, Android, Mac, Windows & TV Remotes)
         window.addEventListener('popstate', (e) => {
+            // Priority 1: Close active modals without leaving the page
             const extModal = document.getElementById('extensions-modal');
             if (extModal && extModal.classList.contains('open')) {
-                closeExtensionsModal(true);
+                extModal.classList.remove('open');
                 return;
             }
             const playerModal = document.getElementById('cinema-player-modal');
@@ -5498,18 +5558,44 @@
             }
             const gridModal = document.getElementById('catalog-fullview-modal');
             if (gridModal && gridModal.classList.contains('open')) {
-                closeCatalogFullGrid(true);
+                gridModal.classList.remove('open');
                 return;
             }
+            const gujModal = document.getElementById('gujarati-vault-modal');
+            if (gujModal && gujModal.classList.contains('open')) {
+                gujModal.classList.remove('open');
+                return;
+            }
+
+            // Priority 2: Navigate back to previous tab if hash changed
+            const hash = (window.location.hash || '').replace('#', '').toLowerCase();
+            const TAB_MAP = {
+                '': { id: 'tab-home', index: 0 },
+                'home': { id: 'tab-home', index: 0 },
+                'movies': { id: 'tab-movies', index: 1 },
+                'series': { id: 'tab-series', index: 2 },
+                'livetv': { id: 'tab-livetv', index: 3 },
+                'sports': { id: 'tab-sports', index: 4 },
+                'search': { id: 'tab-search', index: 5 }
+            };
+
+            const target = TAB_MAP[hash] || TAB_MAP['home'];
+            switchNavTab(target.id, target.index, false);
         });
 
-        // 🏁 Boot Application
+        // 🏁 Boot Application & Router Init
         window.addEventListener('DOMContentLoaded', () => {
-            // Clean any stale fragment on page reload
-            if (window.location.hash) {
-                try {
-                    history.replaceState(null, '', window.location.pathname + window.location.search);
-                } catch(e) {}
+            const initialHash = (window.location.hash || '').replace('#', '').toLowerCase();
+            const TAB_MAP = {
+                'movies': { id: 'tab-movies', index: 1 },
+                'series': { id: 'tab-series', index: 2 },
+                'livetv': { id: 'tab-livetv', index: 3 },
+                'sports': { id: 'tab-sports', index: 4 },
+                'search': { id: 'tab-search', index: 5 }
+            };
+
+            if (TAB_MAP[initialHash]) {
+                setTimeout(() => switchNavTab(TAB_MAP[initialHash].id, TAB_MAP[initialHash].index, false), 100);
             }
 
             checkInitialLock();
