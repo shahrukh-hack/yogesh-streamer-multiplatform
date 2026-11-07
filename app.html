@@ -2514,108 +2514,89 @@
 
         <!-- 🏆 TOP PROVIDER BRAND TILES (Disney+ / Apple TV Style) -->
         <div class="brand-tiles-bar" id="home-brand-tiles">
-            <div class="brand-tile focusable" tabindex="0" onclick="filterByBrandTile('castle')" title="Castle Cinema (Instant Web 1080p)">
+            <!-- Curated Multi-Platform Cinema Portals (Matches Android MainScreen) -->
+            <div class="brand-tile focusable" tabindex="0" onclick="openGujaratiVaultModal()" title="Gujarati Cinema Vault - 380+ Verified Titles">
                 <div class="brand-tile-inner">
-                    <div class="brand-icon"><i class="fas fa-crown"></i></div>
+                    <div class="brand-icon" style="color:var(--gold); background:rgba(229,169,59,0.12); border-color:rgba(229,169,59,0.3);"><i class="fas fa-masks-theater"></i></div>
                     <div class="brand-info">
-                        <span class="brand-name">Castle Cinema</span>
-                        <span class="brand-tag">Instant Web 1080p</span>
+                        <span class="brand-name">Gujarati Cinema</span>
+                        <span class="brand-tag">Pure Regional Hits</span>
                     </div>
-                    <div class="brand-glow"></div>
+                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(229,169,59,0.35) 0%, transparent 70%);"></div>
                 </div>
             </div>
-            <div class="brand-tile focusable" tabindex="0" onclick="filterByBrandTile('hdhub4u')" title="HDHub4u (4K UHD Dubbed)">
+            <div class="brand-tile focusable" tabindex="0" onclick="switchNavTab('tab-movies', 1)" title="Bollywood Blockbusters - 10,000+ Hindi Titles">
                 <div class="brand-tile-inner">
-                    <div class="brand-icon" style="color:#38bdf8; background:rgba(56,189,248,0.12); border-color:rgba(56,189,248,0.25);"><i class="fas fa-gem"></i></div>
+                    <div class="brand-icon" style="color:#60a5fa; background:rgba(37,99,235,0.12); border-color:rgba(37,99,235,0.25);"><i class="fas fa-film"></i></div>
                     <div class="brand-info">
-                        <span class="brand-name">HDHub4u</span>
-                        <span class="brand-tag">4K UHD Dubbed</span>
+                        <span class="brand-name">Bollywood Hits</span>
+                        <span class="brand-tag">1080p Ultra HD</span>
                     </div>
-                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(56,189,248,0.25) 0%, transparent 70%);"></div>
+                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(37,99,235,0.3) 0%, transparent 70%);"></div>
                 </div>
             </div>
-            <div class="brand-tile focusable" tabindex="0" onclick="filterByBrandTile('sports')" title="FanCode Live Cricket">
+            <div class="brand-tile focusable" tabindex="0" onclick="switchNavTab('tab-movies', 1)" title="South Hindi Dubbed Blockbusters">
+                <div class="brand-tile-inner">
+                    <div class="brand-icon" style="color:#f59e0b; background:rgba(245,158,11,0.12); border-color:rgba(245,158,11,0.25);"><i class="fas fa-gem"></i></div>
+                    <div class="brand-info">
+                        <span class="brand-name">South Dubbed</span>
+                        <span class="brand-tag">Tollywood in Hindi</span>
+                    </div>
+                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(245,158,11,0.3) 0%, transparent 70%);"></div>
+                </div>
+            </div>
+            <div class="brand-tile focusable" tabindex="0" onclick="switchNavTab('tab-movies', 1)" title="Hollywood 4K UHD Multi-Audio">
+                <div class="brand-tile-inner">
+                    <div class="brand-icon" style="color:#ec4899; background:rgba(236,72,153,0.12); border-color:rgba(236,72,153,0.25);"><i class="fas fa-clapperboard"></i></div>
+                    <div class="brand-info">
+                        <span class="brand-name">Hollywood 4K</span>
+                        <span class="brand-tag">2160p HDR Multi-Audio</span>
+                    </div>
+                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(236,72,153,0.3) 0%, transparent 70%);"></div>
+                </div>
+            </div>
+            <div class="brand-tile focusable" tabindex="0" onclick="switchNavTab('tab-series', 2)" title="Binge-Worthy Web Series">
+                <div class="brand-tile-inner">
+                    <div class="brand-icon" style="color:#c084fc; background:rgba(168,85,247,0.12); border-color:rgba(168,85,247,0.25);"><i class="fas fa-tv"></i></div>
+                    <div class="brand-info">
+                        <span class="brand-name">Web Series</span>
+                        <span class="brand-tag">Complete Seasons</span>
+                    </div>
+                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(168,85,247,0.3) 0%, transparent 70%);"></div>
+                </div>
+            </div>
+            <div class="brand-tile focusable" tabindex="0" onclick="switchNavTab('tab-sports', 3)" title="Live Cricket & Sports Arena">
                 <div class="brand-tile-inner">
                     <div class="brand-icon" style="color:#ef4444; background:rgba(239,68,68,0.12); border-color:rgba(239,68,68,0.25);"><i class="fas fa-baseball-bat-ball"></i></div>
                     <div class="brand-info">
-                        <span class="brand-name">FanCode Live</span>
-                        <span class="brand-tag">0ms Live Cricket</span>
+                        <span class="brand-name">Live Cricket</span>
+                        <span class="brand-tag">FanCode 0ms Stream</span>
                     </div>
-                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(239,68,68,0.25) 0%, transparent 70%);"></div>
+                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(239,68,68,0.3) 0%, transparent 70%);"></div>
                 </div>
             </div>
-            <div class="brand-tile focusable" tabindex="0" onclick="filterByBrandTile('hotstar')" title="Disney+ Hotstar Hub">
+            <div class="brand-tile focusable" tabindex="0" onclick="switchNavTab('tab-livetv', 4)" title="24/7 Verified Live TV Channels">
                 <div class="brand-tile-inner">
-                    <div class="brand-icon" style="color:#38bdf8; background:rgba(56,189,248,0.12); border-color:rgba(56,189,248,0.25);"><i class="fas fa-star"></i></div>
+                    <div class="brand-icon" style="color:#34d399; background:rgba(16,185,129,0.12); border-color:rgba(16,185,129,0.25);"><i class="fas fa-satellite-dish"></i></div>
                     <div class="brand-info">
-                        <span class="brand-name">Hotstar</span>
-                        <span class="brand-tag">Disney &amp; Marvel</span>
-                    </div>
-                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(56,189,248,0.25) 0%, transparent 70%);"></div>
-                </div>
-            </div>
-            <div class="brand-tile focusable" tabindex="0" onclick="filterByBrandTile('netflix')" title="Netflix Originals">
-                <div class="brand-tile-inner">
-                    <div class="brand-icon" style="color:#e50914; background:rgba(229,9,20,0.12); border-color:rgba(229,9,20,0.25);"><i class="fas fa-circle-play"></i></div>
-                    <div class="brand-info">
-                        <span class="brand-name">Netflix</span>
-                        <span class="brand-tag">Global Originals</span>
-                    </div>
-                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(229,9,20,0.25) 0%, transparent 70%);"></div>
-                </div>
-            </div>
-            <div class="brand-tile focusable" tabindex="0" onclick="filterByBrandTile('prime')" title="Amazon Prime Video">
-                <div class="brand-tile-inner">
-                    <div class="brand-icon" style="color:#00a8e1; background:rgba(0,168,225,0.12); border-color:rgba(0,168,225,0.25);"><i class="fas fa-tv"></i></div>
-                    <div class="brand-info">
-                        <span class="brand-name">Prime Video</span>
-                        <span class="brand-tag">Amazon Originals</span>
-                    </div>
-                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(0,168,225,0.25) 0%, transparent 70%);"></div>
-                </div>
-            </div>
-            <div class="brand-tile focusable" tabindex="0" onclick="filterByBrandTile('jiocinema')" title="JioCinema &amp; HBO Hub">
-                <div class="brand-tile-inner">
-                    <div class="brand-icon" style="color:#ec4899; background:rgba(236,72,153,0.12); border-color:rgba(236,72,153,0.25);"><i class="fas fa-bolt"></i></div>
-                    <div class="brand-info">
-                        <span class="brand-name">JioCinema</span>
-                        <span class="brand-tag">HBO &amp; T20 Live</span>
-                    </div>
-                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(236,72,153,0.25) 0%, transparent 70%);"></div>
-                </div>
-            </div>
-            <div class="brand-tile focusable" tabindex="0" onclick="filterByBrandTile('vegamovies')" title="VegaMovies (2160p Multi)">
-                <div class="brand-tile-inner">
-                    <div class="brand-icon" style="color:#a855f7; background:rgba(168,85,247,0.12); border-color:rgba(168,85,247,0.25);"><i class="fas fa-film"></i></div>
-                    <div class="brand-info">
-                        <span class="brand-name">VegaMovies</span>
-                        <span class="brand-tag">2160p HDR Multi</span>
-                    </div>
-                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(168,85,247,0.25) 0%, transparent 70%);"></div>
-                </div>
-            </div>
-            <div class="brand-tile focusable" tabindex="0" onclick="filterByBrandTile('gujarati')" title="Gujarati Cinema Vault">
-                <div class="brand-tile-inner">
-                    <div class="brand-icon" style="color:#f59e0b; background:rgba(245,158,11,0.12); border-color:rgba(245,158,11,0.25);"><i class="fas fa-theater-masks"></i></div>
-                    <div class="brand-info">
-                        <span class="brand-name">Gujarati Vault</span>
-                        <span class="brand-tag">Shemaroo &amp; OHO</span>
-                    </div>
-                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(245,158,11,0.25) 0%, transparent 70%);"></div>
-                </div>
-            </div>
-            <div class="brand-tile focusable" tabindex="0" onclick="openExtensionsModal()" title="43+ CS3 & JSON Plugins Hub">
-                <div class="brand-tile-inner">
-                    <div class="brand-icon" style="color:#10b981; background:rgba(16,185,129,0.12); border-color:rgba(16,185,129,0.25);"><i class="fas fa-puzzle-piece"></i></div>
-                    <div class="brand-info">
-                        <span class="brand-name">43+ Plugins</span>
-                        <span class="brand-tag">Universal CS3/JSON</span>
+                        <span class="brand-name">24/7 Live TV</span>
+                        <span class="brand-tag">JioTV+ & Regional</span>
                     </div>
                     <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(16,185,129,0.25) 0%, transparent 70%);"></div>
                 </div>
             </div>
+            <div class="brand-tile focusable" tabindex="0" onclick="openSettingsModal()" title="Settings & 43 Active Cloud Resolvers">
+                <div class="brand-tile-inner">
+                    <div class="brand-icon" style="color:var(--gold); background:rgba(229,169,59,0.12); border-color:rgba(229,169,59,0.3);"><i class="fas fa-gear"></i></div>
+                    <div class="brand-info">
+                        <span class="brand-name">Settings</span>
+                        <span class="brand-tag">43 Servers & PIN</span>
+                    </div>
+                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(229,169,59,0.35) 0%, transparent 70%);"></div>
+                </div>
+            </div>
         </div>
-
+        
         <!-- Quick Filters -->
         <div class="chips-bar" id="home-chips">
             <div class="chip-btn active focusable" tabindex="0" onclick="filterHomeCatalog('ALL', this)">All Catalogs</div>
