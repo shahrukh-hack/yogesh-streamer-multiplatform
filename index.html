@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -12,7 +12,9 @@
     
     <!-- FontAwesome 6 Pro Icons & HLS.js Player -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <!-- Video Engine: HLS.js + Google Shaka Player (ClearKey DRM Handshake) -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.compiled.js"></script>
 
     <style>
         :root {
@@ -1638,6 +1640,155 @@
             filter: brightness(1.1);
         }
 
+
+        /* 🚀 HOME QUICK FILTER BAR */
+        .home-quick-filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 8px 2px 16px 2px;
+            margin-bottom: 12px;
+            scrollbar-width: none;
+        }
+        .home-quick-filter-bar::-webkit-scrollbar { display: none; }
+        .quick-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-sub);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: var(--transition-smooth);
+        }
+        .quick-chip:hover, .quick-chip.active {
+            background: rgba(229, 169, 59, 0.18);
+            border-color: var(--gold);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(229, 169, 59, 0.2);
+        }
+
+        /* 🏏 LIVE MATCH CENTER WIDGET */
+        .live-match-center-widget {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.14) 0%, rgba(15, 23, 42, 0.85) 100%);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        .match-widget-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .live-pulse-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            color: #f87171;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            padding: 4px 12px;
+            border-radius: 999px;
+        }
+        .live-pulse-badge .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+            animation: pulseGlow 1.4s infinite;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.3); }
+        }
+        .match-widget-subtitle {
+            color: var(--text-sub);
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .match-cards-track {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+        }
+        .match-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .match-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--gold);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+        .match-badge {
+            font-size: 10px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: rgba(239, 68, 68, 0.25);
+            color: #ef4444;
+            width: fit-content;
+        }
+        .match-teams {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .match-vs {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--gold);
+        }
+        .match-desc {
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+        .btn-match-play {
+            background: var(--gold);
+            color: #000;
+            border: none;
+            padding: 7px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: var(--transition-smooth);
+        }
+        .match-card:hover .btn-match-play {
+            filter: brightness(1.15);
+        }
+
     </style>
 </head>
 <body>
@@ -1729,6 +1880,17 @@
                     <button class="btn-details focusable" tabindex="0" onclick="event.stopPropagation(); switchNavTab('tab-movies', 1)"><i class="fas fa-compass"></i> Explore Movies</button>
                 </div>
             </div>
+        </div>
+
+        <!-- 🚀 Quick-Jump Category & Engine Filter Chips Bar -->
+        <div class="home-quick-filter-bar">
+            <button class="quick-chip active focusable" tabindex="0" onclick="scrollToHomeSection('all', this)"><i class="fas fa-sparkles"></i> For You</button>
+            <button class="quick-chip focusable" tabindex="0" onclick="scrollToHomeSection('engines', this)"><i class="fas fa-bolt" style="color:var(--cyan)"></i> Direct HLS (43 Engines)</button>
+            <button class="quick-chip focusable" tabindex="0" onclick="scrollToHomeSection('anime', this)"><i class="fas fa-dragon" style="color:#ec4899"></i> Anime Universe</button>
+            <button class="quick-chip focusable" tabindex="0" onclick="scrollToHomeSection('sports', this)"><i class="fas fa-baseball-bat-ball" style="color:#ef4444"></i> Live Match Center</button>
+            <button class="quick-chip focusable" tabindex="0" onclick="scrollToHomeSection('bollywood', this)"><i class="fas fa-film" style="color:#60a5fa"></i> Bollywood 4K</button>
+            <button class="quick-chip focusable" tabindex="0" onclick="scrollToHomeSection('gujarati', this)"><i class="fas fa-masks-theater" style="color:var(--gold)"></i> Gujarati Vault</button>
+            <button class="quick-chip focusable" tabindex="0" onclick="openPluginHubModal()"><i class="fas fa-puzzle-piece" style="color:var(--gold)"></i> Plugin Hub (43)</button>
         </div>
 
         <!-- Brand Portals (Hotstar / Disney Style Quick Jumps) -->
@@ -1830,6 +1992,49 @@
                 <span class="rail-see-all focusable" tabindex="0" onclick="switchNavTab('tab-anime', 3)">Anime Arena <i class="fas fa-arrow-right"></i></span>
             </div>
             <div class="rail-track" id="home-anime-track"></div>
+        </div>
+
+
+        <!-- 🏏 Live Match Center Scoreboard / Broadcast Widget -->
+        <div class="live-match-center-widget" id="home-match-center-widget">
+            <div class="match-widget-header">
+                <div class="live-pulse-badge">
+                    <span class="live-dot"></span> LIVE MATCH CENTER
+                </div>
+                <div class="match-widget-subtitle">Direct HLS 1080p 60fps Feeds • 0ms Lag</div>
+            </div>
+            <div class="match-cards-track">
+                <div class="match-card focusable" tabindex="0" onclick="launchDirectStream('https://playztv-apps.pages.dev/a-sports/index.m3u8', 'A Sports HD (Live Cricket)')">
+                    <div class="match-badge">🏏 CRICKET LIVE</div>
+                    <div class="match-teams">
+                        <span class="team-name">A Sports HD</span>
+                        <span class="match-vs">VS</span>
+                        <span class="team-name">Live Match</span>
+                    </div>
+                    <div class="match-desc">ICC Cricket & T20 Live Feeds</div>
+                    <button class="btn-match-play"><i class="fas fa-play"></i> Watch Direct HLS</button>
+                </div>
+                <div class="match-card focusable" tabindex="0" onclick="launchDirectStream('https://playztv-apps.pages.dev/ptv-sports/index.m3u8', 'PTV Sports HD (Live Cricket)')">
+                    <div class="match-badge" style="background: rgba(37,99,235,0.25); color:#60a5fa;">🏏 PTV LIVE</div>
+                    <div class="match-teams">
+                        <span class="team-name">PTV Sports</span>
+                        <span class="match-vs">HD</span>
+                        <span class="team-name">1080p Feed</span>
+                    </div>
+                    <div class="match-desc">International Cricket & Highlights</div>
+                    <button class="btn-match-play"><i class="fas fa-play"></i> Watch Direct HLS</button>
+                </div>
+                <div class="match-card focusable" tabindex="0" onclick="launchDirectStream('https://mumbai-edge.smartplaytv.in/ddsports/live/ddsports.m3u8', 'DD Sports 1 HD')">
+                    <div class="match-badge" style="background: rgba(16,185,129,0.25); color:#34d399;">🇮🇳 NATIONAL LIVE</div>
+                    <div class="match-teams">
+                        <span class="team-name">DD Sports</span>
+                        <span class="match-vs">HD</span>
+                        <span class="team-name">India Games</span>
+                    </div>
+                    <div class="match-desc">National Tournaments & Test Matches</div>
+                    <button class="btn-match-play"><i class="fas fa-play"></i> Watch Direct HLS</button>
+                </div>
+            </div>
         </div>
 
         <!-- Live Sports Spotlight Rail -->
@@ -2170,12 +2375,18 @@
         <div class="stream-picker-sheet" style="max-width: 900px; height: 85vh;" onclick="event.stopPropagation()">
             <div class="sheet-header">
                 <div>
-                    <h3 class="sheet-title">🦁 Gujarati Cinema Exclusive Vault</h3>
-                    <div style="font-size: 11px; color: var(--gold); font-weight: 700; margin-top: 2px;">380+ Verified Regional Blockbusters & Web Series</div>
+                    <h3 class="sheet-title">🦁 Gujarati Cinema & OTT Vault</h3>
+                    <div id="gujarati-vault-count-badge" style="font-size: 11px; color: var(--gold); font-weight: 700; margin-top: 2px;">100+ Regional Blockbusters, Web Series & Shemaroo/OHO/JOJO Originals</div>
                 </div>
                 <button class="focusable" tabindex="0" onclick="closeGujaratiVaultModal()" style="background: transparent; border: none; color: var(--text-sub); font-size: 18px; cursor: pointer;"><i class="fas fa-times"></i></button>
             </div>
             <div class="sheet-body">
+                <div class="chips-bar" id="gujarati-chips" style="margin-bottom: 14px;">
+                    <button class="chip-pill active focusable" onclick="filterGujaratiVault('ALL', this)">All Gujarati (100+)</button>
+                    <button class="chip-pill focusable" onclick="filterGujaratiVault('MOVIE', this)">🍿 Movies</button>
+                    <button class="chip-pill focusable" onclick="filterGujaratiVault('SERIES', this)">📺 Web Series</button>
+                    <button class="chip-pill focusable" onclick="filterGujaratiVault('OTT', this)">✨ Shemaroo • OHO • JOJO</button>
+                </div>
                 <div class="content-grid-wrap" id="gujarati-vault-grid">
                     <div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>
                 </div>
@@ -2280,6 +2491,31 @@
         const BRAND_LOGO = "/logo.jpg";
         const FALLBACK_LOGO = "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/logo.jpg";
 
+        
+        function scrollToHomeSection(target, el) {
+            if (el) {
+                document.querySelectorAll('.quick-chip').forEach(c => c.classList.remove('active'));
+                el.classList.add('active');
+            }
+            if (target === 'all') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (target === 'engines') {
+                document.getElementById('home-plugins-track')?.parentElement?.scrollIntoView({ behavior: 'smooth' });
+            } else if (target === 'anime') {
+                document.getElementById('home-anime-track')?.parentElement?.scrollIntoView({ behavior: 'smooth' });
+            } else if (target === 'sports') {
+                document.getElementById('home-match-center-widget')?.scrollIntoView({ behavior: 'smooth' });
+            } else if (target === 'bollywood') {
+                document.getElementById('home-trending-track')?.parentElement?.scrollIntoView({ behavior: 'smooth' });
+            } else if (target === 'gujarati') {
+                document.getElementById('home-gujarati-track')?.parentElement?.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function launchDirectStream(url, title) {
+            launchCinemaPlayer(url, title, [{ name: 'Direct HLS Master (0ms)', url: url }], 0);
+        }
+
         // Global Stores
         let allBridgeCatalogs = [];
         let catalogCache = new Map();
@@ -2295,6 +2531,7 @@
         let activeStreamTitle = "";
         let currentPlayingUrl = "";
         let currentHlsEngine = null;
+        let currentShakaPlayer = null;
 
         // PIN Lock State
         let enteredPin = "";
@@ -3690,9 +3927,69 @@
                 }
             };
 
+            // Clean up previous engines
+            if (currentHlsEngine) {
+                currentHlsEngine.destroy();
+                currentHlsEngine = null;
+            }
+            if (currentShakaPlayer) {
+                try { currentShakaPlayer.destroy(); } catch(e) {}
+                currentShakaPlayer = null;
+            }
+
+            const activeStream = (activeStreamList && activeStreamList[activeStreamIndex]) || null;
+            const activeClearkey = (activeStream && activeStream.clearkey) ? activeStream.clearkey : null;
+
+            // 🚀 Google Shaka Player Engine with ClearKey DRM Handshake (Live Cricket & Live TV)
+            const mpdMatch = url.match(/[?&]d=([^&]+)/);
+            const isDashClearkey = (Boolean(activeClearkey) || url.includes('.mpd') || Boolean(mpdMatch)) && 
+                                   (typeof shaka !== 'undefined' && shaka.Player && shaka.Player.isBrowserSupported());
+
+            if (isDashClearkey) {
+                try {
+                    shaka.polyfill.installAll();
+                    let directMpd = mpdMatch ? decodeURIComponent(mpdMatch[1]) : ((activeStream && activeStream.mpdUrl) ? activeStream.mpdUrl : url);
+                    currentShakaPlayer = new shaka.Player(video);
+
+                    if (activeClearkey) {
+                        const parts = activeClearkey.split(':');
+                        if (parts.length === 2) {
+                            currentShakaPlayer.configure({
+                                drm: {
+                                    clearKeys: {
+                                        [parts[0]]: parts[1]
+                                    }
+                                },
+                                streaming: {
+                                    bufferingGoal: 10,
+                                    rebufferingGoal: 2
+                                }
+                            });
+                        }
+                    }
+
+                    currentShakaPlayer.addEventListener('error', (e) => {
+                        console.warn('Shaka Player DRM error:', e);
+                        if (activeStreamList.length > 1 && activeStreamIndex < activeStreamList.length - 1) {
+                            tryNextStreamServer();
+                        }
+                    });
+
+                    currentShakaPlayer.load(directMpd).then(() => {
+                        applyResume();
+                        video.play().catch(() => {});
+                    }).catch(err => {
+                        console.warn('Shaka load error, trying next server:', err);
+                        tryNextStreamServer();
+                    });
+                    return;
+                } catch(err) {
+                    console.warn('Shaka Player failed to initialize, falling back to Hls.js:', err);
+                }
+            }
+
             // Playback with HLS or Native
             if (Hls.isSupported() && (url.includes('.m3u8') || !url.includes('.mp4'))) {
-                if (currentHlsEngine) currentHlsEngine.destroy();
                 currentHlsEngine = new Hls({ enableWorker: true, lowLatencyMode: true });
                 currentHlsEngine.loadSource(url);
                 currentHlsEngine.attachMedia(video);
@@ -4061,17 +4358,74 @@
         // ==========================================
         // 🦁 DYNAMIC GUJARATI HARVESTING
         // ==========================================
-        function harvestGujaratiFromCloud() {
-            if (!Array.isArray(allLoadedMovies) || allLoadedMovies.length === 0) return;
-            allLoadedMovies.forEach(m => {
-                const txt = ((m.name || '') + ' ' + (m.description || '')).toLowerCase();
-                if (txt.includes('gujarati') || txt.includes('gujju') || txt.includes('dhollywood')) {
-                    if (!dynamicGujaratiMovies.some(g => g.id === m.id)) {
-                        dynamicGujaratiMovies.push(m);
-                    }
+        async function harvestGujaratiFromCloud() {
+            // 1. Verified Core Seeds
+            const gujaratiSeeds = [
+                { id: 'tt13433802', name: 'Chhello Show (Last Film Show) (2022)', type: 'movie', poster: 'https://m.media-amazon.com/images/M/MV5BMjA4ODQ3ODQ5Ml5BMl5BanBnXkFtZTgwNTU5Nzc3NzM@._V1_FMjpg_UX1000_.jpg', imdbRating: '8.2', cat: 'MOVIE' },
+                { id: 'tt9074052', name: 'Sharato Lagu (2018)', type: 'movie', poster: BRAND_LOGO, imdbRating: '7.8', cat: 'MOVIE' },
+                { id: 'tt10899268', name: 'Hellaro (2019)', type: 'movie', poster: BRAND_LOGO, imdbRating: '8.5', cat: 'MOVIE' },
+                { id: 'tt8543788', name: 'Chaal Jeevi Laiye (2019)', type: 'movie', poster: BRAND_LOGO, imdbRating: '8.4', cat: 'MOVIE' },
+                { id: 'tt20864350', name: 'Fakt Mahilao Maate (2022)', type: 'movie', poster: BRAND_LOGO, imdbRating: '7.5', cat: 'MOVIE' },
+                { id: 'tt28532452', name: '3 Ekka (2023)', type: 'movie', poster: BRAND_LOGO, imdbRating: '7.9', cat: 'MOVIE' },
+                { id: 'tt16279930', name: 'Kutch Express (2023)', type: 'movie', poster: BRAND_LOGO, imdbRating: '7.6', cat: 'MOVIE' },
+                { id: 'tt21820626', name: 'Bushirt T-shirt (2023)', type: 'movie', poster: BRAND_LOGO, imdbRating: '7.4', cat: 'MOVIE' },
+                { id: 'tt27718018', name: 'Kasoombo (2024)', type: 'movie', poster: BRAND_LOGO, imdbRating: '8.7', cat: 'MOVIE' },
+                { id: 'tt32870494', name: 'Jhamkudi (2024)', type: 'movie', poster: BRAND_LOGO, imdbRating: '8.1', cat: 'MOVIE' }
+            ];
+
+            const seenIds = new Set(dynamicGujaratiMovies.map(g => g.id));
+            gujaratiSeeds.forEach(s => {
+                if (!seenIds.has(s.id)) {
+                    seenIds.add(s.id);
+                    dynamicGujaratiMovies.push(s);
                 }
             });
-            renderStandardRail(dynamicGujaratiMovies.slice(0, 12), 'home-gujarati-track', 'movie');
+
+            // 2. Concurrently query all 16 Gujarati search endpoints across cloud scrapers
+            const endpoints = [
+                `${API_BASE}/catalog/other/cnc_HDHub4U_other/search=gujarati.json`,
+                `${API_BASE}/catalog/other/cnc_Rogmovies_other/search=gujarati.json`,
+                `${API_BASE}/catalog/other/cnc_HDHub4U_other/search=gujarati%20series.json`,
+                `${API_BASE}/catalog/other/cnc_Rogmovies_other/search=gujarati%20series.json`,
+                `${API_BASE}/catalog/other/cnc_HDHub4U_other/search=gujarati%20season.json`,
+                `${API_BASE}/catalog/other/cnc_HDHub4U_other/search=vitthal.json`,
+                `${API_BASE}/catalog/other/cnc_HDHub4U_other/search=oho.json`,
+                `${API_BASE}/catalog/other/cnc_Rogmovies_other/search=shemaroo.json`,
+                `${API_BASE}/catalog/other/cnc_Rogmovies_other/search=shemaroome.json`,
+                `${API_BASE}/catalog/other/cnc_Rogmovies_other/search=jojo.json`,
+                `${API_BASE}/catalog/other/cnc_Rogmovies_other/search=natak.json`,
+                `${API_BASE}/catalog/other/cnc_HDHub4U_other/search=gujarati%202025.json`,
+                `${API_BASE}/catalog/other/cnc_HDHub4U_other/search=gujarati%202024.json`,
+                `${API_BASE}/catalog/other/cnc_HDHub4U_other/search=gujarati%202023.json`,
+                `${API_BASE}/catalog/other/cnc_Rogmovies_other/search=gujarati%202025.json`,
+                `${API_BASE}/catalog/other/cnc_Rogmovies_other/search=gujarati%202024.json`,
+                `${API_BASE}/catalog/other/cnc_Rogmovies_other/search=gujarati%202023.json`,
+                `${API_BASE}/catalog/movie/cnc_CastleTV_other/search=gujarati.json`
+            ];
+
+            try {
+                await Promise.allSettled(endpoints.map(async url => {
+                    try {
+                        const res = await fetch(url);
+                        const data = await res.json();
+                        if (Array.isArray(data?.metas)) {
+                            data.metas.forEach(m => {
+                                if (!m || !m.name || seenIds.has(m.id)) return;
+                                seenIds.add(m.id);
+                                const isSeries = (m.name + ' ' + (m.description || '')).toLowerCase().includes('season') || (m.name || '').toLowerCase().includes('series');
+                                m.cat = isSeries ? 'SERIES' : 'MOVIE';
+                                if (!m.type) m.type = isSeries ? 'series' : 'movie';
+                                dynamicGujaratiMovies.push(m);
+                            });
+                        }
+                    } catch(e) {}
+                }));
+
+                // Update Gujarati Vault modal count & home rail
+                const badge = document.getElementById('gujarati-vault-count-badge');
+                if (badge) badge.innerText = `${dynamicGujaratiMovies.length} Blockbusters & Series`;
+                renderStandardRail(dynamicGujaratiMovies.slice(0, 16), 'home-gujarati-track', 'movie');
+            } catch(e) {}
         }
 
         // ==========================================
