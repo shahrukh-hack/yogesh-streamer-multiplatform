@@ -295,6 +295,36 @@ async function getNativeSportsStream(matchId) {
 let cachedHDHubCatalog = null;
 let lastHDHubCatalogFetch = 0;
 
+function unpackDeanEdwards(packed) {
+    const match = packed.match(new RegExp("}\\s*\\('([\\s\\S]*?)',\\s*(\\d+),\\s*(\\d+),\\s*'([\\s\\S]*?)'\\.split\\('\\|'\\)"));
+    if (!match) return null;
+    let [_, p, a, c, k] = match;
+    a = parseInt(a, 10);
+    c = parseInt(c, 10);
+    const keywords = k.split('|');
+
+    function base36(n, b) {
+        const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        if (n === 0) return '0';
+        let res = '';
+        while (n > 0) {
+            res = chars[n % b] + res;
+            n = Math.floor(n / b);
+        }
+        return res;
+    }
+
+    const dict = {};
+    for (let i = 0; i < c; i++) {
+        const key = base36(i, a);
+        dict[key] = (keywords[i] !== undefined && keywords[i] !== '') ? keywords[i] : key;
+    }
+
+    return p.replace(/\b\w+\b/g, (token) => {
+        return dict.hasOwnProperty(token) ? dict[token] : token;
+    });
+}
+
 async function getNativeHDHub4uCatalog() {
     const now = Date.now();
     if (cachedHDHubCatalog && (now - lastHDHubCatalogFetch < 900000)) { // 15 mins cache
@@ -306,15 +336,15 @@ async function getNativeHDHub4uCatalog() {
         const baseDomain = domains.HDHUB4u || 'https://new11.hdhub4u.cl';
         const html = await fetchHtml(baseDomain);
         
-        const regex = /<a[^>]+href="([^"]+)"[^>]*>[\s\S]*?<img[^>]+src="([^"]+)"[^>]*alt="([^"]*)"/gi;
+        const regex = /<a[^>]+href="([^"]+)"[^>]+(?:aria-label|title)="([^"]+)"[^>]*>[\s\S]*?<img[^>]+src="([^"]+)"/gi;
         let match;
         const items = [];
         const seenSlugs = new Set();
         
         while ((match = regex.exec(html)) !== null) {
             const href = match[1];
-            const poster = match[2];
-            const rawTitle = match[3];
+            const rawTitle = match[2];
+            const poster = match[3];
             
             if (rawTitle && href && href !== '/' && !href.includes('/disclaimer/') && !href.includes('app-download')) {
                 const slug = href.replace(/^https?:\/\/[^\/]+/, '').replace(/^\//, '').replace(/\/$/, '');
@@ -353,9 +383,47 @@ async function getNativeHDHub4uStreams(slug) {
         const domains = await getLiveDomains();
         const baseDomain = domains.HDHUB4u || 'https://new11.hdhub4u.cl';
         const moviePageUrl = `${baseDomain}/${slug}/`;
-        const pageHtml = await fetchHtml(moviePageUrl);
+        const pageHtml = await fetchHtml(moviePageUrl, { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' });
 
-        // Find quality links (hubcdn, hubdrive, hubcloud, etc.)
+        const streams = [];
+
+        // 1. Direct HLS 1080p via hdstream4u / hubstream player unpacker
+        const streamLinkMatch = pageHtml.match(/https?:\/\/(?:[a-zA-Z0-9-]+\.)?(?:hdstream4u|hubstream)\.[a-z]+\/file\/[a-zA-Z0-9]+/i);
+        if (streamLinkMatch) {
+            try {
+                const streamUrl = streamLinkMatch[0];
+                const streamPageHtml = await fetchHtml(streamUrl, {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+                    'Referer': moviePageUrl
+                }, 5000);
+
+                const scripts = streamPageHtml.match(/<script[^>]*>([\s\S]*?)<\/script>/gi) || [];
+                for (const s of scripts) {
+                    if (s.includes('eval(function(p,a,c,k,e,d)')) {
+                        const unpacked = unpackDeanEdwards(s);
+                        if (unpacked) {
+                            const m3u8Match = unpacked.match(/https?:\/\/[^\s"']+\.m3u8[^\s"']*/);
+                            if (m3u8Match) {
+                                streams.push({
+                                    name: '⚡ HDHub4u [Direct 1080p HLS]',
+                                    title: 'Full HD 1080p • Multi-Audio (Hindi / English / Tamil / Telugu)',
+                                    url: m3u8Match[0],
+                                    isWebPlayable: true,
+                                    behaviorHints: {
+                                        notWebReady: false
+                                    }
+                                });
+                                break;
+                            }
+                        }
+                    }
+                }
+            } catch(e) {
+                console.error('Error resolving hdstream4u for slug:', slug, e.message);
+            }
+        }
+
+        // 2. Quality mirrors (hubcdn, hubdrive, hubcloud, etc.)
         const linkRegex = /href="([^"]+)"[^>]*>([^<]+)<\/a>/gi;
         let lMatch;
         const qualityLinks = [];
@@ -474,9 +542,23 @@ async function getNativeVegaMoviesStreams(slug) {
         const domains = await getLiveDomains();
         const baseDomain = domains.vegamovies || 'https://vegamovies.lease';
         const moviePageUrl = `${baseDomain}/${slug}/`;
-        const pageHtml = await fetchHtml(moviePageUrl);
+        const pageHtml = await fetchHtml(moviePageUrl, { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' });
 
-        // Find nexdrive links
+        const streams = [];
+
+        // 1. Direct playdrive.vip web player
+        const playMatch = pageHtml.match(/https?:\/\/(?:www\.)?playdrive\.vip\/e\/[a-zA-Z0-9_-]+/i);
+        if (playMatch) {
+            streams.push({
+                name: '🍿 VegaMovies [Direct Web Player]',
+                title: 'Full HD 1080p • Multi-Audio (Hindi / English / Tamil / Telugu)',
+                url: playMatch[0],
+                isWebPlayable: true,
+                behaviorHints: { notWebReady: false }
+            });
+        }
+
+        // 2. Nexdrive & fastdl direct download / stream mirrors
         const nexRegex = /href="([^"]*nexdrive[^"]*)"/gi;
         let nMatch;
         const nexLinks = [];
@@ -485,8 +567,6 @@ async function getNativeVegaMoviesStreams(slug) {
                 nexLinks.push(nMatch[1]);
             }
         }
-
-        const streams = [];
 
         for (const nexUrl of nexLinks.slice(0, 4)) {
             try {
