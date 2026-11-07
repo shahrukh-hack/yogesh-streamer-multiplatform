@@ -1697,6 +1697,27 @@ const server = http.createServer(async (req, res) => {
             res.end(JSON.stringify({ metas }));
             return;
         }
+
+        if (pathname === '/api/debug/anime') {
+            try {
+                const domains = await getLiveDomains();
+                const baseDomain = domains.animeworld || 'https://watchanimeworld.one';
+                const html = await fetchHtml(baseDomain);
+                const articles = html.match(/<article[^>]*>[\s\S]*?<\/article>/gi) || [];
+                res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+                res.end(JSON.stringify({
+                    baseDomain,
+                    htmlLength: html.length,
+                    articlesCount: articles.length,
+                    sampleArticle: articles[0] ? articles[0].slice(0, 300) : null
+                }));
+                return;
+            } catch(e) {
+                res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+                res.end(JSON.stringify({ error: e.message }));
+                return;
+            }
+        }
         try {
             // If Stremio is requesting /catalog/movie/cnc_..._other.json, map to /catalog/other/cnc_..._other.json upstream
             let mappedPath = pathname;
