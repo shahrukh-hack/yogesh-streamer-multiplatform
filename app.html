@@ -4603,6 +4603,19 @@
                 `;
             }
 
+            // Universal 1-Tap Direct Offline Download
+            const isDirectFile = streamUrl.includes('.mp4') || streamUrl.includes('.mkv') || streamUrl.includes('.webm') || streamUrl.includes('r2.dev');
+            const downloadLabel = isDirectFile ? 'Download Video (Direct MP4/MKV)' : 'Download Offline Stream';
+            buttonsHtml += `
+                <a href="${escapeHtml(streamUrl)}" download="${escapeHtml(activeStreamTitle || 'video')}.mp4" target="_blank" class="player-opt-btn focusable" style="text-decoration: none;" onclick="showToast('⬇️ Starting direct download...'); setTimeout(closePlayerOptionsModal, 800);">
+                    <i class="fas fa-arrow-down-to-bracket" style="color: #10b981;"></i>
+                    <div class="player-opt-text">
+                        <strong>${downloadLabel}</strong>
+                        <span>Save video to device storage for offline viewing</span>
+                    </div>
+                </a>
+            `;
+
             // Universal 1-Tap Copy Direct Stream Link
             buttonsHtml += `
                 <button class="player-opt-btn focusable" tabindex="0" onclick="copyToClipboard('${escapeHtml(streamUrl)}', '📋 Direct stream link copied! Paste into any player'); closePlayerOptionsModal();">
