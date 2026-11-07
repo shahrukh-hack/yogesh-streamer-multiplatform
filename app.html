@@ -2459,24 +2459,24 @@
             <a href="#home" class="nav-pill active focusable" tabindex="0" role="button" onclick="event.preventDefault(); switchNavTab('tab-home', 0)"><i class="fas fa-home"></i> Home</a>
             <a href="#movies" class="nav-pill focusable" tabindex="0" role="button" onclick="event.preventDefault(); switchNavTab('tab-movies', 1)"><i class="fas fa-film"></i> Movies</a>
             <a href="#series" class="nav-pill focusable" tabindex="0" role="button" onclick="event.preventDefault(); switchNavTab('tab-series', 2)"><i class="fas fa-tv"></i> Series</a>
-            <a href="#livetv" class="nav-pill focusable" tabindex="0" role="button" onclick="event.preventDefault(); switchNavTab('tab-livetv', 3)"><i class="fas fa-satellite-dish"></i> Live TV</a>
-            <a href="#sports" class="nav-pill focusable" tabindex="0" role="button" onclick="event.preventDefault(); switchNavTab('tab-sports', 4)"><i class="fas fa-baseball-bat-ball"></i> Sports</a>
-            <a href="#extensions" class="nav-pill focusable" tabindex="0" role="button" onclick="event.preventDefault(); openExtensionsModal()"><i class="fas fa-puzzle-piece" style="color: var(--gold);"></i> 43+ Scrapers</a>
+            <a href="#sports" class="nav-pill focusable" tabindex="0" role="button" onclick="event.preventDefault(); switchNavTab('tab-sports', 3)"><i class="fas fa-baseball-bat-ball"></i> Sports</a>
+            <a href="#livetv" class="nav-pill focusable" tabindex="0" role="button" onclick="event.preventDefault(); switchNavTab('tab-livetv', 4)"><i class="fas fa-satellite-dish"></i> Live TV</a>
             <a href="#search" class="nav-pill focusable" tabindex="0" role="button" onclick="event.preventDefault(); switchNavTab('tab-search', 5)"><i class="fas fa-search"></i> Search</a>
+            <a href="#settings" class="nav-pill focusable" tabindex="0" role="button" onclick="event.preventDefault(); openSettingsModal()"><i class="fas fa-gear" style="color: var(--gold);"></i> Settings</a>
         </div>
 
         <div class="header-right-actions">
             <button class="btn-sync-header focusable" tabindex="0" onclick="openSyncModal()" title="Cross-Device Cloud Sync">
                 <i class="fas fa-cloud"></i> <span>Sync</span>
             </button>
-            <button class="btn-extensions-header focusable" tabindex="0" onclick="openExtensionsModal()" title="View Verified Cloud Extensions">
-                <i class="fas fa-puzzle-piece"></i> <span>Extensions</span>
+            <button class="btn-extensions-header focusable" tabindex="0" onclick="openSettingsModal()" title="Settings & Cloud Engine">
+                <i class="fas fa-gear"></i> <span>Settings</span>
             </button>
-            <a href="/apk" target="_blank" class="btn-apk-header focusable" tabindex="0" title="Download Native Android App APK (v5.4.4)">
-                <i class="fab fa-android"></i> <span>Get App (v5.4)</span>
+            <a href="/apk" target="_blank" class="btn-apk-header focusable" tabindex="0" title="Download Official Android App (v5.4.4)">
+                <i class="fab fa-android"></i> <span>Android App</span>
             </a>
             <div class="header-status">
-                <span class="status-dot"></span> 42 SOURCES ONLINE
+                <span class="status-dot"></span> 43 SERVERS ONLINE
             </div>
             <button class="btn-lock-session focusable" tabindex="0" onclick="lockApp()" title="Lock Session">
                 <i class="fas fa-lock"></i> <span>Lock</span>
@@ -2949,17 +2949,21 @@
             <i class="fas fa-tv"></i>
             <span>Series</span>
         </div>
-        <div class="bottom-nav-item focusable" tabindex="0" role="button" onclick="switchNavTab('tab-livetv', 3)">
-            <i class="fas fa-satellite-dish"></i>
-            <span>Live TV</span>
-        </div>
-        <div class="bottom-nav-item focusable" tabindex="0" role="button" onclick="switchNavTab('tab-sports', 4)">
+        <div class="bottom-nav-item focusable" tabindex="0" role="button" onclick="switchNavTab('tab-sports', 3)">
             <i class="fas fa-baseball-bat-ball"></i>
             <span>Sports</span>
+        </div>
+        <div class="bottom-nav-item focusable" tabindex="0" role="button" onclick="switchNavTab('tab-livetv', 4)">
+            <i class="fas fa-satellite-dish"></i>
+            <span>Live TV</span>
         </div>
         <div class="bottom-nav-item focusable" tabindex="0" role="button" onclick="switchNavTab('tab-search', 5)">
             <i class="fas fa-search"></i>
             <span>Search</span>
+        </div>
+        <div class="bottom-nav-item focusable" tabindex="0" role="button" onclick="openSettingsModal()">
+            <i class="fas fa-gear"></i>
+            <span>Settings</span>
         </div>
     </nav>
 
@@ -3900,14 +3904,8 @@
             sec.setAttribute('data-id', cat.id);
             sec.setAttribute('data-name', cat.name);
 
-            let headlineHtml = cat.name;
-            if (cat.id === 'cnc_CastleTVUseVLC_other') {
-                headlineHtml = `🏰 Castle Cinema <span class="badge-stream-format badge-stream-web">⚡ Instant Web Play • 1080p</span>`;
-            } else if (cat.id === 'cnc_Kisskh_other') {
-                headlineHtml = `🌟 Kisskh Series & Cinema <span class="badge-stream-format badge-stream-web">⚡ Instant Web Play</span>`;
-            } else if ((cat.name || '').toLowerCase().includes('mkv') || (cat.name || '').toLowerCase().includes('vlc')) {
-                headlineHtml = `${cat.name} <span class="badge-stream-format badge-stream-mkv">🚀 MKV • VLC</span>`;
-            }
+            const meta = getCuratedCategoryMeta(cat.id, cat.name);
+            let headlineHtml = `${meta.title} <span class="badge-stream-format ${meta.badgeClass}">${meta.badge}</span>`;
 
             sec.innerHTML = `
                 <div class="section-headline">
