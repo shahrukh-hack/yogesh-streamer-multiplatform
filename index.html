@@ -2767,6 +2767,7 @@
     </nav>
 
     <script>
+        const BRAND_LOGO = 'https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg';
         const API_BASE = (window.location.origin && window.location.origin !== 'null' && !window.location.protocol.startsWith('file')) 
             ? window.location.origin 
             : 'https://yogesh-streamer-bridge.onrender.com';
@@ -2999,8 +3000,8 @@
             { name: "A Sports HD (Live Cricket)", cat: "SPORTS", url: "https://playztv-apps.pages.dev/a-sports/index.m3u8", logo: "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg", quality: "1080p HD Direct" },
             { name: "PTV Sports HD (Live Cricket)", cat: "SPORTS", url: "https://playztv-apps.pages.dev/ptv-sports/index.m3u8", logo: "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg", quality: "720p HD Direct" },
             { name: "DD Sports 1 HD (National Sports & Cricket)", cat: "SPORTS", url: "https://mumbai-edge.smartplaytv.in/DDSportsHD/index.m3u8", logo: "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg", quality: "1080p 60fps" },
-            { name: "Aaj Tak HD", cat: "NEWS", url: "https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Aaj_tak_logo.png/300px-Aaj_tak_logo.png", quality: "1080p HD" },
-            { name: "9X Jalwa HD", cat: "MUSIC", url: "https://wiselp.wiseplayout.com/9X_Jalwa/master.m3u8", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/90/9X_Jalwa_logo.jpg/220px-9X_Jalwa_logo.jpg", quality: "1080p HD" },
+            { name: "Aaj Tak HD", cat: "NEWS", url: "https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8", logo: "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg", quality: "1080p HD" },
+            { name: "9X Jalwa HD", cat: "MUSIC", url: "https://wiselp.wiseplayout.com/9X_Jalwa/master.m3u8", logo: "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg", quality: "1080p HD" },
             { name: "DD National HD", cat: "ENTERTAINMENT", url: "https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/7ff57cc9046b4c188b51a0d506f36e7f/index.m3u8", logo: "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg", quality: "1080p HD" },
             { name: "DD Girnar (Gujarati)", cat: "GUJARATI", url: "https://d2lk5u59tns74c.cloudfront.net/out/v1/558fdb9aebb54bb5bbbf0ced03686148/index.m3u8", logo: "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg", quality: "720p HD" },
             { name: "Aastha Gujarati", cat: "GUJARATI", url: "https://mumt04.tangotv.in/m18aqlK4AASTHAGUJARATI/index.m3u8", logo: "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg", quality: "720p HD" }
@@ -5389,34 +5390,52 @@
             if (!grid) return;
             grid.innerHTML = '<div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i> Loading verified plugins...</div>';
 
-            try {
-                const res = await fetch(`${API_BASE}/api/plugins`);
-                const plugins = await res.json();
-                if (Array.isArray(plugins) && plugins.length > 0) {
-                    cachedPluginsList = plugins;
-                    renderPluginsGrid(plugins);
-                } else {
-                    grid.innerHTML = '<div style="color:var(--text-sub); padding:20px;">No plugins available currently.</div>';
+            const endpoints = [
+                `${API_BASE}/api/plugins`,
+                'https://yogesh-streamer-bridge.onrender.com/api/plugins',
+                'https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/plugins.json'
+            ];
+
+            let plugins = null;
+            for (const url of endpoints) {
+                try {
+                    const res = await fetch(url);
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    if (Array.isArray(data) && data.length > 0) {
+                        plugins = data;
+                        break;
+                    }
+                } catch(e) {
+                    console.warn(`Plugin endpoint ${url} failed:`, e.message);
                 }
-            } catch(err) {
-                grid.innerHTML = `<div style="color:#ef4444; padding:20px;">Failed to load plugins: ${err.message}</div>`;
+            }
+
+            if (plugins && plugins.length > 0) {
+                cachedPluginsList = plugins;
+                renderPluginsGrid(plugins);
+            } else {
+                grid.innerHTML = '<div style="color:var(--text-sub); padding:20px;">No plugins available currently. Please check your network connection.</div>';
             }
         }
 
         function renderPluginsGrid(plugins) {
             const grid = document.getElementById('extensions-grid');
             if (!grid) return;
+            const defaultLogo = (typeof BRAND_LOGO !== 'undefined' && BRAND_LOGO) 
+                ? BRAND_LOGO 
+                : 'https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg';
 
             grid.innerHTML = plugins.map(p => {
-                const icon = p.iconUrl || BRAND_LOGO;
+                const icon = (p && p.iconUrl) ? p.iconUrl : defaultLogo;
                 const types = Array.isArray(p.tvTypes) ? p.tvTypes.join(' • ') : 'Streaming';
                 const ver = p.version ? `v${p.version}` : 'v1.0';
                 return `
                     <div class="ext-card focusable" tabindex="0">
                         <div class="ext-card-header">
-                            <img src="${escapeHtml(icon)}" class="ext-icon" alt="${escapeHtml(p.name)}" onerror="this.src='${BRAND_LOGO}'">
+                            <img src="${escapeHtml(icon)}" class="ext-icon" alt="${escapeHtml(p.name || 'Extension')}" onerror="this.onerror=null; this.src='${defaultLogo}';">
                             <div class="ext-title-wrap">
-                                <div class="ext-name">${escapeHtml(p.name)}</div>
+                                <div class="ext-name">${escapeHtml(p.name || 'Provider')}</div>
                                 <div class="ext-meta-tags">
                                     <span class="ext-badge-ver">${ver}</span>
                                     <span class="ext-badge-type">${escapeHtml(types)}</span>
