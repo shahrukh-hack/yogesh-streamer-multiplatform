@@ -1904,6 +1904,148 @@
             }
         }
     
+        /* 🏆 Top Provider Brand Tiles (Disney+ / Apple TV Style) */
+        .brand-tiles-bar {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            margin-bottom: 22px;
+            padding: 0 4px;
+        }
+        @media (max-width: 960px) {
+            .brand-tiles-bar {
+                display: flex;
+                overflow-x: auto;
+                gap: 10px;
+                padding-bottom: 6px;
+                scrollbar-width: none;
+            }
+            .brand-tiles-bar::-webkit-scrollbar {
+                display: none;
+            }
+            .brand-tile {
+                flex: 0 0 160px;
+            }
+        }
+        .brand-tile {
+            position: relative;
+            border-radius: 14px;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.015) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            outline: none;
+        }
+        .brand-tile:hover, .brand-tile:focus, .brand-tile.focused {
+            transform: translateY(-4px) scale(1.03);
+            border-color: var(--gold);
+            box-shadow: 0 10px 28px rgba(229, 169, 59, 0.35);
+        }
+        .brand-tile-inner {
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            position: relative;
+            z-index: 2;
+        }
+        .brand-icon {
+            font-size: 20px;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: rgba(229, 169, 59, 0.12);
+            border: 1px solid rgba(229, 169, 59, 0.25);
+            flex-shrink: 0;
+        }
+        .brand-info {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        .brand-name {
+            font-size: 13px;
+            font-weight: 800;
+            color: #FFF;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            letter-spacing: 0.2px;
+        }
+        .brand-tag {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-sub);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+        }
+        .brand-glow {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(229, 169, 59, 0.22) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .brand-tile:hover .brand-glow, .brand-tile:focus .brand-glow {
+            opacity: 1;
+        }
+
+        /* 💫 Shimmer Skeleton Loaders */
+        @keyframes skeletonShimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .skeleton-row {
+            padding: 12px 4px;
+            margin-bottom: 24px;
+        }
+        .skeleton-title {
+            width: 200px;
+            height: 20px;
+            border-radius: 6px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.04) 75%);
+            background-size: 200% 100%;
+            animation: skeletonShimmer 1.8s infinite;
+            margin-bottom: 14px;
+        }
+        .skeleton-cards-track {
+            display: flex;
+            gap: 14px;
+            overflow: hidden;
+        }
+        .skeleton-card {
+            flex: 0 0 150px;
+            height: 220px;
+            border-radius: 10px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+            background-size: 200% 100%;
+            animation: skeletonShimmer 1.8s infinite;
+        }
+        .skeleton-card-landscape {
+            flex: 0 0 240px;
+            height: 140px;
+        }
+        @media (max-width: 600px) {
+            .skeleton-card {
+                flex: 0 0 115px;
+                height: 165px;
+            }
+            .skeleton-card-landscape {
+                flex: 0 0 180px;
+                height: 110px;
+            }
+        }
+
         /* 🕒 Continue Watching Rail & Cards */
         .continue-watching-section {
             margin-bottom: 28px;
@@ -2284,6 +2426,70 @@
             </div>
         </div>
 
+        <!-- 🏆 TOP PROVIDER BRAND TILES (Disney+ / Apple TV Style) -->
+        <div class="brand-tiles-bar" id="home-brand-tiles">
+            <div class="brand-tile focusable" tabindex="0" onclick="filterByBrandTile('castle')" title="Castle Cinema (Instant Web 1080p)">
+                <div class="brand-tile-inner">
+                    <div class="brand-icon"><i class="fas fa-crown"></i></div>
+                    <div class="brand-info">
+                        <span class="brand-name">Castle Cinema</span>
+                        <span class="brand-tag">Instant Web 1080p</span>
+                    </div>
+                    <div class="brand-glow"></div>
+                </div>
+            </div>
+            <div class="brand-tile focusable" tabindex="0" onclick="filterByBrandTile('hdhub4u')" title="HDHub4u (4K UHD Dubbed)">
+                <div class="brand-tile-inner">
+                    <div class="brand-icon" style="color:#38bdf8; background:rgba(56,189,248,0.12); border-color:rgba(56,189,248,0.25);"><i class="fas fa-gem"></i></div>
+                    <div class="brand-info">
+                        <span class="brand-name">HDHub4u</span>
+                        <span class="brand-tag">4K UHD Dubbed</span>
+                    </div>
+                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(56,189,248,0.25) 0%, transparent 70%);"></div>
+                </div>
+            </div>
+            <div class="brand-tile focusable" tabindex="0" onclick="filterByBrandTile('sports')" title="FanCode Live Cricket">
+                <div class="brand-tile-inner">
+                    <div class="brand-icon" style="color:#ef4444; background:rgba(239,68,68,0.12); border-color:rgba(239,68,68,0.25);"><i class="fas fa-baseball-bat-ball"></i></div>
+                    <div class="brand-info">
+                        <span class="brand-name">FanCode Live</span>
+                        <span class="brand-tag">0ms Live Cricket</span>
+                    </div>
+                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(239,68,68,0.25) 0%, transparent 70%);"></div>
+                </div>
+            </div>
+            <div class="brand-tile focusable" tabindex="0" onclick="filterByBrandTile('vegamovies')" title="VegaMovies (2160p Multi)">
+                <div class="brand-tile-inner">
+                    <div class="brand-icon" style="color:#a855f7; background:rgba(168,85,247,0.12); border-color:rgba(168,85,247,0.25);"><i class="fas fa-film"></i></div>
+                    <div class="brand-info">
+                        <span class="brand-name">VegaMovies</span>
+                        <span class="brand-tag">2160p HDR Multi</span>
+                    </div>
+                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(168,85,247,0.25) 0%, transparent 70%);"></div>
+                </div>
+            </div>
+            <div class="brand-tile focusable" tabindex="0" onclick="filterByBrandTile('gujarati')" title="Gujarati Cinema Vault">
+                <div class="brand-tile-inner">
+                    <div class="brand-icon" style="color:#f59e0b; background:rgba(245,158,11,0.12); border-color:rgba(245,158,11,0.25);"><i class="fas fa-theater-masks"></i></div>
+                    <div class="brand-info">
+                        <span class="brand-name">Gujarati Vault</span>
+                        <span class="brand-tag">Shemaroo &amp; OHO</span>
+                    </div>
+                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(245,158,11,0.25) 0%, transparent 70%);"></div>
+                </div>
+            </div>
+            <div class="brand-tile focusable" tabindex="0" onclick="openExtensionsModal()" title="43+ CS3 & JSON Plugins Hub">
+                <div class="brand-tile-inner">
+                    <div class="brand-icon" style="color:#10b981; background:rgba(16,185,129,0.12); border-color:rgba(16,185,129,0.25);"><i class="fas fa-puzzle-piece"></i></div>
+                    <div class="brand-info">
+                        <span class="brand-name">43+ Plugins</span>
+                        <span class="brand-tag">Universal CS3/JSON</span>
+                    </div>
+                    <div class="brand-glow" style="background: radial-gradient(circle at 50% 0%, rgba(16,185,129,0.25) 0%, transparent 70%);"></div>
+                </div>
+            </div>
+        </div>
+
         <!-- Quick Filters -->
         <div class="chips-bar" id="home-chips">
             <div class="chip-btn active focusable" tabindex="0" onclick="filterHomeCatalog('ALL', this)">All Catalogs</div>
@@ -2314,7 +2520,26 @@
         </div>
 
         <div id="home-catalogs-grid">
-            <div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>
+            <div class="skeleton-row">
+                <div class="skeleton-title"></div>
+                <div class="skeleton-cards-track">
+                    <div class="skeleton-card skeleton-card-landscape"></div>
+                    <div class="skeleton-card skeleton-card-landscape"></div>
+                    <div class="skeleton-card skeleton-card-landscape"></div>
+                    <div class="skeleton-card skeleton-card-landscape"></div>
+                </div>
+            </div>
+            <div class="skeleton-row">
+                <div class="skeleton-title" style="width: 250px;"></div>
+                <div class="skeleton-cards-track">
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -2474,7 +2699,7 @@
                     </div>
                     <div>
                         <h2 style="font-size: 17px; font-weight: 800; color: #FFF; margin: 0;">Verified Cloud Extensions &amp; Scrapers</h2>
-                        <span style="font-size: 11px; color: var(--text-sub);">40 Verified Providers • Direct HLS &amp; Cloud Resolvers</span>
+                        <span style="font-size: 11px; color: var(--text-sub);">43 Verified Providers • Decompiled DEX to JSON • Direct HLS</span>
                     </div>
                 </div>
                 <button class="btn-close-modal focusable" onclick="closeExtensionsModal()"><i class="fas fa-times"></i></button>
@@ -2496,11 +2721,16 @@
 
             <div class="modal-footer" style="padding: 12px 18px; border-top: 1px solid var(--border-dim); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; background: rgba(0,0,0,0.3);">
                 <span style="font-size: 12px; color: #8892b0;">
-                    💡 <strong style="color: #4ade80;">Apple &amp; Smart TVs:</strong> All 40 providers stream automatically in cloud.
+                    💡 <strong style="color: #4ade80;">Apple &amp; Smart TVs:</strong> 43 providers decompiled to JSON with automated cloud streaming.
                 </span>
-                <a href="https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/repo.json" target="_blank" class="btn-secondary focusable" style="font-size: 11px; color: var(--gold); text-decoration: none; padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(255,215,0,0.3);">
-                    <i class="fas fa-code-branch"></i> Repository JSON
-                </a>
+                <div style="display:flex; gap:8px;">
+                    <a href="/api/scrapers" target="_blank" class="btn-secondary focusable" style="font-size: 11px; color: #38bdf8; text-decoration: none; padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(56,189,248,0.3);">
+                        <i class="fas fa-file-code"></i> Universal Scrapers JSON
+                    </a>
+                    <a href="https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/repo.json" target="_blank" class="btn-secondary focusable" style="font-size: 11px; color: var(--gold); text-decoration: none; padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(255,215,0,0.3);">
+                        <i class="fas fa-code-branch"></i> CloudStream Repo
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -3003,11 +3233,13 @@
             }
         }
 
-        // ⚡ Direct Live Sports row for Home
+        // ⚡ Direct Live Sports row for Home (Verified Channels + Dynamic Reverse-Engineered FanCode CS3 Feed)
         function renderHomeVerifiedSportsRow(container) {
             const sec = document.createElement('div');
             sec.className = 'catalog-row-section';
             sec.id = 'row-section-home-live-sports';
+            sec.setAttribute('data-name', 'Live Cricket & Sports Arena');
+            sec.setAttribute('data-id', 'native_live_sports_tv');
             sec.innerHTML = `
                 <div class="section-headline">
                     <div class="section-title-text"><i class="fas fa-baseball-bat-ball" style="color: var(--gold);"></i> ⚡ Live Cricket & Sports Arena <span class="badge-stream-format" style="background:rgba(255,51,75,0.2); color:#FF334B; border:1px solid rgba(255,51,75,0.4);">🔴 LIVE • 60FPS</span></div>
@@ -3038,6 +3270,33 @@
                 card.onclick = () => launchCinemaPlayer(s.url, s.title);
                 track.appendChild(card);
             });
+
+            // ⚡ Asynchronously fetch live matches from native FanCode CS3 extractor
+            fetch(`${API_BASE}/catalog/tv/native_live_sports_tv.json`)
+                .then(r => r.json())
+                .then(data => {
+                    const metas = Array.isArray(data?.metas) ? data.metas : [];
+                    if (metas.length > 0) {
+                        metas.slice(0, 15).reverse().forEach(m => {
+                            const card = document.createElement('div');
+                            card.className = 'media-poster-card focusable landscape-card';
+                            card.tabIndex = 0;
+                            const isLive = (m.description || '').includes('🔴 LIVE');
+                            const badgeText = isLive ? '🔴 LIVE CRICKET' : '🏏 MATCH';
+                            const badgeColor = isLive ? '#FF334B' : 'var(--gold)';
+                            card.innerHTML = `
+                                <div class="poster-frame">
+                                    <img src="${m.poster || 'https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg'}" alt="${m.name}" onerror="this.src='https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg'">
+                                    <div class="badge-card-quality" style="background:${badgeColor}; font-weight:800;">${badgeText}</div>
+                                </div>
+                                <div class="poster-title" title="${m.name}">⚡ ${m.name}</div>
+                            `;
+                            card.onclick = () => openStreamPicker('tv', m.id, m.name);
+                            track.prepend(card);
+                        });
+                    }
+                })
+                .catch(e => console.warn('FanCode live feed fetch skipped:', e));
         }
 
         // 📺 Direct 24/7 Live Indian TV Channels row for Home
@@ -3618,6 +3877,57 @@
         function openHeroPlay() {
             if (heroFeaturedItem) {
                 openStreamPicker('movie', heroFeaturedItem.id, heroFeaturedItem.name);
+            }
+        }
+
+        // 🏆 Filter by Brand Tile (Disney+/Apple TV Style)
+        function filterByBrandTile(providerKey) {
+            if (providerKey === 'sports') {
+                const sportsChip = Array.from(document.querySelectorAll('#home-chips .chip-btn')).find(c => c.textContent.includes('Sports'));
+                if (sportsChip) filterHomeCatalog('SPORTS', sportsChip);
+                const sportsSec = document.getElementById('row-section-home-live-sports');
+                if (sportsSec) sportsSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else if (providerKey === 'gujarati') {
+                const gujChip = Array.from(document.querySelectorAll('#home-chips .chip-btn')).find(c => c.textContent.includes('Gujarati'));
+                if (gujChip) filterHomeCatalog('GUJARATI', gujChip);
+                const gujSec = document.getElementById('row-section-home-gujarati-movies');
+                if (gujSec) gujSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else if (providerKey === 'castle') {
+                const sections = document.querySelectorAll('#home-catalogs-grid .catalog-row-section');
+                let found = null;
+                sections.forEach(sec => {
+                    const id = (sec.getAttribute('data-id') || '').toLowerCase();
+                    const name = (sec.getAttribute('data-name') || '').toLowerCase();
+                    if (id.includes('castle') || name.includes('castle')) {
+                        sec.style.display = 'block';
+                        if (!found) found = sec;
+                    }
+                });
+                if (found) found.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else if (providerKey === 'hdhub4u') {
+                const sections = document.querySelectorAll('#home-catalogs-grid .catalog-row-section');
+                let found = null;
+                sections.forEach(sec => {
+                    const id = (sec.getAttribute('data-id') || '').toLowerCase();
+                    const name = (sec.getAttribute('data-name') || '').toLowerCase();
+                    if (id.includes('hdhub') || name.includes('hdhub')) {
+                        sec.style.display = 'block';
+                        if (!found) found = sec;
+                    }
+                });
+                if (found) found.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else if (providerKey === 'vegamovies') {
+                const sections = document.querySelectorAll('#home-catalogs-grid .catalog-row-section');
+                let found = null;
+                sections.forEach(sec => {
+                    const id = (sec.getAttribute('data-id') || '').toLowerCase();
+                    const name = (sec.getAttribute('data-name') || '').toLowerCase();
+                    if (id.includes('vega') || name.includes('vega')) {
+                        sec.style.display = 'block';
+                        if (!found) found = sec;
+                    }
+                });
+                if (found) found.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
 
