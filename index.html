@@ -5609,7 +5609,8 @@
 
         // 🎬 1-Click Provider Catalog Launcher (Connects Reverse-Engineered CS3/JSON to Safari, Chrome & Smart TVs)
         function browseProviderCatalog(providerName) {
-            closeExtensionsModal();
+            const extModal = document.getElementById('extensions-modal');
+            if (extModal) extModal.classList.remove('open');
             const low = (providerName || '').toLowerCase();
 
             // Direct mapping of CS3 providers to cloud streaming catalog IDs
