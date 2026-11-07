@@ -6,14 +6,14 @@
 
 ### Luxury Cross-Platform Cinema App for Android, iOS PWA, Smart TVs & Web 🎬
 
-[![Release](https://img.shields.io/badge/Release-v1.4.2-FFD700.svg?style=for-the-badge&logo=android)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform/releases)
+[![Release](https://img.shields.io/badge/Release-v2.1.0-FFD700.svg?style=for-the-badge&logo=android)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform/releases)
 [![Platforms](https://img.shields.io/badge/Platforms-Android%20%7C%20Smart%20TV%20%7C%20FireStick%20%7C%20iOS%20PWA-00E5FF.svg?style=for-the-badge)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform)
 [![Security](https://img.shields.io/badge/Access-6--Digit%20PIN%20Protected-00E676.svg?style=for-the-badge&logo=shield)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform)
 [![Video Engine](https://img.shields.io/badge/Streaming-4K%20UHD%20%2B%20ExoPlayer-FF2E56.svg?style=for-the-badge)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform)
 
 ---
 
-### 📥 [Download Official Android APK (v1.4.2)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform/releases/download/v1.4.2/YogeshStreamer-v1.4.2.apk)
+### 📥 [Download Official Android APK (v2.1.0)](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform/releases/download/v2.1.0/YogeshStreamer-v2.1.0.apk)
 #### 📺 TV Downloader Short Link: `tinyurl.com/y-streamer-apk`
 #### 🌐 [Launch Web & iOS PWA App](https://yogesh-streamer-bridge.onrender.com/app) • 📋 [View All Releases](https://github.com/shahrukh-hack/yogesh-streamer-multiplatform/releases)
 
@@ -30,6 +30,15 @@
 ---
 
 ## ✨ Features & Architecture
+
+### 🕒 Universal "Continue Watching" Engine
+- **Cross-Device Persistent Resume:** Auto-saves exact playback timestamps (`currentTime`, `duration`, `title`, and poster) in browser storage.
+- **Visual Progress Bar:** Netflix-style carousel at the top of Home with red progress indicator and 1-tap/OK remote instant resume.
+- **Smart Auto-Cleanup:** Automatically clears completed titles within 45s of video end.
+
+### 🧩 43-Provider Extensions & Scrapers Directory
+- **Universal Scraper Catalog:** Dynamic in-app directory browsing all 43 verified CloudStream `.cs3` plugins and web scrapers.
+- **Multi-Device Support:** Auto-streams in cloud for Apple iOS, iPadOS, and Smart TVs with zero installation; provides direct 1-tap `.cs3` downloads for Android & FireStick.
 
 ### 🔒 6-Digit Family Security PIN Protection
 - **Private Access Control**: Family security code gateway prevents unauthorized access.

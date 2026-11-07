@@ -6,7 +6,7 @@
     <title>Yogesh Streamer • Universal Cinema & Live TV</title>
 
     <!-- PWA & Mobile Web App Meta Tags -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="/manifest.webmanifest">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -17,6 +17,7 @@
 
     <!-- Video Engine & FontAwesome Icons -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.compiled.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
@@ -1364,6 +1365,65 @@
             color: #000;
         }
 
+        /* 📱 Player Options Modal & Device Launcher */
+        .player-opt-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 12px 14px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+
+        .player-opt-btn:hover, .player-opt-btn.focused {
+            background: rgba(255, 215, 0, 0.12);
+            border-color: var(--gold);
+            transform: translateX(3px);
+        }
+
+        .player-opt-btn.gold {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 165, 0, 0.2) 100%);
+            border-color: var(--gold);
+        }
+
+        .player-opt-btn.gold:hover {
+            background: var(--gold);
+            color: #000;
+        }
+
+        .player-opt-btn.gold:hover .player-opt-text span {
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        .player-opt-btn i {
+            font-size: 22px;
+            flex-shrink: 0;
+            width: 28px;
+            text-align: center;
+        }
+
+        .player-opt-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+        }
+
+        .player-opt-text strong {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .player-opt-text span {
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+
         /* 🚨 In-Player Format & Error Overlay */
         .player-overlay-screen {
             position: absolute;
@@ -1811,17 +1871,311 @@
             color: #ef4444;
             outline: none;
         }
+        .btn-apk-header {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.22) 0%, rgba(5, 150, 105, 0.22) 100%);
+            border: 1px solid #10b981;
+            color: #34d399;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-apk-header:hover, .btn-apk-header.focusable:focus {
+            background: #10b981;
+            color: #000;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+            outline: none;
+        }
         @media (max-width: 600px) {
             .header-status {
                 display: none;
             }
-            .btn-lock-session span {
+            .btn-lock-session span, .btn-apk-header span {
                 display: none;
             }
-            .btn-lock-session {
+            .btn-lock-session, .btn-apk-header {
                 padding: 6px 9px;
             }
         }
+    
+        /* 🕒 Continue Watching Rail & Cards */
+        .continue-watching-section {
+            margin-bottom: 28px;
+        }
+        .btn-clear-history {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-sub);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+        .btn-clear-history:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+        .cw-card {
+            flex: 0 0 200px;
+            width: 200px;
+            cursor: pointer;
+            outline: none;
+            position: relative;
+            user-select: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        @media (min-width: 768px) {
+            .cw-card {
+                flex: 0 0 240px;
+                width: 240px;
+            }
+        }
+        .cw-card:hover, .cw-card:focus, .cw-card.focused {
+            transform: scale(1.04);
+            z-index: 5;
+        }
+        .cw-poster-wrap {
+            position: relative;
+            width: 100%;
+            height: 125px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #090E1A;
+            border: 1px solid var(--border-dim);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+        }
+        .cw-card:hover .cw-poster-wrap, .cw-card:focus .cw-poster-wrap {
+            border-color: var(--gold);
+            box-shadow: 0 0 18px rgba(255, 215, 0, 0.4);
+        }
+        .cw-poster-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.85);
+            transition: filter 0.2s;
+        }
+        .cw-card:hover .cw-poster-img {
+            filter: brightness(1);
+        }
+        .cw-play-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.35);
+        }
+        .cw-play-icon {
+            font-size: 24px;
+            color: #FFFFFF;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 215, 0, 0.85);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-left: 3px;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+            transition: transform 0.2s;
+        }
+        .cw-card:hover .cw-play-icon {
+            transform: scale(1.1);
+        }
+        .cw-delete-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            cursor: pointer;
+            z-index: 6;
+            transition: all 0.2s;
+        }
+        .cw-delete-btn:hover {
+            background: #ef4444;
+            border-color: #ef4444;
+        }
+        .cw-progress-bar-bg {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .cw-progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF334B, #FFD700);
+            box-shadow: 0 0 8px rgba(255, 51, 75, 0.7);
+        }
+        .cw-info {
+            padding: 8px 2px 2px 2px;
+        }
+        .cw-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #FFF;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .cw-meta {
+            font-size: 11px;
+            color: var(--text-sub);
+            margin-top: 2px;
+        }
+
+        /* 🧩 Extensions Modal & Cards */
+        .btn-extensions-header {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.35);
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-extensions-header:hover, .btn-extensions-header:focus {
+            background: var(--gold);
+            color: #000;
+            box-shadow: 0 0 14px rgba(255, 215, 0, 0.5);
+        }
+        .ext-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-dim);
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: all 0.2s;
+            outline: none;
+        }
+        .ext-card:hover, .ext-card:focus, .ext-card.focused {
+            border-color: var(--gold);
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+        }
+        .ext-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .ext-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            background: #090E1A;
+        }
+        .ext-title-wrap {
+            flex: 1;
+            min-width: 0;
+        }
+        .ext-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: #FFF;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .ext-meta-tags {
+            display: flex;
+            gap: 6px;
+            margin-top: 3px;
+            flex-wrap: wrap;
+        }
+        .ext-badge-ver {
+            font-size: 10px;
+            font-weight: 700;
+            background: rgba(255, 215, 0, 0.15);
+            color: var(--gold);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            padding: 1px 6px;
+            border-radius: 4px;
+        }
+        .ext-badge-type {
+            font-size: 10px;
+            color: var(--cyan);
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid rgba(0, 240, 255, 0.25);
+            padding: 1px 6px;
+            border-radius: 4px;
+        }
+        .ext-card-desc {
+            font-size: 12px;
+            color: var(--text-sub);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .ext-card-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .ext-cloud-status {
+            font-size: 11px;
+            color: #4ade80;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .ext-download-btn {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: #fff;
+            text-decoration: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+        .ext-download-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
     </style>
 </head>
 <body>
@@ -1882,10 +2236,17 @@
             <a class="nav-pill focusable" tabindex="0" onclick="switchNavTab('tab-series', 2)"><i class="fas fa-tv"></i> Series</a>
             <a class="nav-pill focusable" tabindex="0" onclick="switchNavTab('tab-livetv', 3)"><i class="fas fa-satellite-dish"></i> Live TV</a>
             <a class="nav-pill focusable" tabindex="0" onclick="switchNavTab('tab-sports', 4)"><i class="fas fa-baseball-bat-ball"></i> Sports</a>
+            <a class="nav-pill focusable" tabindex="0" onclick="openExtensionsModal()"><i class="fas fa-puzzle-piece" style="color: var(--gold);"></i> Extensions</a>
             <a class="nav-pill focusable" tabindex="0" onclick="switchNavTab('tab-search', 5)"><i class="fas fa-search"></i> Search</a>
         </div>
 
         <div class="header-right-actions">
+            <button class="btn-extensions-header focusable" tabindex="0" onclick="openExtensionsModal()" title="View Verified Cloud Extensions">
+                <i class="fas fa-puzzle-piece"></i> <span>Extensions</span>
+            </button>
+            <a href="/apk" target="_blank" class="btn-apk-header focusable" tabindex="0" title="Download Native Android App APK (v2.0.0)">
+                <i class="fab fa-android"></i> <span>Get App (v2.0)</span>
+            </a>
             <div class="header-status">
                 <span class="status-dot"></span> 42 SOURCES ONLINE
             </div>
@@ -1926,15 +2287,32 @@
         <!-- Quick Filters -->
         <div class="chips-bar" id="home-chips">
             <div class="chip-btn active focusable" tabindex="0" onclick="filterHomeCatalog('ALL', this)">All Catalogs</div>
-            <div class="chip-btn focusable" tabindex="0" onclick="filterHomeCatalog('SPORTS', this)">🏏 Live Sports & Cricket</div>
-            <div class="chip-btn focusable" tabindex="0" onclick="filterHomeCatalog('BOLLYWOOD', this)">🇮🇳 Bollywood & Regional</div>
+            <div class="chip-btn focusable" tabindex="0" onclick="filterHomeCatalog('GUJARATI', this)" style="border-color: #f59e0b; color: #f59e0b;">🦁 Gujarati Movies &amp; Series</div>
+            <div class="chip-btn focusable" tabindex="0" onclick="filterHomeCatalog('SPORTS', this)">🏏 Live Sports &amp; Cricket</div>
+            <div class="chip-btn focusable" tabindex="0" onclick="filterHomeCatalog('BOLLYWOOD', this)">🇮🇳 Bollywood &amp; Regional</div>
             <div class="chip-btn focusable" tabindex="0" onclick="filterHomeCatalog('HOLLYWOOD', this)">🍿 Hollywood Dual-Audio</div>
-            <div class="chip-btn focusable" tabindex="0" onclick="filterHomeCatalog('OTT', this)">✨ Netflix / Prime / Disney</div>
+            <div class="chip-btn focusable" tabindex="0" onclick="filterHomeCatalog('OTT', this)">✨ All OTT Hits (Netflix • Prime • Hotstar)</div>
             <div class="chip-btn focusable" tabindex="0" onclick="filterHomeCatalog('SERIES', this)">📺 Complete Web Series</div>
-            <div class="chip-btn focusable" tabindex="0" onclick="filterHomeCatalog('ANIME', this)">⚔️ Anime & K-Drama</div>
+            <div class="chip-btn focusable" tabindex="0" onclick="filterHomeCatalog('ANIME', this)">⚔️ Anime &amp; K-Drama</div>
+        </div>
+        <!-- 🕒 CONTINUE WATCHING CAROUSEL (Netflix/Prime Style with saved playback progress) -->
+        <div id="continue-watching-section" class="continue-watching-section catalog-row-section" style="display: none; padding: 0 16px;">
+            <div class="catalog-header-row" style="margin-bottom: 12px;">
+                <div class="catalog-title-wrap" style="display: flex; align-items: center; gap: 8px;">
+                    <span class="catalog-title" style="font-size: 17px; font-weight: 800; color: #FFF; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-history" style="color: var(--gold);"></i> Continue Watching
+                    </span>
+                    <span class="catalog-badge-pill" id="continue-watching-count">0 Titles</span>
+                </div>
+                <button class="btn-clear-history focusable" onclick="clearContinueWatching()" title="Clear All History">
+                    <i class="fas fa-trash-alt"></i> Clear
+                </button>
+            </div>
+            <div class="carousel-rail-wrap">
+                <div class="carousel-rail" id="continue-watching-rail" style="display: flex; gap: 14px; overflow-x: auto; padding-bottom: 10px;"></div>
+            </div>
         </div>
 
-        <!-- All 42 Dynamic Cloud Catalogs for Home -->
         <div id="home-catalogs-grid">
             <div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>
         </div>
@@ -1944,6 +2322,7 @@
     <div id="tab-movies" class="tab-view">
         <div class="chips-bar" id="movies-chips">
             <div class="chip-btn active focusable" tabindex="0" onclick="filterMoviesCategory('ALL', this)">All Movies</div>
+            <div class="chip-btn focusable" tabindex="0" onclick="filterMoviesCategory('GUJARATI', this)" style="border-color: #f59e0b; color: #f59e0b;">🦁 Gujarati Movies</div>
             <div class="chip-btn focusable" tabindex="0" onclick="filterMoviesCategory('4K', this)">💎 True 4K UHD</div>
             <div class="chip-btn focusable" tabindex="0" onclick="filterMoviesCategory('BOLLY', this)">🇮🇳 Bollywood Blockbusters</div>
             <div class="chip-btn focusable" tabindex="0" onclick="filterMoviesCategory('SOUTH', this)">🔥 South Hindi Dubbed</div>
@@ -1958,10 +2337,12 @@
     <div id="tab-series" class="tab-view">
         <div class="chips-bar" id="series-chips">
             <div class="chip-btn active focusable" tabindex="0" onclick="filterSeriesCategory('ALL', this)">All Series</div>
-            <div class="chip-btn focusable" tabindex="0" onclick="filterSeriesCategory('NETFLIX', this)">🔴 Netflix Originals</div>
-            <div class="chip-btn focusable" tabindex="0" onclick="filterSeriesCategory('PRIME', this)">🔵 Amazon Prime Hits</div>
-            <div class="chip-btn focusable" tabindex="0" onclick="filterSeriesCategory('HOTSTAR', this)">⭐ Disney+ Hotstar</div>
-            <div class="chip-btn focusable" tabindex="0" onclick="filterSeriesCategory('KDRAMA', this)">🌸 K-Dramas & Asian Drama</div>
+            <div class="chip-btn focusable" tabindex="0" onclick="filterSeriesCategory('GUJARATI', this)" style="border-color: #f59e0b; color: #f59e0b;">🦁 Gujarati Web Series</div>
+            <div class="chip-btn focusable" tabindex="0" onclick="filterSeriesCategory('OTT', this)">✨ All OTT Shows (Netflix • Prime • Hotstar)</div>
+            <div class="chip-btn focusable" tabindex="0" onclick="filterSeriesCategory('ROG', this)">🔥 Rogmovies OTT Hub</div>
+            <div class="chip-btn focusable" tabindex="0" onclick="filterSeriesCategory('HDHUB', this)">🎬 HDHub4U Series</div>
+            <div class="chip-btn focusable" tabindex="0" onclick="filterSeriesCategory('CASTLE', this)">🏰 Castle Instant Web Play</div>
+            <div class="chip-btn focusable" tabindex="0" onclick="filterSeriesCategory('KDRAMA', this)">🌸 K-Dramas &amp; Asian Drama</div>
             <div class="chip-btn focusable" tabindex="0" onclick="filterSeriesCategory('ANIME', this)">⚔️ Anime Series (Multi-Audio)</div>
         </div>
         <div id="series-catalogs-grid">
@@ -2049,6 +2430,19 @@
         </div>
     </div>
 
+    <!-- 📱 DEVICE & EXTERNAL PLAYER SELECTOR MODAL -->
+    <div id="player-options-modal" class="modal-overlay" onclick="closePlayerOptionsModal(event)">
+        <div class="stream-sheet-box" onclick="event.stopPropagation()" style="max-width: 480px;">
+            <div class="sheet-drag-handle"></div>
+            <div class="sheet-top">
+                <div class="sheet-heading"><i class="fas fa-play-circle" style="color:var(--gold);"></i> Choose Playback Option</div>
+                <button class="sheet-close-btn focusable" tabindex="0" onclick="closePlayerOptionsModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="player-options-list" style="padding: 12px 16px 24px; display:flex; flex-direction:column; gap:10px;">
+            </div>
+        </div>
+    </div>
+
     <!-- 📺 NATIVE FULLSCREEN CINEMA PLAYER -->
     <div id="cinema-player-modal" class="player-modal">
         <div class="player-header-bar">
@@ -2058,9 +2452,57 @@
             <div id="player-server-switch-btn" class="focusable" tabindex="0" style="display:none; cursor:pointer; font-size:11px; color:var(--gold); font-weight:800; border:1px solid rgba(255,215,0,0.4); padding:4px 12px; border-radius:20px; background:rgba(0,0,0,0.6); align-items:center; gap:6px;" onclick="switchPlayerServer()">
                 <i class="fas fa-random"></i> <span id="player-server-label">Server 1/3</span>
             </div>
+            <div id="player-audio-switch-btn" class="focusable" tabindex="0" style="display:none; cursor:pointer; font-size:11px; color:#38bdf8; font-weight:800; border:1px solid rgba(56,189,248,0.4); padding:4px 12px; border-radius:20px; background:rgba(0,0,0,0.6); align-items:center; gap:6px;" onclick="switchAudioTrack()">
+                <i class="fas fa-volume-up"></i> <span id="player-audio-label">Audio: Default</span>
+            </div>
+            <div id="player-pip-btn" class="focusable" tabindex="0" style="cursor:pointer; font-size:11px; color:#a78bfa; font-weight:800; border:1px solid rgba(167,139,250,0.4); padding:4px 12px; border-radius:20px; background:rgba(0,0,0,0.6); display:flex; align-items:center; gap:6px;" onclick="togglePictureInPicture()" title="Picture-in-Picture">
+                <i class="fas fa-clone"></i> <span>PiP</span>
+            </div>
             <div style="font-size: 11px; color: var(--cyan); font-weight: 800;">1080p Ultra HD • HLS Direct</div>
         </div>
         <div class="player-viewport" id="player-screen-wrap"></div>
+    </div>
+
+    
+    <!-- 🧩 EXTENSIONS & CLOUD PROVIDERS DIRECTORY MODAL -->
+    <div id="extensions-modal" class="modal-backdrop">
+        <div class="modal-dialog-large focusable" tabindex="0">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(255,215,0,0.15); border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--gold);">
+                        <i class="fas fa-puzzle-piece"></i>
+                    </div>
+                    <div>
+                        <h2 style="font-size: 17px; font-weight: 800; color: #FFF; margin: 0;">Verified Cloud Extensions &amp; Scrapers</h2>
+                        <span style="font-size: 11px; color: var(--text-sub);">40 Verified Providers • Direct HLS &amp; Cloud Resolvers</span>
+                    </div>
+                </div>
+                <button class="btn-close-modal focusable" onclick="closeExtensionsModal()"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <!-- Category Chips -->
+            <div class="chips-bar" id="extensions-filter-chips" style="padding: 10px 18px 0 18px; margin: 0;">
+                <div class="chip-btn active focusable" onclick="filterExtensions('ALL', this)">All Extensions (40)</div>
+                <div class="chip-btn focusable" onclick="filterExtensions('Live', this)">🏏 Live Sports</div>
+                <div class="chip-btn focusable" onclick="filterExtensions('Movie', this)">🎬 Cinema &amp; OTT</div>
+                <div class="chip-btn focusable" onclick="filterExtensions('Anime', this)">⚔️ Anime</div>
+            </div>
+
+            <div class="modal-body" style="padding: 14px 18px; max-height: 60vh; overflow-y: auto;">
+                <div id="extensions-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px;">
+                    <div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i> Loading plugin catalog...</div>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="padding: 12px 18px; border-top: 1px solid var(--border-dim); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; background: rgba(0,0,0,0.3);">
+                <span style="font-size: 12px; color: #8892b0;">
+                    💡 <strong style="color: #4ade80;">Apple &amp; Smart TVs:</strong> All 40 providers stream automatically in cloud.
+                </span>
+                <a href="https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/repo.json" target="_blank" class="btn-secondary focusable" style="font-size: 11px; color: var(--gold); text-decoration: none; padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(255,215,0,0.3);">
+                    <i class="fas fa-code-branch"></i> Repository JSON
+                </a>
+            </div>
+        </div>
     </div>
 
     <!-- 📋 Floating Toast Notification -->
@@ -2289,11 +2731,21 @@
             return raw
                 .replace(/\[Hindi[^\]]*\]/gi, '')
                 .replace(/\(Hindi[^\)]*\)/gi, '')
+                .replace(/\{Hindi[^\}]*\}/gi, '')
+                .replace(/\[Gujarati[^\]]*\]/gi, '')
+                .replace(/\(Gujarati[^\)]*\)/gi, '')
+                .replace(/\{Gujarati[^\}]*\}/gi, '')
                 .replace(/\[Telugu[^\]]*\]/gi, '')
                 .replace(/\[Tamil[^\]]*\]/gi, '')
                 .replace(/\[Dual[^\]]*\]/gi, '')
                 .replace(/\[Multi[^\]]*\]/gi, '')
-                .replace(/WEB-DL|DS4K|HDRip|HD-TS|ESubs?|Multi\s*Audio|Dual\s*Audio|Full\s*Movie|x264|x265|HEVC|AMZN|NF|DD\+?5\.1/gi, '')
+                .replace(/\[x264[^\]]*\]/gi, '')
+                .replace(/\[Exclusive[^\]]*\]/gi, '')
+                .replace(/\[ALL Episodes\]/gi, '')
+                .replace(/\|\s*OHO Series/gi, '')
+                .replace(/Complete\s+Gujarati\s+WEB\s+Series/gi, '')
+                .replace(/Complete\s+Web\s+Series/gi, '')
+                .replace(/WEB-DL|DS4K|HDRip|HD-TS|ESubs?|Multi\s*Audio|Dual\s*Audio|Full\s*Movie|Full\s*Series|x264|x265|HEVC|AMZN|NF|DD\+?5\.1|DD\+?2\.0|Gujarati/gi, '')
                 .replace(/\s*\|\s*480p.*$/gi, '')
                 .replace(/\s*\|\s*720p.*$/gi, '')
                 .replace(/\s*\|\s*1080p.*$/gi, '')
@@ -2302,6 +2754,7 @@
                 .replace(/720p.*$/gi, '')
                 .replace(/1080p.*$/gi, '')
                 .replace(/2160p.*$/gi, '')
+                .replace(/\s+4k\b/gi, '')
                 .replace(/\s{2,}/g, ' ')
                 .trim();
         }
@@ -2312,23 +2765,23 @@
 
         // 🌟 Verified 100% 24/7 Direct Working Live Indian TV Feeds
         const VERIFIED_LIVE_CHANNELS = [
-            { name: "Willow Cricket HD", cat: "SPORTS", url: "https://baila-lentoo.pages.dev/all-sp/809386.m3u8", logo: "https://s21.q4cdn.com/819998841/files/doc_news/2024/May/Willow-logo-transparent-cb.png", quality: "1080p 60fps" },
-            { name: "A Sports HD (Live Cricket)", cat: "SPORTS", url: "https://playztv-apps.pages.dev/a-sports/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Doordarshan_Logo.svg/512px-Doordarshan_Logo.svg.png", quality: "1080p HD" },
-            { name: "Fancode Cricket Live", cat: "SPORTS", url: "https://dai-fancode.pages.dev/mumbai/4249693_english_hls_aaca093f3b68270_1ta-di_h264/index.m3u8", logo: "https://m.media-amazon.com/images/I/21K+HipHr6L.png", quality: "1080p HD" },
-            { name: "DD Sports 1 HD (Cricket)", cat: "SPORTS", url: "https://mumbai-edge.smartplaytv.in/DDSportsHD/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Doordarshan_Logo.svg/512px-Doordarshan_Logo.svg.png", quality: "1080p 60fps" },
+            { name: "Willow Cricket HD (Live Cricket)", cat: "SPORTS", url: "https://baila-lentoo.pages.dev/all-sp/809386.m3u8", logo: "https://s21.q4cdn.com/819998841/files/doc_news/2024/May/Willow-logo-transparent-cb.png", quality: "1080p 60fps Direct" },
+            { name: "A Sports HD (Live Cricket)", cat: "SPORTS", url: "https://playztv-apps.pages.dev/a-sports/index.m3u8", logo: "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg", quality: "1080p HD Direct" },
+            { name: "PTV Sports HD (Live Cricket)", cat: "SPORTS", url: "https://playztv-apps.pages.dev/ptv-sports/index.m3u8", logo: "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg", quality: "720p HD Direct" },
+            { name: "DD Sports 1 HD (National Sports & Cricket)", cat: "SPORTS", url: "https://mumbai-edge.smartplaytv.in/DDSportsHD/index.m3u8", logo: "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg", quality: "1080p 60fps" },
             { name: "Aaj Tak HD", cat: "NEWS", url: "https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Aaj_tak_logo.png/300px-Aaj_tak_logo.png", quality: "1080p HD" },
             { name: "9X Jalwa HD", cat: "MUSIC", url: "https://wiselp.wiseplayout.com/9X_Jalwa/master.m3u8", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/90/9X_Jalwa_logo.jpg/220px-9X_Jalwa_logo.jpg", quality: "1080p HD" },
-            { name: "DD National HD", cat: "ENTERTAINMENT", url: "https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/7ff57cc9046b4c188b51a0d506f36e7f/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Doordarshan_Logo.svg/512px-Doordarshan_Logo.svg.png", quality: "1080p HD" },
-            { name: "DD Girnar (Gujarati)", cat: "GUJARATI", url: "https://d2lk5u59tns74c.cloudfront.net/out/v1/558fdb9aebb54bb5bbbf0ced03686148/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Doordarshan_Logo.svg/512px-Doordarshan_Logo.svg.png", quality: "720p HD" },
-            { name: "Aastha Gujarati", cat: "GUJARATI", url: "https://mumt04.tangotv.in/m18aqlK4AASTHAGUJARATI/index.m3u8", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Aastha_Logo.png/220px-Aastha_Logo.png", quality: "720p HD" }
+            { name: "DD National HD", cat: "ENTERTAINMENT", url: "https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/7ff57cc9046b4c188b51a0d506f36e7f/index.m3u8", logo: "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg", quality: "1080p HD" },
+            { name: "DD Girnar (Gujarati)", cat: "GUJARATI", url: "https://d2lk5u59tns74c.cloudfront.net/out/v1/558fdb9aebb54bb5bbbf0ced03686148/index.m3u8", logo: "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg", quality: "720p HD" },
+            { name: "Aastha Gujarati", cat: "GUJARATI", url: "https://mumt04.tangotv.in/m18aqlK4AASTHAGUJARATI/index.m3u8", logo: "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg", quality: "720p HD" }
         ];
 
-        // 🌟 Verified Working Sports Feeds
+        // 🌟 Verified Working Sports Feeds (Live World Cricket First)
         const VERIFIED_SPORTS_EVENTS = [
-            { title: "Willow Cricket HD (Live International Matches)", tour: "ICC & Global Cricket Series", url: "https://baila-lentoo.pages.dev/all-sp/809386.m3u8" },
-            { title: "A Sports HD (Live Cricket Broadcast)", tour: "T20 Leagues & Bilateral Tours", url: "https://playztv-apps.pages.dev/a-sports/index.m3u8" },
-            { title: "Fancode Cricket Live Stream", tour: "International & Domestic Matches", url: "https://dai-fancode.pages.dev/mumbai/4249693_english_hls_aaca093f3b68270_1ta-di_h264/index.m3u8" },
-            { title: "DD Sports 1 HD (Live Cricket & National Sports)", tour: "Team India & Major Tournaments", url: "https://mumbai-edge.smartplaytv.in/DDSportsHD/index.m3u8" }
+            { title: "Willow Cricket HD (Live World Cricket)", tour: "ICC, Test, ODI & T20 Leagues (24/7 Live)", url: "https://baila-lentoo.pages.dev/all-sp/809386.m3u8", logo: "https://s21.q4cdn.com/819998841/files/doc_news/2024/May/Willow-logo-transparent-cb.png", quality: "1080p 60FPS" },
+            { title: "A Sports HD (Live Cricket Broadcast)", tour: "Bilateral Tours & T20 Leagues", url: "https://playztv-apps.pages.dev/a-sports/index.m3u8", logo: "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg", quality: "1080p HD" },
+            { title: "PTV Sports HD (Live Cricket Series)", tour: "Global Cricket & Bilateral Tours", url: "https://playztv-apps.pages.dev/ptv-sports/index.m3u8", logo: "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg", quality: "720p HD" },
+            { title: "DD Sports 1 HD (National Sports & Cricket)", tour: "Team India Bilateral & National Games", url: "https://mumbai-edge.smartplaytv.in/DDSportsHD/index.m3u8", logo: "https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg", quality: "1080p 60FPS" }
         ];
 
         // 📑 Tab Switching Engine
@@ -2378,7 +2831,20 @@
                 const movieCatalogs = [];
                 const seriesCatalogs = [];
 
+                // Known dead scrapers or metadata-only catalogs upstream to deprioritize
+                const deadScraperIds = new Set([
+                    'cnc_Netflix_other',
+                    'cnc_PrimeVideo_other',
+                    'cnc_Hotstar_other',
+                    'cnc_Disney_other',
+                    'cnc_Marvel_other',
+                    'cnc_StarWars_other',
+                    'cnc_Pixar_other',
+                    'cnc_Kisskh_other'
+                ]);
+
                 allBridgeCatalogs.forEach(cat => {
+                    if (deadScraperIds.has(cat.id)) return; // Skip dead/abandoned NetMirror scrapers completely
                     const lower = (cat.name + ' ' + cat.id).toLowerCase();
                     const isSports = lower.includes('sport') || lower.includes('event') || lower.includes('highlight') || lower.includes('cricket');
 
@@ -2386,62 +2852,120 @@
                         sportsCatalogs.push(cat);
                     } else if (cat.type === 'tv') {
                         liveTvCatalogs.push(cat);
-                    } else if (lower.includes('series') || lower.includes('netflix') || lower.includes('prime') || lower.includes('kisskh') || lower.includes('drama') || lower.includes('anime')) {
-                        seriesCatalogs.push(cat);
                     } else {
-                        movieCatalogs.push(cat);
+                        // 🏰 Include verified high-quality streaming catalogs in both Movies and Series
+                        if (cat.id === 'cnc_CastleTVUseVLC_other' || cat.id === 'cnc_Rogmovies_other' || cat.id === 'cnc_HDHub4U_other' || cat.id === 'cnc_MultiMovies_other' || cat.id === 'cnc_MovieBoxIN_other') {
+                            movieCatalogs.push(cat);
+                            seriesCatalogs.push(cat);
+                        } else if (lower.includes('series') || lower.includes('drama') || lower.includes('anime')) {
+                            seriesCatalogs.push(cat);
+                        } else {
+                            movieCatalogs.push(cat);
+                        }
                     }
                 });
 
-                // 🌟 Smart Prioritization: verified instant web-playable catalogs first
+                // 🌟 Smart Prioritization: verified working streaming catalogs first
                 movieCatalogs.sort((a, b) => {
-                    if (a.id === 'cnc_CastleTVUseVLC_other') return -1;
-                    if (b.id === 'cnc_CastleTVUseVLC_other') return 1;
-                    if (a.id === 'cnc_Kisskh_other') return -1;
-                    if (b.id === 'cnc_Kisskh_other') return 1;
-                    if (a.id === 'cnc_Movix_other') return -1;
-                    if (b.id === 'cnc_Movix_other') return 1;
+                    const topMovies = ['cnc_CastleTVUseVLC_other', 'cnc_HDHub4U_other', 'cnc_Rogmovies_other', 'cnc_VegaMovies_other', 'cnc_4KHDHUB_other', 'cnc_ReANIME_other', 'cnc_RingZ_other', 'cnc_MovieBoxIN_other', 'cnc_MultiMovies_other'];
+                    const isDeadA = deadScraperIds.has(a.id);
+                    const isDeadB = deadScraperIds.has(b.id);
+                    if (isDeadA && !isDeadB) return 1;
+                    if (!isDeadA && isDeadB) return -1;
+                    const idxA = topMovies.indexOf(a.id);
+                    const idxB = topMovies.indexOf(b.id);
+                    if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                    if (idxA !== -1) return -1;
+                    if (idxB !== -1) return 1;
                     return 0;
                 });
 
                 seriesCatalogs.sort((a, b) => {
-                    if (a.id === 'cnc_Kisskh_other') return -1;
-                    if (b.id === 'cnc_Kisskh_other') return 1;
-                    if (a.id === 'cnc_CastleTVUseVLC_other') return -1;
-                    if (b.id === 'cnc_CastleTVUseVLC_other') return 1;
+                    const topSeries = ['cnc_CastleTVUseVLC_other', 'cnc_Rogmovies_other', 'cnc_HDHub4U_other', 'cnc_ReANIME_other', 'cnc_MultiMovies_other', 'cnc_MovieBoxIN_other'];
+                    const isDeadA = deadScraperIds.has(a.id);
+                    const isDeadB = deadScraperIds.has(b.id);
+                    if (isDeadA && !isDeadB) return 1;
+                    if (!isDeadA && isDeadB) return -1;
+                    const idxA = topSeries.indexOf(a.id);
+                    const idxB = topSeries.indexOf(b.id);
+                    if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                    if (idxA !== -1) return -1;
+                    if (idxB !== -1) return 1;
                     return 0;
                 });
 
                 sportsCatalogs.sort((a, b) => {
-                    if (a.id === 'cnc_SportzXLiveEvents_tv') return -1;
-                    if (b.id === 'cnc_SportzXLiveEvents_tv') return 1;
+                    const topSports = ['cnc_PlayFyLiveEvents_tv', 'cnc_PlayFyHighlights_tv', 'cnc_LivXowLiveEvents_tv', 'cnc_PlayZTVLiveEvents_tv', 'cnc_SportzXLiveEvents_tv'];
+                    const idxA = topSports.indexOf(a.id);
+                    const idxB = topSports.indexOf(b.id);
+                    if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                    if (idxA !== -1) return -1;
+                    if (idxB !== -1) return 1;
                     return 0;
                 });
 
-                // 1. Home Tab: Verified Live Sports & Live TV first, then Instant Web Movies & Series
+                liveTvCatalogs.sort((a, b) => {
+                    const topTv = ['cnc_JIOTVPlusIND3_tv', 'cnc_JIOTVIND_tv', 'cnc_JioHotstar2_tv', 'cnc_SUNNXT_SKTechProvider_tv'];
+                    const idxA = topTv.indexOf(a.id);
+                    const idxB = topTv.indexOf(b.id);
+                    if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                    if (idxA !== -1) return -1;
+                    if (idxB !== -1) return 1;
+                    return 0;
+                });
+
+                // 1. Home Tab: Verified Live Sports, Live TV & Gujarati Movies Row
                 renderHomeVerifiedSportsRow(homeGrid);
                 renderHomeVerifiedLiveTVRow(homeGrid);
+                renderHomeGujaratiRow(homeGrid);
 
+                const homeAddedIds = new Set();
                 let homeRank = 2;
-                // Castle Cinema (100% Instant Web Play Movies)
-                movieCatalogs.slice(0, 1).forEach(cat => {
+
+                // Priority 1: Instant Web Play Cinema (Castle Cinema)
+                movieCatalogs.filter(c => c.id === 'cnc_CastleTVUseVLC_other').forEach(cat => {
+                    homeAddedIds.add(cat.id);
                     buildCatalogRowElement(cat, homeGrid, 'home', true, homeRank++);
                 });
-                // Kisskh Series (100% Instant Web Play Web Series & Dramas)
-                seriesCatalogs.slice(0, 1).forEach(cat => {
-                    buildCatalogRowElement(cat, homeGrid, 'home', true, homeRank++);
+
+                // Priority 2: Top Web Series (Rogmovies & HDHub4U)
+                seriesCatalogs.filter(c => c.id === 'cnc_Rogmovies_other' || c.id === 'cnc_HDHub4U_other').forEach(cat => {
+                    if (!homeAddedIds.has(cat.id)) {
+                        homeAddedIds.add(cat.id);
+                        buildCatalogRowElement(cat, homeGrid, 'home', true, homeRank++);
+                    }
                 });
-                // Cloud sports events
-                sportsCatalogs.slice(0, 2).forEach(cat => {
-                    buildCatalogRowElement(cat, homeGrid, 'home', true, homeRank++);
+
+                // Priority 3: Live Sports & Cricket Events
+                sportsCatalogs.forEach(cat => {
+                    if (!homeAddedIds.has(cat.id)) {
+                        homeAddedIds.add(cat.id);
+                        buildCatalogRowElement(cat, homeGrid, 'home', homeRank <= 6, homeRank++);
+                    }
                 });
-                // Remaining movie catalogs
-                movieCatalogs.slice(1, 14).forEach(cat => {
-                    buildCatalogRowElement(cat, homeGrid, 'home', false, homeRank++);
+
+                // Priority 4: All Movie Catalogs (Full Collection)
+                movieCatalogs.forEach(cat => {
+                    if (!homeAddedIds.has(cat.id)) {
+                        homeAddedIds.add(cat.id);
+                        buildCatalogRowElement(cat, homeGrid, 'home', false, homeRank++);
+                    }
                 });
-                // Remaining series catalogs
-                seriesCatalogs.slice(1, 8).forEach(cat => {
-                    buildCatalogRowElement(cat, homeGrid, 'home', false, homeRank++);
+
+                // Priority 5: All Series Catalogs (Full Collection)
+                seriesCatalogs.forEach(cat => {
+                    if (!homeAddedIds.has(cat.id)) {
+                        homeAddedIds.add(cat.id);
+                        buildCatalogRowElement(cat, homeGrid, 'home', false, homeRank++);
+                    }
+                });
+
+                // Priority 6: All Live TV Catalogs (Full Collection)
+                liveTvCatalogs.forEach(cat => {
+                    if (!homeAddedIds.has(cat.id)) {
+                        homeAddedIds.add(cat.id);
+                        buildCatalogRowElement(cat, homeGrid, 'home', false, homeRank++);
+                    }
                 });
 
                 // 2. Movies Tab
@@ -2467,6 +2991,12 @@
                         buildCatalogRowElement(cat, sportsGrid, 'sports', idx < 2, idx);
                     });
                 }
+
+                // Pre-scan top movie and series catalogs in background to harvest Gujarati titles immediately
+                setTimeout(() => {
+                    const topScanners = movieCatalogs.concat(seriesCatalogs).slice(0, 10);
+                    topScanners.forEach(cat => fetchCatalogTrack(cat, false));
+                }, 300);
             } catch (err) {
                 console.error('Bootstrap failed:', err);
                 homeGrid.innerHTML = '<div style="color: var(--text-sub); padding: 24px;">Failed to reach cloud resolver.</div>';
@@ -2500,8 +3030,8 @@
                 card.tabIndex = 0;
                 card.innerHTML = `
                     <div class="poster-frame">
-                        <img src="https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg" alt="${s.title}">
-                        <div class="badge-card-quality" style="background:#FF334B;">🔴 LIVE 60FPS</div>
+                        <img src="${s.logo || 'https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg'}" alt="${s.title}" onerror="this.src='https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg'">
+                        <div class="badge-card-quality" style="background:#FF334B;">🔴 ${s.quality || 'LIVE 60FPS'}</div>
                     </div>
                     <div class="poster-title" title="${s.title}">⚡ ${s.title}</div>
                 `;
@@ -2545,6 +3075,316 @@
                 card.onclick = () => launchCinemaPlayer(c.url, c.name);
                 track.appendChild(card);
             });
+        }
+
+        // 🦁 Dynamic Gujarati Movies, Web Series, ShemarooMe, JOJO & OHO Auto-Harvester
+        // Captures Gujarati movies & web series from ALL cloud sources dynamically as they are added
+        let dynamicGujaratiMovies = [];
+        const seenGujaratiMovieIds = new Set();
+        let gujaratiInitStarted = false;
+        let gujaratiCurrentModalFilter = 'ALL';
+
+        function getGujaratiBadge(name) {
+            const low = (name || '').toLowerCase();
+            const isSeries = low.includes('season') || low.includes('series') || low.includes('episode');
+            if (isSeries) {
+                return '<div class="badge-card-quality" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color:#fff; font-weight:800;">📺 SERIES</div>';
+            }
+            if (low.includes('shemaroo')) {
+                return '<div class="badge-card-quality" style="background: linear-gradient(135deg, #9333ea, #7e22ce); color:#fff; font-weight:800;">🎭 SHEMAROO</div>';
+            }
+            if (low.includes('jojo')) {
+                return '<div class="badge-card-quality" style="background: linear-gradient(135deg, #ec4899, #be185d); color:#fff; font-weight:800;">✨ JOJO OTT</div>';
+            }
+            if (low.includes('oho')) {
+                return '<div class="badge-card-quality" style="background: linear-gradient(135deg, #10b981, #047857); color:#fff; font-weight:800;">🌟 OHO</div>';
+            }
+            return '<div class="badge-card-quality" style="background: linear-gradient(135deg, #f59e0b, #d97706); color:#000; font-weight:800;">🦁 GUJARATI</div>';
+        }
+
+        function harvestGujaratiMovies(metas, catType, catName) {
+            if (!Array.isArray(metas) || catType === 'tv') return; // strictly movies and series
+            let newlyFound = false;
+
+            metas.forEach(m => {
+                if (!m || !m.name || seenGujaratiMovieIds.has(m.id)) return;
+                const text = `${m.name} ${m.description || ''} ${m.genre || ''}`.toLowerCase();
+                const isGuj = text.includes('gujarat') || 
+                              text.includes('gujrati') || 
+                              text.includes('gujarati-') || 
+                              text.includes('[gujarati') || 
+                              text.includes('(gujarati') || 
+                              text.includes('{gujarati') || 
+                              text.includes('oho') || 
+                              text.includes('shemaroo') || 
+                              text.includes('shemaroome') || 
+                              text.includes('jojo') || 
+                              text.includes('vitthal') || 
+                              text.includes('warso') || 
+                              text.includes('fafda') || 
+                              text.includes('matsyavedh') || 
+                              text.includes('taari maari') || 
+                              text.includes('kajodu') || 
+                              text.includes('kunwari') || 
+                              text.includes('dil padosi') || 
+                              text.includes('beinteha') || 
+                              text.includes('natak') || 
+                              text.includes('bicharo bachelor') || 
+                              text.includes('kasoombo') || 
+                              text.includes('chhello show') || 
+                              text.includes('last film show') || 
+                              text.includes('fakt mahilao') || 
+                              text.includes('3 ekka') || 
+                              text.includes('tron ekka') || 
+                              text.includes('shubh yatra') || 
+                              text.includes('naadi dosh') || 
+                              text.includes('dear father') || 
+                              text.includes('vickida') || 
+                              text.includes('jaysuk') || 
+                              text.includes('raado') || 
+                              text.includes('bachubhai') || 
+                              (text.includes('vash') && (text.includes('janki') || text.includes('hit') || text.includes('movie') || text.includes('horror') || text.includes('level 2'))) || 
+                              text.includes('hellaro') || 
+                              text.includes('bushirt t-shirt') || 
+                              text.includes('kutch express') || 
+                              text.includes('chal man jeetva') || 
+                              text.includes('chaal jeevi laiye') || 
+                              text.includes('jhamkudi') || 
+                              text.includes('sonu tane mara par bharoso');
+
+                if (isGuj) {
+                    seenGujaratiMovieIds.add(m.id);
+                    if (!m.type) m.type = catType || 'movie';
+                    dynamicGujaratiMovies.push({
+                        ...m,
+                        sourceCat: catName || 'Movie & Series Source'
+                    });
+                    newlyFound = true;
+                }
+            });
+
+            if (newlyFound) {
+                renderGujaratiTrackCards();
+            }
+        }
+
+        async function initGujaratiLibrary() {
+            if (gujaratiInitStarted) return;
+            gujaratiInitStarted = true;
+
+            // 1. Seed verified blockbusters with confirmed working streams
+            const seedBlockbusters = [
+                {
+                    id: 'tt13433802',
+                    name: 'Chhello Show (Last Film Show) (2022)',
+                    type: 'movie',
+                    poster: 'https://image.tmdb.org/t/p/w500/b1pWf2Y1l7g5zO4T6XzWfO0uTfF.jpg',
+                    sourceCat: 'Gujarati Blockbuster (45 Streams)'
+                },
+                {
+                    id: 'tt9074052',
+                    name: 'Sharato Lagu (2018)',
+                    type: 'movie',
+                    poster: 'https://m.media-amazon.com/images/M/MV5BNTBmNTQwMTUtMTI1Yi00NjA1LWIwMWEtYmQ3MGNmYTkwMTM3XkEyXkFqcGc@._V1_.jpg',
+                    sourceCat: 'Gujarati Cinema'
+                }
+            ];
+
+            seedBlockbusters.forEach(m => {
+                if (!seenGujaratiMovieIds.has(m.id)) {
+                    seenGujaratiMovieIds.add(m.id);
+                    dynamicGujaratiMovies.push(m);
+                }
+            });
+
+            // 2. Concurrently harvest all Gujarati movies, web series, ShemarooMe & JOJO originals from upstream cloud scrapers
+            try {
+                const endpoints = [
+                    `${API_BASE}/catalog/other/cnc_HDHub4U_other/search=gujarati.json`,
+                    `${API_BASE}/catalog/other/cnc_Rogmovies_other/search=gujarati.json`,
+                    `${API_BASE}/catalog/other/cnc_HDHub4U_other/search=gujarati%20series.json`,
+                    `${API_BASE}/catalog/other/cnc_Rogmovies_other/search=gujarati%20series.json`,
+                    `${API_BASE}/catalog/other/cnc_HDHub4U_other/search=gujarati%20season.json`,
+                    `${API_BASE}/catalog/other/cnc_HDHub4U_other/search=vitthal.json`,
+                    `${API_BASE}/catalog/other/cnc_HDHub4U_other/search=oho.json`,
+                    `${API_BASE}/catalog/other/cnc_Rogmovies_other/search=shemaroo.json`,
+                    `${API_BASE}/catalog/other/cnc_Rogmovies_other/search=shemaroome.json`,
+                    `${API_BASE}/catalog/other/cnc_Rogmovies_other/search=jojo.json`,
+                    `${API_BASE}/catalog/other/cnc_Rogmovies_other/search=natak.json`,
+                    `${API_BASE}/catalog/other/cnc_HDHub4U_other/search=gujarati%202025.json`,
+                    `${API_BASE}/catalog/other/cnc_HDHub4U_other/search=gujarati%202024.json`,
+                    `${API_BASE}/catalog/other/cnc_HDHub4U_other/search=gujarati%202023.json`,
+                    `${API_BASE}/catalog/other/cnc_HDHub4U_other/search=gujarati%202022.json`,
+                    `${API_BASE}/catalog/other/cnc_Rogmovies_other/search=gujarati%202025.json`,
+                    `${API_BASE}/catalog/other/cnc_Rogmovies_other/search=gujarati%202024.json`,
+                    `${API_BASE}/catalog/other/cnc_Rogmovies_other/search=gujarati%202023.json`,
+                    `${API_BASE}/catalog/other/cnc_Rogmovies_other/search=gujarati%202022.json`
+                ];
+
+                await Promise.allSettled(endpoints.map(async url => {
+                    try {
+                        const res = await fetch(url);
+                        const data = await res.json();
+                        if (data && Array.isArray(data.metas)) {
+                            harvestGujaratiMovies(data.metas, 'other', 'Gujarati Cloud Scraper');
+                        }
+                    } catch(e) {}
+                }));
+            } catch(e) {}
+
+            renderGujaratiTrackCards();
+        }
+
+        function renderHomeGujaratiRow(container) {
+            const sec = document.createElement('div');
+            sec.className = 'catalog-row-section';
+            sec.id = 'row-section-home-gujarati-movies';
+            sec.setAttribute('data-id', 'gujarati-movies-series');
+            sec.setAttribute('data-name', '🦁 Gujarati Movies & Web Series (ગુજરાતી ફિલ્મો અને સિરીઝ)');
+            sec.innerHTML = `
+                <div class="section-headline">
+                    <div class="section-title-text"><i class="fas fa-film" style="color: #f59e0b;"></i> 🦁 Gujarati Movies &amp; Series <span class="badge-stream-format badge-stream-web" id="badge-gujarati-count">ગુજરાતી ફિલ્મો • Auto-Updated</span></div>
+                    <span class="see-all-btn focusable" tabindex="0" onclick="openGujaratiMoviesFullGrid()">
+                        See All <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
+                    </span>
+                </div>
+                <div class="carousel-container">
+                    <button class="carousel-arrow left focusable" tabindex="0" onclick="scrollTrack('track-home-gujarati-movies', -480)"><i class="fas fa-chevron-left"></i></button>
+                    <div class="carousel-track" id="track-home-gujarati-movies">
+                        <div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>
+                    </div>
+                    <button class="carousel-arrow right focusable" tabindex="0" onclick="scrollTrack('track-home-gujarati-movies', 480)"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            `;
+            container.appendChild(sec);
+            renderGujaratiTrackCards();
+            initGujaratiLibrary();
+        }
+
+        function renderGujaratiTrackCards() {
+            const track = document.getElementById('track-home-gujarati-movies');
+            if (!track) return;
+
+            const badgeCount = document.getElementById('badge-gujarati-count');
+            if (badgeCount && dynamicGujaratiMovies.length > 0) {
+                const seriesCount = dynamicGujaratiMovies.filter(m => {
+                    const l = (m.name || '').toLowerCase();
+                    return l.includes('season') || l.includes('series') || l.includes('episode');
+                }).length;
+                badgeCount.innerText = `ગુજરાતી • ${dynamicGujaratiMovies.length} Titles (${seriesCount} Series)`;
+            }
+
+            if (dynamicGujaratiMovies.length === 0) {
+                track.innerHTML = '<div style="color: var(--text-sub); padding: 22px; font-size: 13px;">Scanning all cloud sources for Gujarati movies &amp; series...</div>';
+                return;
+            }
+
+            track.innerHTML = '';
+            dynamicGujaratiMovies.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'media-poster-card focusable';
+                card.tabIndex = 0;
+                const displayTitle = cleanTitle(item.name);
+                const badgeHtml = getGujaratiBadge(item.name);
+                card.innerHTML = `
+                    <div class="poster-frame">
+                        <img src="${item.poster || 'https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg'}" alt="${displayTitle}" loading="lazy" onerror="this.src='https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg'">
+                        ${badgeHtml}
+                    </div>
+                    <div class="poster-title" title="${item.name}">${displayTitle}</div>
+                `;
+                card.onclick = () => openStreamPicker(item.type || 'movie', item.id, item.name);
+                track.appendChild(card);
+            });
+        }
+
+        function filterGujaratiGridByTag(filterTag) {
+            gujaratiCurrentModalFilter = filterTag;
+            renderGujaratiFullGridItems();
+        }
+
+        function renderGujaratiFullGridItems() {
+            const wrap = document.getElementById('fullgrid-items-wrap');
+            if (!wrap) return;
+
+            let filtered = dynamicGujaratiMovies;
+            if (gujaratiCurrentModalFilter === 'SERIES') {
+                filtered = dynamicGujaratiMovies.filter(m => {
+                    const l = (m.name || '').toLowerCase();
+                    return l.includes('season') || l.includes('series') || l.includes('episode');
+                });
+            } else if (gujaratiCurrentModalFilter === 'MOVIES') {
+                filtered = dynamicGujaratiMovies.filter(m => {
+                    const l = (m.name || '').toLowerCase();
+                    return !l.includes('season') && !l.includes('series') && !l.includes('episode');
+                });
+            } else if (gujaratiCurrentModalFilter === 'OTT') {
+                filtered = dynamicGujaratiMovies.filter(m => {
+                    const l = (m.name || '').toLowerCase();
+                    return l.includes('shemaroo') || l.includes('jojo') || l.includes('oho');
+                });
+            }
+
+            const badgeEl = document.getElementById('fullgrid-count-badge');
+            if (badgeEl) badgeEl.innerText = `${filtered.length} Titles`;
+
+            if (filtered.length === 0) {
+                wrap.innerHTML = '<div style="color: var(--text-sub); grid-column: 1 / -1; text-align: center; padding: 40px; font-size: 13px;">No titles found in this category.</div>';
+                return;
+            }
+
+            wrap.innerHTML = '';
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'media-poster-card focusable';
+                card.tabIndex = 0;
+                card.style.flex = 'unset';
+                card.style.width = '100%';
+                card.style.maxWidth = '100%';
+
+                const displayTitle = cleanTitle(item.name);
+                const badgeHtml = getGujaratiBadge(item.name);
+                card.innerHTML = `
+                    <div class="poster-frame">
+                        <img src="${item.poster || 'https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg'}" alt="${displayTitle}" loading="lazy" onerror="this.src='https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg'">
+                        ${badgeHtml}
+                    </div>
+                    <div class="poster-title" title="${item.name}">${displayTitle}</div>
+                `;
+                card.onclick = () => openStreamPicker(item.type || 'movie', item.id, item.name);
+                wrap.appendChild(card);
+            });
+        }
+
+        function openGujaratiMoviesFullGrid(initialFilter = 'ALL') {
+            const modal = document.getElementById('catalog-fullview-modal');
+            const titleEl = document.getElementById('fullgrid-catalog-title');
+            const badgeEl = document.getElementById('fullgrid-count-badge');
+
+            if (window.location.hash !== '#catalog-grid') {
+                history.pushState({ modal: 'catalog-grid' }, '', '#catalog-grid');
+            }
+
+            const seriesCount = dynamicGujaratiMovies.filter(m => {
+                const l = (m.name || '').toLowerCase();
+                return l.includes('season') || l.includes('series') || l.includes('episode');
+            }).length;
+
+            titleEl.innerHTML = `
+                🦁 Gujarati Movies &amp; Web Series (ગુજરાતી ફિલ્મો અને સિરીઝ)
+                <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+                    <button class="chip-btn focusable active" onclick="document.querySelectorAll('#catalog-fullview-modal .chip-btn').forEach(b => b.classList.remove('active')); this.classList.add('active'); filterGujaratiGridByTag('ALL');" style="padding:4px 12px; font-size:11px;">All (${dynamicGujaratiMovies.length})</button>
+                    <button class="chip-btn focusable" onclick="document.querySelectorAll('#catalog-fullview-modal .chip-btn').forEach(b => b.classList.remove('active')); this.classList.add('active'); filterGujaratiGridByTag('SERIES');" style="padding:4px 12px; font-size:11px; border-color:#3b82f6; color:#60a5fa;">📺 Web Series (${seriesCount})</button>
+                    <button class="chip-btn focusable" onclick="document.querySelectorAll('#catalog-fullview-modal .chip-btn').forEach(b => b.classList.remove('active')); this.classList.add('active'); filterGujaratiGridByTag('MOVIES');" style="padding:4px 12px; font-size:11px; border-color:#f59e0b; color:#f59e0b;">🍿 Movies (${dynamicGujaratiMovies.length - seriesCount})</button>
+                    <button class="chip-btn focusable" onclick="document.querySelectorAll('#catalog-fullview-modal .chip-btn').forEach(b => b.classList.remove('active')); this.classList.add('active'); filterGujaratiGridByTag('OTT');" style="padding:4px 12px; font-size:11px; border-color:#ec4899; color:#f472b6;">🎭 Shemaroo • JOJO • OHO</button>
+                </div>
+            `;
+            badgeEl.innerText = `${dynamicGujaratiMovies.length} Titles`;
+            modal.classList.add('open');
+            modal.scrollTo({ top: 0 });
+
+            gujaratiCurrentModalFilter = initialFilter;
+            renderGujaratiFullGridItems();
         }
 
         function buildCatalogRowElement(cat, parentContainer, tabPrefix, loadImmediate, rankOffset) {
@@ -2612,7 +3452,11 @@
                     const res = await fetch(`${API_BASE}${path}`);
                     const data = await res.json();
                     metas = Array.isArray(data?.metas) ? data.metas : [];
+                    metas = metas.filter(m => m && m.name && m.name.trim() !== '' && m.name.trim() !== '⠀');
                     catalogItemCache[cat.id] = metas;
+
+                    // Automatically harvest any Gujarati movies and web series from this catalog
+                    harvestGujaratiMovies(metas, cat.type, cat.name);
 
                     // Add to universal search index
                     metas.forEach(m => {
@@ -2637,7 +3481,8 @@
                 track.setAttribute('data-loaded', 'true');
 
                 if (metas.length === 0) {
-                    track.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; padding: 14px;">No titles available right now.</div>';
+                    const rowContainer = track.closest('.catalog-row-section') || track.parentElement;
+                    if (rowContainer) rowContainer.style.display = 'none';
                     return;
                 }
 
@@ -2695,6 +3540,10 @@
             const badgeEl = document.getElementById('fullgrid-count-badge');
             const wrap = document.getElementById('fullgrid-items-wrap');
 
+            if (window.location.hash !== '#catalog-grid') {
+                history.pushState({ modal: 'catalog-grid' }, '', '#catalog-grid');
+            }
+
             titleEl.innerText = catName || 'Catalog Collection';
             wrap.innerHTML = '<div class="spinner-gold" style="grid-column: 1 / -1;"><i class="fas fa-spinner fa-spin"></i></div>';
             modal.classList.add('open');
@@ -2734,8 +3583,13 @@
             });
         }
 
-        function closeCatalogFullGrid() {
-            document.getElementById('catalog-fullview-modal').classList.remove('open');
+        function closeCatalogFullGrid(fromPopstate = false) {
+            const isPop = fromPopstate === true;
+            const modal = document.getElementById('catalog-fullview-modal');
+            if (modal) modal.classList.remove('open');
+            if (!isPop && window.location.hash === '#catalog-grid') {
+                history.back();
+            }
         }
 
         function setHeroBillboard(item) {
@@ -2779,6 +3633,8 @@
 
                 if (cat === 'ALL') {
                     sec.style.display = 'block';
+                } else if (cat === 'GUJARATI') {
+                    sec.style.display = (id.includes('gujarat') || sec.id.includes('gujarat') || name.includes('gujarat')) ? 'block' : 'none';
                 } else if (cat === 'SPORTS') {
                     sec.style.display = (name.includes('sport') || name.includes('event') || name.includes('highlight') || name.includes('cricket') || id.includes('sport') || id.includes('event')) ? 'block' : 'none';
                 } else if (cat === 'BOLLYWOOD') {
@@ -2786,19 +3642,31 @@
                 } else if (cat === 'HOLLYWOOD') {
                     sec.style.display = (name.includes('vegamovies') || name.includes('marvel') || name.includes('4khdhub') || name.includes('star wars') || name.includes('rogmovies')) ? 'block' : 'none';
                 } else if (cat === 'OTT') {
-                    sec.style.display = (name.includes('netflix') || name.includes('prime') || name.includes('hotstar') || name.includes('disney')) ? 'block' : 'none';
+                    sec.style.display = (id.includes('castle') || id.includes('rogmovies') || id.includes('hdhub') || id.includes('moviebox') || id.includes('multimovies') || name.includes('castle') || name.includes('rogmovies')) ? 'block' : 'none';
                 } else if (cat === 'SERIES') {
                     sec.style.display = (name.includes('series') || name.includes('kisskh') || name.includes('multimovies')) ? 'block' : 'none';
                 } else if (cat === 'ANIME') {
                     sec.style.display = (name.includes('anime') || name.includes('anilight')) ? 'block' : 'none';
                 }
             });
+
+            if (cat === 'GUJARATI') {
+                const gujSec = document.getElementById('row-section-home-gujarati-movies');
+                if (gujSec) {
+                    gujSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
         }
 
         // 🎬 Filtering for Movies Tab
         function filterMoviesCategory(cat, el) {
             document.querySelectorAll('#movies-chips .chip-btn').forEach(c => c.classList.remove('active'));
             el.classList.add('active');
+
+            if (cat === 'GUJARATI') {
+                openGujaratiMoviesFullGrid();
+                return;
+            }
 
             const sections = document.querySelectorAll('#movies-catalogs-grid .catalog-row-section');
             sections.forEach(sec => {
@@ -2824,6 +3692,11 @@
             document.querySelectorAll('#series-chips .chip-btn').forEach(c => c.classList.remove('active'));
             el.classList.add('active');
 
+            if (cat === 'GUJARATI') {
+                openGujaratiMoviesFullGrid();
+                return;
+            }
+
             const sections = document.querySelectorAll('#series-catalogs-grid .catalog-row-section');
             sections.forEach(sec => {
                 const name = (sec.getAttribute('data-name') || '').toLowerCase();
@@ -2831,14 +3704,16 @@
 
                 if (cat === 'ALL') {
                     sec.style.display = 'block';
-                } else if (cat === 'NETFLIX') {
-                    sec.style.display = (name.includes('netflix') || id.includes('netflix')) ? 'block' : 'none';
-                } else if (cat === 'PRIME') {
-                    sec.style.display = (name.includes('prime') || id.includes('prime')) ? 'block' : 'none';
-                } else if (cat === 'HOTSTAR') {
-                    sec.style.display = (name.includes('hotstar') || id.includes('hotstar') || name.includes('disney')) ? 'block' : 'none';
+                } else if (cat === 'OTT' || cat === 'NETFLIX' || cat === 'PRIME' || cat === 'HOTSTAR') {
+                    sec.style.display = (id.includes('rogmovies') || id.includes('hdhub') || id.includes('castle') || id.includes('moviebox') || id.includes('multimovies')) ? 'block' : 'none';
+                } else if (cat === 'ROG') {
+                    sec.style.display = id.includes('rogmovies') ? 'block' : 'none';
+                } else if (cat === 'HDHUB') {
+                    sec.style.display = id.includes('hdhub') ? 'block' : 'none';
+                } else if (cat === 'CASTLE') {
+                    sec.style.display = id.includes('castle') ? 'block' : 'none';
                 } else if (cat === 'KDRAMA') {
-                    sec.style.display = (name.includes('kisskh') || name.includes('multimovies') || name.includes('drama') || name.includes('cinefreak')) ? 'block' : 'none';
+                    sec.style.display = (name.includes('multimovies') || name.includes('drama') || name.includes('cinefreak')) ? 'block' : 'none';
                 } else if (cat === 'ANIME') {
                     sec.style.display = (name.includes('anime') || id.includes('anime') || name.includes('reanime')) ? 'block' : 'none';
                 }
@@ -2945,7 +3820,7 @@
             if (u.includes('.mkv') || u.includes('pub-') || u.includes('.r2.dev') || (u.includes('worker') && u.includes('.mkv'))) {
                 return false;
             }
-            if (u.includes('.m3u8') || u.includes('.mp4') || u.includes('.webm') || u.includes('/proxy/stream')) {
+            if (u.includes('.m3u8') || u.includes('.mp4') || u.includes('.webm') || u.includes('.mpd') || u.includes('/proxy/stream')) {
                 return true;
             }
             if (u.includes('klnwm.com') || u.includes('hlscob.com') || u.includes('kwsvon.com') || u.includes('mlcoxn.com') || u.includes('cdnvideo11.shop')) {
@@ -2954,30 +3829,148 @@
             return false;
         }
 
-        // 🚀 1-Tap External Video Player Launcher (VLC, MX Player, Outplayer)
+        // 🚀 1-Tap Device-Aware External Video Player Launcher (iPhone, Android, Smart TVs, PC)
         function openInExternalPlayer(streamUrl) {
             if (!streamUrl) return;
+            if (window.AndroidBridge && typeof window.AndroidBridge.openInExternalPlayer === 'function') {
+                window.AndroidBridge.openInExternalPlayer(streamUrl);
+                return;
+            }
             const ua = navigator.userAgent || '';
-            const isAndroid = /Android/i.test(ua);
-            const isIOS = /iPhone|iPad|iPod/i.test(ua);
+            const isSmartTV = /SmartTV|Tizen|webOS|NetCast|BRAVIA|GoogleTV|HbbTV|CrKey|Roku/i.test(ua);
 
-            if (isAndroid) {
-                const vlcIntent = `intent:${streamUrl}#Intent;type=video/*;package=org.videolan.vlc;action=android.intent.action.VIEW;end`;
-                const genericIntent = `intent:${streamUrl}#Intent;type=video/*;action=android.intent.action.VIEW;end`;
-                window.location.href = vlcIntent;
-                setTimeout(() => {
-                    window.location.href = genericIntent;
-                }, 1500);
-            } else if (isIOS) {
-                window.location.href = `vlc://${streamUrl}`;
-                setTimeout(() => {
-                    window.location.href = `outplayer://${streamUrl}`;
-                }, 1200);
-            } else {
-                window.location.href = `vlc://${streamUrl}`;
+            if (isSmartTV) {
+                // Smart TV browsers do not have VLC app installed. Play directly in full-screen Cinema Player!
+                closeStreamPicker();
+                launchCinemaPlayer(streamUrl, activeStreamTitle || 'Smart TV Stream', activeStreamList, activeStreamIndex);
+                showToast('📺 Playing in Smart TV Cinema Player');
+                return;
             }
 
-            copyToClipboard(streamUrl, '🚀 Stream URL copied! Opening in VLC / MX Player...');
+            showPlayerChoiceModal(streamUrl);
+        }
+
+        // 📱 Device-Aware Player Option Modal (iPhone, Android, PC)
+        function showPlayerChoiceModal(streamUrl) {
+            const modal = document.getElementById('player-options-modal');
+            const list = document.getElementById('player-options-list');
+            if (!modal || !list) return;
+
+            if (window.location.hash !== '#player-options') {
+                history.pushState({ modal: 'player-options' }, '', '#player-options');
+            }
+
+            const ua = navigator.userAgent || '';
+            const isIOS = /iPhone|iPad|iPod/i.test(ua);
+            const isAndroid = /Android/i.test(ua);
+            const encoded = encodeURI(streamUrl);
+            const encodedComponent = encodeURIComponent(streamUrl);
+
+            let buttonsHtml = '';
+
+            // 1. In-Browser / Built-in Cinema Player Option (always available)
+            buttonsHtml += `
+                <button class="player-opt-btn gold focusable" tabindex="0" onclick="closePlayerOptionsModal(true); closeStreamPicker(true); launchCinemaPlayer('${escapeHtml(streamUrl)}', activeStreamTitle || 'Direct Play', activeStreamList, activeStreamIndex);">
+                    <i class="fas fa-play"></i>
+                    <div class="player-opt-text">
+                        <strong>Play in Cinema Player</strong>
+                        <span>Instant playback directly inside web browser</span>
+                    </div>
+                </button>
+            `;
+
+            if (isIOS) {
+                // iPhone / iPad: Outplayer (top rated Stremio player), VLC for iOS, Infuse
+                buttonsHtml += `
+                    <button class="player-opt-btn focusable" tabindex="0" onclick="window.location.href='outplayer://${encodedComponent}'; copyToClipboard('${escapeHtml(streamUrl)}', 'Opening in Outplayer...'); setTimeout(closePlayerOptionsModal, 600);">
+                        <i class="fas fa-play-circle" style="color:#38bdf8;"></i>
+                        <div class="player-opt-text">
+                            <strong>Outplayer (iOS Recommended)</strong>
+                            <span>Top rated external player for iPhone &amp; iPad</span>
+                        </div>
+                    </button>
+                    <button class="player-opt-btn focusable" tabindex="0" onclick="window.location.href='vlc-x-callback://x-callback-url/stream?url=${encodedComponent}'; copyToClipboard('${escapeHtml(streamUrl)}', 'Opening in VLC iOS...'); setTimeout(closePlayerOptionsModal, 600);">
+                        <i class="fab fa-vimeo-v" style="color:#FFA500;"></i>
+                        <div class="player-opt-text">
+                            <strong>VLC for iOS</strong>
+                            <span>Direct launch in official VLC App</span>
+                        </div>
+                    </button>
+                    <button class="player-opt-btn focusable" tabindex="0" onclick="window.location.href='infuse://x-callback-url/play?url=${encodedComponent}'; copyToClipboard('${escapeHtml(streamUrl)}', 'Opening in Infuse...'); setTimeout(closePlayerOptionsModal, 600);">
+                        <i class="fas fa-film" style="color:#a78bfa;"></i>
+                        <div class="player-opt-text">
+                            <strong>Infuse Player</strong>
+                            <span>High-performance iOS &amp; Apple TV playback</span>
+                        </div>
+                    </button>
+                `;
+            } else if (isAndroid) {
+                // Android Phone / Tablet / TV
+                const vlcIntent = `intent:${encoded}#Intent;type=video/*;package=org.videolan.vlc;action=android.intent.action.VIEW;end`;
+                const mxIntent = `intent:${encoded}#Intent;type=video/*;package=com.mxtech.videoplayer.ad;action=android.intent.action.VIEW;end`;
+                const genericIntent = `intent:${encoded}#Intent;type=video/*;action=android.intent.action.VIEW;end`;
+
+                buttonsHtml += `
+                    <button class="player-opt-btn focusable" tabindex="0" onclick="window.location.href='${escapeHtml(vlcIntent)}'; copyToClipboard('${escapeHtml(streamUrl)}', 'Opening in VLC Android...'); setTimeout(closePlayerOptionsModal, 600);">
+                        <i class="fab fa-vimeo-v" style="color:#FFA500;"></i>
+                        <div class="player-opt-text">
+                            <strong>VLC for Android</strong>
+                            <span>Launch stream directly in VLC Player</span>
+                        </div>
+                    </button>
+                    <button class="player-opt-btn focusable" tabindex="0" onclick="window.location.href='${escapeHtml(mxIntent)}'; copyToClipboard('${escapeHtml(streamUrl)}', 'Opening in MX Player...'); setTimeout(closePlayerOptionsModal, 600);">
+                        <i class="fas fa-play-circle" style="color:#10b981;"></i>
+                        <div class="player-opt-text">
+                            <strong>MX Player</strong>
+                            <span>Launch stream in MX Player</span>
+                        </div>
+                    </button>
+                    <button class="player-opt-btn focusable" tabindex="0" onclick="window.location.href='${escapeHtml(genericIntent)}'; copyToClipboard('${escapeHtml(streamUrl)}', 'Opening Android Video App...'); setTimeout(closePlayerOptionsModal, 600);">
+                        <i class="fab fa-android" style="color:#34d399;"></i>
+                        <div class="player-opt-text">
+                            <strong>Android App Chooser</strong>
+                            <span>Choose any installed video player</span>
+                        </div>
+                    </button>
+                `;
+            } else {
+                // Desktop (Windows / Mac)
+                buttonsHtml += `
+                    <button class="player-opt-btn focusable" tabindex="0" onclick="window.location.href='vlc://${escapeHtml(streamUrl)}'; copyToClipboard('${escapeHtml(streamUrl)}', 'Stream link copied! Open VLC, press Ctrl+N and paste'); setTimeout(closePlayerOptionsModal, 600);">
+                        <i class="fab fa-vimeo-v" style="color:#FFA500;"></i>
+                        <div class="player-opt-text">
+                            <strong>Open in VLC (Desktop)</strong>
+                            <span>Launches VLC or copies link for Ctrl+N / Cmd+N</span>
+                        </div>
+                    </button>
+                `;
+            }
+
+            // Universal 1-Tap Copy Direct Stream Link
+            buttonsHtml += `
+                <button class="player-opt-btn focusable" tabindex="0" onclick="copyToClipboard('${escapeHtml(streamUrl)}', '📋 Direct stream link copied! Paste into any player'); closePlayerOptionsModal();">
+                    <i class="fas fa-copy" style="color:var(--gold);"></i>
+                    <div class="player-opt-text">
+                        <strong>Copy Direct Stream Link</strong>
+                        <span>Paste into VLC (Media ➔ Open Network Stream)</span>
+                    </div>
+                </button>
+            `;
+
+            list.innerHTML = buttonsHtml;
+            modal.classList.add('open');
+            const firstBtn = list.querySelector('.player-opt-btn');
+            if (firstBtn) firstBtn.focus();
+        }
+
+        function closePlayerOptionsModal(fromPopstate = false) {
+            if (fromPopstate && fromPopstate.target && fromPopstate.target.id !== 'player-options-modal') return;
+            const isPop = fromPopstate === true;
+            const modal = document.getElementById('player-options-modal');
+            if (modal) modal.classList.remove('open');
+            if (!isPop && window.location.hash === '#player-options') {
+                history.back();
+            }
         }
 
         function copyToClipboard(text, successMsg) {
@@ -3020,8 +4013,26 @@
             }
         }
 
+        // 🎧 Detect Audio Language helper for multi-audio streams
+        function detectAudioLanguage(title, name) {
+            const text = ((title || '') + ' ' + (name || '')).toLowerCase();
+            if (text.includes('audio: hindi') || text.includes('(hin)') || text.includes('hindi') || text.includes('prime hindi')) return 'Hindi';
+            if (text.includes('audio: english') || text.includes('(eng)') || text.includes('english') || text.includes('prime eng')) return 'English';
+            if (text.includes('audio: tamil') || text.includes('(tam)') || text.includes('tamil')) return 'Tamil';
+            if (text.includes('audio: telugu') || text.includes('(tel)') || text.includes('telugu')) return 'Telugu';
+            if (text.includes('audio: kannada') || text.includes('(kan)') || text.includes('kannada')) return 'Kannada';
+            if (text.includes('audio: malayalam') || text.includes('(mal)') || text.includes('malayalam')) return 'Malayalam';
+            if (text.includes('audio: gujarati') || text.includes('(guj)') || text.includes('gujarati')) return 'Gujarati';
+            if (text.includes('dual audio') || text.includes('multi audio') || text.includes('multi-audio')) return 'Multi Audio';
+            return null;
+        }
+
         // 🎬 Stream Selection Bottom Sheet Modal
         async function openStreamPicker(type, id, title) {
+            if (window.location.hash !== '#stream-picker') {
+                history.pushState({ modal: 'stream-picker' }, '', '#stream-picker');
+            }
+
             document.getElementById('sheet-title-text').innerText = cleanTitle(title);
             const container = document.getElementById('stream-options-container');
             container.innerHTML = '<div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>';
@@ -3043,7 +4054,33 @@
                 });
 
                 if (validStreams.length === 0) {
-                    container.innerHTML = '<div style="text-align: center; color: var(--text-sub); padding: 26px; font-size: 13px;">No playable streams active for this title right now.<br><span style="font-size:11px;opacity:0.8;">(Live match broadcasts go live shortly before start time)</span></div>';
+                    const isUpcoming = (title || '').includes('🔜');
+                    if (isUpcoming) {
+                        container.innerHTML = `
+                            <div style="text-align: center; color: var(--gold); padding: 30px 20px; font-size: 14px;">
+                                <div style="font-size: 32px; margin-bottom: 10px;">🔜 ⏳</div>
+                                <strong style="font-size: 16px; color: #fff;">Match Scheduled</strong><br>
+                                <span style="display:inline-block; margin-top:8px; color:var(--text-sub); font-size:13px; line-height:1.5;">
+                                    This fixture is upcoming. Live satellite & CDN feeds activate approximately <b>15 minutes</b> prior to toss / match start time.
+                                </span>
+                            </div>
+                        `;
+                    } else {
+                        container.innerHTML = `
+                            <div style="text-align: center; color: var(--text-sub); padding: 26px 20px; font-size: 13px;">
+                                <div style="font-size: 28px; margin-bottom: 8px;">🎬 ⚠️</div>
+                                <strong style="font-size: 15px; color: #fff;">No active stream links found for this title</strong><br>
+                                <span style="display:inline-block; margin-top:6px; color:var(--text-sub); font-size:12px; line-height:1.5;">
+                                    This provider link may be temporarily offline. Try another server or explore Castle Cinema for 550+ verified 1080p instant web titles.
+                                </span>
+                                <div style="margin-top: 16px;">
+                                    <button class="btn-stream-action focusable" tabindex="0" style="background:var(--gold); color:#000; padding:10px 18px; border-radius:10px; font-weight:700; cursor:pointer;" onclick="closeStreamPicker(); openCatalogFullGrid('cnc_CastleTVUseVLC_other', '🏰 Castle Cinema (Instant Web Play • 1080p)', 'other');">
+                                        🏰 Explore 550+ Titles in Castle Cinema
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }
                     return;
                 }
 
@@ -3076,32 +4113,70 @@
                         ? `<span class="badge-stream-format badge-stream-web"><i class="fas fa-bolt"></i> Web Play</span>`
                         : `<span class="badge-stream-format badge-stream-mkv"><i class="fas fa-rocket"></i> MKV • VLC</span>`;
 
+                    const detectedLang = detectAudioLanguage(s.title, s.name);
+                    const langBadge = detectedLang
+                        ? `<span class="badge-stream-format" style="background:rgba(56,189,248,0.2); color:#38bdf8; border:1px solid rgba(56,189,248,0.4);"><i class="fas fa-volume-up"></i> ${detectedLang}</span>`
+                        : '';
+
                     entry.innerHTML = `
                         <div style="flex:1; min-width:0; padding-right:10px;">
                             <div style="display:flex; align-items:center; flex-wrap:wrap; gap:5px; margin-bottom:4px;">
                                 <span class="stream-name-bold">${name}</span>
                                 ${formatBadge}
+                                ${langBadge}
                             </div>
                             <div class="stream-detail-sub">${sub}</div>
                         </div>
-                        <div class="stream-actions-group" onclick="event.stopPropagation()">
-                            ${!webPlayable ? `
-                                <button class="btn-stream-action btn-vlc focusable" tabindex="0" onclick="openInExternalPlayer('${escapeHtml(s.url)}')">
-                                    <i class="fas fa-play"></i> VLC / MX
-                                </button>
-                            ` : `
-                                <button class="btn-stream-action focusable" tabindex="0" style="background:var(--gold); color:#000;" onclick="closeStreamPicker(); launchCinemaPlayer('${escapeHtml(s.url)}', '${escapeHtml(title)}', validStreams, ${idx});">
-                                    <i class="fas fa-play"></i> Play
-                                </button>
-                            `}
-                            <button class="btn-stream-action focusable" tabindex="0" title="Copy Stream URL" onclick="copyToClipboard('${escapeHtml(s.url)}', 'Stream URL copied! Paste into VLC (Ctrl+N)')">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
                     `;
 
+                    const actionsGroup = document.createElement('div');
+                    actionsGroup.className = 'stream-actions-group';
+                    actionsGroup.onclick = (e) => e.stopPropagation();
+
+                    if (webPlayable) {
+                        const playBtn = document.createElement('button');
+                        playBtn.className = 'btn-stream-action focusable';
+                        playBtn.tabIndex = 0;
+                        playBtn.style.cssText = 'background:var(--gold); color:#000;';
+                        playBtn.innerHTML = '<i class="fas fa-play"></i> Play';
+                        playBtn.onclick = (e) => {
+                            e.stopPropagation();
+                            closeStreamPicker(true);
+                            launchCinemaPlayer(s.url, title, validStreams, idx);
+                        };
+                        actionsGroup.appendChild(playBtn);
+                    }
+
+                    const ua = navigator.userAgent || '';
+                    const isSmartTV = /SmartTV|Tizen|webOS|NetCast|BRAVIA|GoogleTV|HbbTV|CrKey|Roku/i.test(ua);
+                    const isIOS = /iPhone|iPad|iPod/i.test(ua);
+                    const vlcLabel = isSmartTV ? 'Play Cinema' : (isIOS ? 'External' : 'VLC / Player');
+
+                    const vlcBtn = document.createElement('button');
+                    vlcBtn.className = 'btn-stream-action btn-vlc focusable';
+                    vlcBtn.tabIndex = 0;
+                    vlcBtn.innerHTML = `<i class="fas fa-play"></i> ${vlcLabel}`;
+                    vlcBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        openInExternalPlayer(s.url);
+                    };
+                    actionsGroup.appendChild(vlcBtn);
+
+                    const copyBtn = document.createElement('button');
+                    copyBtn.className = 'btn-stream-action focusable';
+                    copyBtn.tabIndex = 0;
+                    copyBtn.title = 'Copy Stream URL';
+                    copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+                    copyBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        copyToClipboard(s.url, 'Stream URL copied! Paste into VLC (Ctrl+N)');
+                    };
+                    actionsGroup.appendChild(copyBtn);
+
+                    entry.appendChild(actionsGroup);
+
                     entry.onclick = () => {
-                        closeStreamPicker();
+                        closeStreamPicker(true);
                         launchCinemaPlayer(s.url, title, validStreams, idx);
                     };
                     container.appendChild(entry);
@@ -3116,8 +4191,14 @@
             }
         }
 
-        function closeStreamPicker() {
-            document.getElementById('stream-picker-modal').classList.remove('open');
+        function closeStreamPicker(fromPopstate = false) {
+            if (fromPopstate && fromPopstate.target && fromPopstate.target.id !== 'stream-picker-modal') return;
+            const isPop = fromPopstate === true;
+            const modal = document.getElementById('stream-picker-modal');
+            if (modal) modal.classList.remove('open');
+            if (!isPop && window.location.hash === '#stream-picker') {
+                history.back();
+            }
         }
 
         // 🍿 Fullscreen Native Cinema Player with Multi-Server Switcher, Auto Failover & MKV Detection
@@ -3126,12 +4207,24 @@
         let activeStreamTitle = '';
         let currentPlayingUrl = '';
 
-        function launchCinemaPlayer(url, title, streamList = [], streamIndex = 0) {
+        function launchCinemaPlayer(url, title, streamList = [], streamIndex = 0, resumeTime = 0) {
             activeStreamList = streamList;
             activeStreamIndex = streamIndex;
             activeStreamTitle = title;
             currentPlayingUrl = url;
             updateServerSwitchUI();
+
+            // Synchronize browser history so Android/iOS back button or swipe closes player
+            if (window.location.hash) {
+                history.replaceState({ modal: 'cinema-player' }, '', '#player');
+            } else {
+                history.pushState({ modal: 'cinema-player' }, '', '#player');
+            }
+
+            // Auto-lock mobile orientation to landscape when playback begins
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(() => {});
+            }
 
             document.getElementById('player-stream-title').innerText = cleanTitle(title);
             const container = document.getElementById('player-screen-wrap');
@@ -3141,12 +4234,54 @@
             `;
             const video = container.querySelector('video');
 
+            // 🕒 Auto-Save Watch Progress for Resume Playback
+            let lastSavedSecond = 0;
+            video.addEventListener('timeupdate', () => {
+                const cur = Math.floor(video.currentTime);
+                if (cur > 10 && cur - lastSavedSecond >= 4) {
+                    lastSavedSecond = cur;
+                    saveWatchProgress({
+                        title: activeStreamTitle,
+                        streamUrl: currentPlayingUrl,
+                        currentTime: video.currentTime,
+                        duration: video.duration,
+                        poster: (activeStreamList && activeStreamList[activeStreamIndex] && activeStreamList[activeStreamIndex].poster) || BRAND_LOGO
+                    });
+                }
+            });
+
+            // Seek to saved position if resuming
+            if (resumeTime && resumeTime > 0) {
+                video.addEventListener('loadedmetadata', () => {
+                    try {
+                        video.currentTime = resumeTime;
+                        showToast(`Resumed from ${formatWatchTime(resumeTime)}`);
+                    } catch(e) {}
+                }, { once: true });
+            }
+
+            // 📝 Inject Subtitles into Video element if available
+            const activeStream = (streamList && streamList[streamIndex]) || null;
+            if (activeStream && Array.isArray(activeStream.subtitles)) {
+                activeStream.subtitles.forEach((sub, sIdx) => {
+                    if (sub && sub.url) {
+                        const track = document.createElement('track');
+                        track.kind = 'subtitles';
+                        track.label = sub.lang ? sub.lang.toUpperCase() : `Subtitle ${sIdx + 1}`;
+                        track.srclang = sub.lang || 'en';
+                        track.src = sub.url;
+                        if (sIdx === 0) track.default = true;
+                        video.appendChild(track);
+                    }
+                });
+            }
+
             const webPlayable = isWebPlayable(url);
             if (!webPlayable) {
                 showPlayerOverlay('mkv', url, title);
+            } else {
+                playStreamUrl(url, video);
             }
-
-            playStreamUrl(url, video);
             document.getElementById('cinema-player-modal').classList.add('open');
         }
 
@@ -3167,7 +4302,7 @@
                             <button class="btn-overlay-act outline focusable" tabindex="0" onclick="copyToClipboard('${escapeHtml(url)}', 'Stream URL copied! Paste into VLC')">
                                 <i class="fas fa-copy"></i> Copy Stream URL
                             </button>
-                            <button class="btn-overlay-act outline focusable" tabindex="0" onclick="dismissPlayerOverlay()">
+                            <button class="btn-overlay-act outline focusable" tabindex="0" onclick="dismissPlayerOverlay(); const v = document.querySelector('#player-screen-wrap video'); if (v) playStreamUrl('${escapeHtml(url)}', v);">
                                 <i class="fas fa-play"></i> Try In Browser
                             </button>
                         </div>
@@ -3204,25 +4339,179 @@
             if (overlay) overlay.style.display = 'none';
         }
 
-        function playStreamUrl(url, video) {
-            currentPlayingUrl = url;
+        let currentShakaPlayer = null;
+
+        async function playStreamUrl(url, video) {
+            let finalUrl = url;
+            currentPlayingUrl = finalUrl;
+
             if (currentHlsEngine) {
                 currentHlsEngine.destroy();
                 currentHlsEngine = null;
             }
+            if (currentShakaPlayer) {
+                try {
+                    await currentShakaPlayer.destroy();
+                } catch (e) {}
+                currentShakaPlayer = null;
+            }
 
-            if (Hls.isSupported() && (url.includes('.m3u8') || url.includes('/proxy/stream') || url.includes('klnwm.com') || url.includes('hlscob.com') || url.includes('cdnvideo11.shop'))) {
-                currentHlsEngine = new Hls({
+            const activeStream = (activeStreamList && activeStreamList[activeStreamIndex]) || null;
+            const activeClearkey = (activeStream && activeStream.clearkey) ? activeStream.clearkey : null;
+
+            // 🚀 Google Shaka Player Engine for MPEG-DASH & ClearKey Streams (PlayFy & SportzX)
+            // Unwrap any proxy/stream wrappers to locate origin MPD and ClearKeys
+            let decodedUrl = finalUrl;
+            for (let i = 0; i < 3; i++) {
+                try {
+                    const next = decodeURIComponent(decodedUrl);
+                    if (next === decodedUrl) break;
+                    decodedUrl = next;
+                } catch(e) { break; }
+            }
+
+            let directMpd = (activeStream && activeStream.mpdUrl) ? activeStream.mpdUrl : null;
+            if (!directMpd) {
+                const dParamMatch = decodedUrl.match(/[?&]d=([^&]+)/);
+                if (dParamMatch && dParamMatch[1]) {
+                    directMpd = dParamMatch[1].trim();
+                } else if (decodedUrl.includes('.mpd')) {
+                    const mpdIdx = decodedUrl.indexOf('.mpd');
+                    const httpIdx = decodedUrl.lastIndexOf('http', mpdIdx);
+                    if (httpIdx !== -1) {
+                        directMpd = decodedUrl.substring(httpIdx, mpdIdx + 4);
+                    } else {
+                        directMpd = decodedUrl;
+                    }
+                }
+            }
+
+            let effectiveClearkey = activeClearkey;
+            if (!effectiveClearkey) {
+                const keyParamMatch = decodedUrl.match(/[?&]clearkey=([^&]+)/);
+                if (keyParamMatch && keyParamMatch[1]) {
+                    effectiveClearkey = keyParamMatch[1].trim();
+                }
+            }
+
+            const isDashClearkey = directMpd && (effectiveClearkey || directMpd.includes('.mpd'));
+
+            if (isDashClearkey && window.shaka && shaka.Player && shaka.Player.isBrowserSupported()) {
+                try {
+                    shaka.polyfill.installAll();
+                    currentShakaPlayer = new shaka.Player(video);
+
+                    const clearKeysMap = {};
+                    if (effectiveClearkey) {
+                        const parts = effectiveClearkey.split(':');
+                        if (parts.length === 2) {
+                            const kid = parts[0].trim();
+                            const key = parts[1].trim();
+                            const cleanKid = kid.replace(/-/g, '').toLowerCase();
+                            const cleanKey = key.replace(/-/g, '').toLowerCase();
+                            clearKeysMap[cleanKid] = cleanKey;
+                            clearKeysMap[cleanKid.toUpperCase()] = cleanKey;
+                            if (cleanKid.length === 32) {
+                                const uuidKid = `${cleanKid.slice(0,8)}-${cleanKid.slice(8,12)}-${cleanKid.slice(12,16)}-${cleanKid.slice(16,20)}-${cleanKid.slice(20)}`;
+                                clearKeysMap[uuidKid] = cleanKey;
+                                clearKeysMap[uuidKid.toUpperCase()] = cleanKey;
+                            }
+                        }
+                    }
+
+                    // Register response filter to inject ClearKey ContentProtection if missing from Amazon Prime MPD
+                    currentShakaPlayer.getNetworkingEngine().registerResponseFilter((type, response) => {
+                        if (type === shaka.net.NetworkingEngine.RequestType.MANIFEST) {
+                            try {
+                                let text = shaka.util.StringUtils.fromUTF8(response.data);
+                                if (!text.includes('1077efec-c0b2-4d02-ace3-3c1e52e2fb4b')) {
+                                    const clearkeyTag = '<ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b" value="ClearKey"/>';
+                                    text = text.replace(/<ContentProtection [^>]*value="cenc"[^>]*\/>/g, (m) => m + '\n' + clearkeyTag);
+                                    response.data = shaka.util.StringUtils.toUTF8(text);
+                                }
+                            } catch (filterErr) {}
+                        }
+                    });
+
+                    currentShakaPlayer.configure({
+                        drm: {
+                            clearKeys: clearKeysMap
+                        },
+                        streaming: {
+                            bufferingGoal: 10,
+                            rebufferingGoal: 2,
+                            jumpLargeGaps: true,
+                            stallEnabled: true,
+                            inaccurateManifestTolerance: 2
+                        },
+                        manifest: {
+                            dash: {
+                                ignoreMinBufferTime: true,
+                                autoCorrectDrift: true
+                            }
+                        }
+                    });
+
+                    currentShakaPlayer.addEventListener('error', (e) => {
+                        console.warn('Shaka Player error:', e);
+                        if (activeStreamList.length > 1 && activeStreamIndex < activeStreamList.length - 1) {
+                            tryNextStreamServer();
+                        } else {
+                            showPlayerOverlay('error', url, activeStreamTitle);
+                        }
+                    });
+
+                    await currentShakaPlayer.load(directMpd);
+                    dismissPlayerOverlay();
+                    updateAudioTrackUI();
+                    video.play().catch(e => console.log('Autoplay:', e));
+                    return;
+                } catch (shakaErr) {
+                    console.warn('Shaka Player failed to load, falling back to Hls.js:', shakaErr);
+                }
+            }
+
+            if (finalUrl.startsWith('http://') || finalUrl.includes('baila-lentoo.pages.dev')) {
+                if (!finalUrl.includes('/proxy/stream')) {
+                    finalUrl = `${API_BASE}/proxy/stream?url=${encodeURIComponent(finalUrl)}`;
+                }
+            }
+
+            if (Hls.isSupported() && (finalUrl.includes('.m3u8') || finalUrl.includes('/proxy/stream') || finalUrl.includes('klnwm.com') || finalUrl.includes('hlscob.com') || finalUrl.includes('cdnvideo11.shop'))) {
+                const hlsConfig = {
                     enableWorker: true,
                     lowLatencyMode: true,
                     manifestLoadingTimeOut: 15000,
-                    levelLoadingTimeOut: 15000
-                });
-                currentHlsEngine.loadSource(url);
+                    levelLoadingTimeOut: 15000,
+                    emeEnabled: true
+                };
+
+                if (activeClearkey) {
+                    const parts = activeClearkey.split(':');
+                    if (parts.length === 2) {
+                        hlsConfig.drmSystems = {
+                            'org.w3.clearkey': {
+                                clearkeys: {
+                                    [parts[0]]: parts[1]
+                                }
+                            }
+                        };
+                    }
+                }
+
+                currentHlsEngine = new Hls(hlsConfig);
+                currentHlsEngine.loadSource(finalUrl);
                 currentHlsEngine.attachMedia(video);
                 currentHlsEngine.on(Hls.Events.MANIFEST_PARSED, function () {
                     dismissPlayerOverlay();
+                    updateAudioTrackUI();
                     video.play().catch(e => console.log('Autoplay blocked:', e));
+                });
+                currentHlsEngine.on(Hls.Events.AUDIO_TRACKS_UPDATED, function () {
+                    updateAudioTrackUI();
+                });
+                currentHlsEngine.on(Hls.Events.AUDIO_TRACK_SWITCHED, function () {
+                    updateAudioTrackUI();
                 });
                 currentHlsEngine.on(Hls.Events.ERROR, function (event, data) {
                     if (data.fatal) {
@@ -3291,20 +4580,108 @@
             }
         }
 
-        function closeCinemaPlayer() {
+        // 🎧 Multi-Audio Track Selector Engine
+        function updateAudioTrackUI() {
+            const btn = document.getElementById('player-audio-switch-btn');
+            const label = document.getElementById('player-audio-label');
+            if (!btn || !label) return;
+
+            if (currentShakaPlayer) {
+                const tracks = currentShakaPlayer.getVariantTracks().filter(t => t.type === 'variant');
+                const langs = [...new Set(tracks.map(t => t.language).filter(Boolean))];
+                if (langs.length > 1) {
+                    const currentLang = currentShakaPlayer.getAudioLanguagesAndRoles()[0]?.language || langs[0];
+                    btn.style.display = 'inline-flex';
+                    label.innerText = `🎧 ${currentLang.toUpperCase()} (${langs.length})`;
+                } else {
+                    btn.style.display = 'none';
+                }
+                return;
+            }
+
+            if (currentHlsEngine && currentHlsEngine.audioTracks && currentHlsEngine.audioTracks.length > 1) {
+                const tracks = currentHlsEngine.audioTracks;
+                const currentIdx = currentHlsEngine.audioTrack >= 0 ? currentHlsEngine.audioTrack : 0;
+                const currentTrack = tracks[currentIdx] || tracks[0];
+                const trackName = currentTrack.name || currentTrack.lang || `Track ${currentIdx + 1}`;
+                btn.style.display = 'inline-flex';
+                label.innerText = `🎧 ${trackName} (${currentIdx + 1}/${tracks.length})`;
+            } else {
+                btn.style.display = 'none';
+            }
+        }
+
+        function switchAudioTrack() {
+            if (currentShakaPlayer) {
+                const tracks = currentShakaPlayer.getVariantTracks().filter(t => t.type === 'variant');
+                const langs = [...new Set(tracks.map(t => t.language).filter(Boolean))];
+                if (langs.length <= 1) return;
+                const currentLang = currentShakaPlayer.getAudioLanguagesAndRoles()[0]?.language || langs[0];
+                const nextIdx = (langs.indexOf(currentLang) + 1) % langs.length;
+                const nextLang = langs[nextIdx];
+                currentShakaPlayer.selectAudioLanguage(nextLang);
+                showToast(`🎧 Switched audio to: ${nextLang.toUpperCase()}`);
+                updateAudioTrackUI();
+                return;
+            }
+
+            if (!currentHlsEngine || !currentHlsEngine.audioTracks || currentHlsEngine.audioTracks.length <= 1) return;
+            const tracks = currentHlsEngine.audioTracks;
+            const currentIdx = currentHlsEngine.audioTrack >= 0 ? currentHlsEngine.audioTrack : 0;
+            const nextIdx = (currentIdx + 1) % tracks.length;
+            currentHlsEngine.audioTrack = nextIdx;
+            const track = tracks[nextIdx];
+            const trackName = track.name || track.lang || `Audio Track ${nextIdx + 1}`;
+            showToast(`🎧 Switched audio to: ${trackName}`);
+            updateAudioTrackUI();
+        }
+
+        function togglePictureInPicture() {
+            const video = document.querySelector('#player-screen-wrap video');
+            if (!video) return;
+            if (document.pictureInPictureElement) {
+                document.exitPictureInPicture().catch(() => {});
+            } else if (video.requestPictureInPicture) {
+                video.requestPictureInPicture().catch(() => {});
+            }
+        }
+
+        async function closeCinemaPlayer(fromPopstate = false) {
+            renderContinueWatching();
             if (currentHlsEngine) {
                 currentHlsEngine.destroy();
                 currentHlsEngine = null;
             }
+            if (currentShakaPlayer) {
+                try {
+                    await currentShakaPlayer.destroy();
+                } catch(e) {}
+                currentShakaPlayer = null;
+            }
+            if (screen.orientation && screen.orientation.unlock) {
+                screen.orientation.unlock().catch(() => {});
+            }
+            if (document.fullscreenElement) {
+                document.exitFullscreen().catch(() => {});
+            }
+            const audioBtn = document.getElementById('player-audio-switch-btn');
+            if (audioBtn) audioBtn.style.display = 'none';
             activeStreamList = [];
             const container = document.getElementById('player-screen-wrap');
             const video = container.querySelector('video');
             if (video) video.pause();
             container.innerHTML = '';
-            document.getElementById('cinema-player-modal').classList.remove('open');
+            const modal = document.getElementById('cinema-player-modal');
+            if (modal) modal.classList.remove('open');
+
+            // Synchronize browser history if closed via in-player back button or TV remote
+            if (fromPopstate !== true && window.location.hash === '#player') {
+                history.back();
+            }
         }
 
-        // 📺 2D Spatial Smart TV Remote Navigation Engine (Samsung Tizen, Toshiba, LG, Android TV)
+        // 📺 Universal 2D Spatial Remote & Desktop Keyboard Navigation Engine
+        // Supports Samsung Tizen, LG webOS, Android TV, Fire TV Stick, Windows, macOS, Linux
         window.addEventListener('keydown', (e) => {
             const keyCode = e.keyCode || e.which;
             const isPlayerOpen = document.getElementById('cinema-player-modal').classList.contains('open');
@@ -3344,14 +4721,21 @@
                 return;
             }
 
-            // Handle Back / Return Key on TV Remotes (Tizen: 10009, Android/Esc: 27)
-            if (keyCode === 27 || keyCode === 10009) {
+            // Universal Back Key (Tizen: 10009, webOS: 461, Esc: 27, Backspace: 8)
+            const isBackKey = keyCode === 27 || keyCode === 10009 || keyCode === 461 || (keyCode === 8 && !document.activeElement?.matches('input, textarea'));
+            if (isBackKey) {
                 if (isPlayerOpen) {
                     closeCinemaPlayer();
                     e.preventDefault();
                     return;
                 }
-                const isModalOpen = document.getElementById('stream-picker-modal').classList.contains('open');
+                const isOptionsOpen = document.getElementById('player-options-modal')?.classList.contains('open');
+                if (isOptionsOpen) {
+                    closePlayerOptionsModal();
+                    e.preventDefault();
+                    return;
+                }
+                const isModalOpen = document.getElementById('stream-picker-modal')?.classList.contains('open');
                 if (isModalOpen) {
                     closeStreamPicker();
                     e.preventDefault();
@@ -3364,13 +4748,38 @@
                 }
             }
 
-            // In-Player Remote Controls
+            // In-Player Remote & Desktop Hotkey Controls
             if (isPlayerOpen) {
                 const video = document.querySelector('video');
                 if (!video) return;
-                // OK / Enter: Toggle Play / Pause
-                if (keyCode === 13) {
+                // OK / Enter / Space: Toggle Play / Pause
+                if (keyCode === 13 || keyCode === 32) {
                     if (video.paused) video.play(); else video.pause();
+                    e.preventDefault();
+                }
+                // F Key: Toggle Fullscreen
+                else if (keyCode === 70 || keyCode === 102) {
+                    if (document.fullscreenElement) {
+                        document.exitFullscreen().catch(() => {});
+                    } else {
+                        document.getElementById('cinema-player-modal').requestFullscreen().catch(() => {});
+                    }
+                    e.preventDefault();
+                }
+                // M Key: Toggle Mute
+                else if (keyCode === 77 || keyCode === 109) {
+                    video.muted = !video.muted;
+                    e.preventDefault();
+                }
+                // Up Arrow: Volume + 10%
+                else if (keyCode === 38) {
+                    video.volume = Math.min(1, video.volume + 0.1);
+                    video.muted = false;
+                    e.preventDefault();
+                }
+                // Down Arrow: Volume - 10%
+                else if (keyCode === 40) {
+                    video.volume = Math.max(0, video.volume - 0.1);
                     e.preventDefault();
                 }
                 // Left Arrow: Seek -10s
@@ -3466,19 +4875,279 @@
 
             if (bestCandidate) {
                 bestCandidate.focus();
-                bestCandidate.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                bestCandidate.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
                 event.preventDefault();
             }
         }
 
+        // 🔄 Universal Browser Back Button & Mobile Swipe-Back Gesture Interceptor
+        // Seamlessly closes active Cinema Player, Stream Picker, Player Options or Fullview Catalog without exiting the app
+        window.addEventListener('popstate', (e) => {
+            const extModal = document.getElementById('extensions-modal');
+            if (extModal && extModal.classList.contains('open')) {
+                closeExtensionsModal(true);
+                return;
+            }
+            const playerModal = document.getElementById('cinema-player-modal');
+            if (playerModal && playerModal.classList.contains('open')) {
+                closeCinemaPlayer(true);
+                return;
+            }
+            const optionsModal = document.getElementById('player-options-modal');
+            if (optionsModal && optionsModal.classList.contains('open')) {
+                closePlayerOptionsModal(true);
+                return;
+            }
+            const pickerModal = document.getElementById('stream-picker-modal');
+            if (pickerModal && pickerModal.classList.contains('open')) {
+                closeStreamPicker(true);
+                return;
+            }
+            const gridModal = document.getElementById('catalog-fullview-modal');
+            if (gridModal && gridModal.classList.contains('open')) {
+                closeCatalogFullGrid(true);
+                return;
+            }
+        });
+
         // 🏁 Boot Application
         window.addEventListener('DOMContentLoaded', () => {
+            // Clean any stale fragment on page reload
+            if (window.location.hash) {
+                try {
+                    history.replaceState(null, '', window.location.pathname + window.location.search);
+                } catch(e) {}
+            }
+
             checkInitialLock();
 
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));
             }
         });
+    
+        // ==========================================
+        // 🕒 CONTINUE WATCHING ENGINE (ALL DEVICES)
+        // ==========================================
+        const CW_STORAGE_KEY = 'y_streamer_continue_watching';
+
+        function getContinueWatchingList() {
+            try {
+                const raw = localStorage.getItem(CW_STORAGE_KEY);
+                return raw ? JSON.parse(raw) : [];
+            } catch(e) {
+                return [];
+            }
+        }
+
+        function saveWatchProgress(item) {
+            if (!item || !item.title || !item.duration || item.duration < 30 || item.currentTime < 10) return;
+            try {
+                let list = getContinueWatchingList();
+                list = list.filter(x => x.title !== item.title && x.streamUrl !== item.streamUrl);
+
+                // If within 45 seconds of video end, clear from continue watching
+                if (item.currentTime >= item.duration - 45) {
+                    localStorage.setItem(CW_STORAGE_KEY, JSON.stringify(list));
+                    renderContinueWatching();
+                    return;
+                }
+
+                const percent = Math.min(100, Math.round((item.currentTime / item.duration) * 100));
+                list.unshift({
+                    title: item.title,
+                    streamUrl: item.streamUrl,
+                    currentTime: Math.floor(item.currentTime),
+                    duration: Math.floor(item.duration),
+                    percent: percent,
+                    poster: item.poster || BRAND_LOGO,
+                    timestamp: Date.now()
+                });
+
+                if (list.length > 15) list = list.slice(0, 15);
+                localStorage.setItem(CW_STORAGE_KEY, JSON.stringify(list));
+                renderContinueWatching();
+            } catch(e) {
+                console.error('Error saving watch progress:', e);
+            }
+        }
+
+        function removeWatchProgress(title, e) {
+            if (e) e.stopPropagation();
+            try {
+                let list = getContinueWatchingList();
+                list = list.filter(x => x.title !== title);
+                localStorage.setItem(CW_STORAGE_KEY, JSON.stringify(list));
+                renderContinueWatching();
+                showToast('Removed from Continue Watching');
+            } catch(e) {}
+        }
+
+        function clearContinueWatching() {
+            if (confirm('Clear all Continue Watching history?')) {
+                localStorage.removeItem(CW_STORAGE_KEY);
+                renderContinueWatching();
+                showToast('Continue Watching cleared');
+            }
+        }
+
+        function formatWatchTime(seconds) {
+            if (!seconds || isNaN(seconds)) return '0:00';
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+            if (hrs > 0) {
+                return `${hrs}h ${mins}m`;
+            }
+            return `${mins}m ${secs < 10 ? '0' : ''}${secs}s`;
+        }
+
+        function renderContinueWatching() {
+            const sec = document.getElementById('continue-watching-section');
+            const rail = document.getElementById('continue-watching-rail');
+            const badge = document.getElementById('continue-watching-count');
+            if (!sec || !rail) return;
+
+            const list = getContinueWatchingList();
+            if (list.length === 0) {
+                sec.style.display = 'none';
+                return;
+            }
+
+            sec.style.display = 'block';
+            if (badge) badge.innerText = `${list.length} ${list.length === 1 ? 'Title' : 'Titles'}`;
+
+            rail.innerHTML = list.map(item => {
+                const safeTitle = escapeHtml(item.title);
+                const remaining = Math.max(0, item.duration - item.currentTime);
+                return `
+                    <div class="cw-card focusable" tabindex="0" onclick="resumeWatchItem('${escapeHtml(item.streamUrl)}', '${safeTitle.replace(/'/g, "\\'")}', ${item.currentTime})">
+                        <div class="cw-poster-wrap">
+                            <img src="${escapeHtml(item.poster || BRAND_LOGO)}" class="cw-poster-img" alt="${safeTitle}" onerror="this.src='${BRAND_LOGO}'">
+                            <div class="cw-play-overlay">
+                                <i class="fas fa-play cw-play-icon"></i>
+                            </div>
+                            <button class="cw-delete-btn focusable" title="Remove" onclick="removeWatchProgress('${safeTitle.replace(/'/g, "\\'")}', event)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <div class="cw-progress-bar-bg">
+                                <div class="cw-progress-bar-fill" style="width: ${item.percent}%;"></div>
+                            </div>
+                        </div>
+                        <div class="cw-info">
+                            <div class="cw-title" title="${safeTitle}">${safeTitle}</div>
+                            <div class="cw-meta">${item.percent}% • ${formatWatchTime(remaining)} left</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function resumeWatchItem(url, title, resumeTime) {
+            launchCinemaPlayer(url, title, [{ url: url, name: 'Resume Stream', isWebPlayable: true }], 0, resumeTime);
+        }
+
+        // ==========================================
+        // 🧩 EXTENSIONS DIRECTORY ENGINE
+        // ==========================================
+        let cachedPluginsList = [];
+
+        async function openExtensionsModal() {
+            const modal = document.getElementById('extensions-modal');
+            if (!modal) return;
+            modal.classList.add('open');
+
+            if (window.location.hash !== '#extensions') {
+                history.pushState({ modal: 'extensions' }, '', '#extensions');
+            }
+
+            if (cachedPluginsList.length === 0) {
+                await loadPluginsCatalog();
+            }
+        }
+
+        function closeExtensionsModal(fromPopstate = false) {
+            const modal = document.getElementById('extensions-modal');
+            if (modal) modal.classList.remove('open');
+            if (!fromPopstate && window.location.hash === '#extensions') {
+                history.back();
+            }
+        }
+
+        async function loadPluginsCatalog() {
+            const grid = document.getElementById('extensions-grid');
+            if (!grid) return;
+            grid.innerHTML = '<div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i> Loading verified plugins...</div>';
+
+            try {
+                const res = await fetch(`${API_BASE}/api/plugins`);
+                const plugins = await res.json();
+                if (Array.isArray(plugins) && plugins.length > 0) {
+                    cachedPluginsList = plugins;
+                    renderPluginsGrid(plugins);
+                } else {
+                    grid.innerHTML = '<div style="color:var(--text-sub); padding:20px;">No plugins available currently.</div>';
+                }
+            } catch(err) {
+                grid.innerHTML = `<div style="color:#ef4444; padding:20px;">Failed to load plugins: ${err.message}</div>`;
+            }
+        }
+
+        function renderPluginsGrid(plugins) {
+            const grid = document.getElementById('extensions-grid');
+            if (!grid) return;
+
+            grid.innerHTML = plugins.map(p => {
+                const icon = p.iconUrl || BRAND_LOGO;
+                const types = Array.isArray(p.tvTypes) ? p.tvTypes.join(' • ') : 'Streaming';
+                const ver = p.version ? `v${p.version}` : 'v1.0';
+                return `
+                    <div class="ext-card focusable" tabindex="0">
+                        <div class="ext-card-header">
+                            <img src="${escapeHtml(icon)}" class="ext-icon" alt="${escapeHtml(p.name)}" onerror="this.src='${BRAND_LOGO}'">
+                            <div class="ext-title-wrap">
+                                <div class="ext-name">${escapeHtml(p.name)}</div>
+                                <div class="ext-meta-tags">
+                                    <span class="ext-badge-ver">${ver}</span>
+                                    <span class="ext-badge-type">${escapeHtml(types)}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ext-card-desc">
+                            ${escapeHtml(p.description || 'High-speed video link resolver and catalog provider for movies, series, and live streaming.')}
+                        </div>
+                        <div class="ext-card-actions">
+                            <span class="ext-cloud-status"><i class="fas fa-check-circle" style="color:#4ade80;"></i> Cloud Active</span>
+                            <a href="${escapeHtml(p.url || '#')}" download class="ext-download-btn focusable" title="Download .cs3 for Android App">
+                                <i class="fab fa-android"></i> .cs3
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterExtensions(category, el) {
+            document.querySelectorAll('#extensions-filter-chips .chip-btn').forEach(c => c.classList.remove('active'));
+            if (el) el.classList.add('active');
+
+            if (!cachedPluginsList || cachedPluginsList.length === 0) return;
+            if (category === 'ALL') {
+                renderPluginsGrid(cachedPluginsList);
+            } else {
+                const filtered = cachedPluginsList.filter(p => {
+                    const types = p.tvTypes || [];
+                    return types.some(t => t.toLowerCase().includes(category.toLowerCase()));
+                });
+                renderPluginsGrid(filtered);
+            }
+        }
+
+        // Render Continue Watching on initial page load
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(renderContinueWatching, 300);
+        });
+
     </script>
 </body>
 </html>

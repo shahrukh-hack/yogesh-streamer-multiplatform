@@ -5,14 +5,27 @@ const fs = require('fs');
 const path = require('path');
 
 const PORT = process.env.PORT || 7000;
-const UPSTREAM_RESOLVER = process.env.UPSTREAM_RESOLVER || 'https://cncverse.dpdns.org';
+const UPSTREAM_RESOLVERS = (process.env.UPSTREAM_RESOLVERS || process.env.UPSTREAM_RESOLVER || 'https://cncverse.dpdns.org')
+    .split(',')
+    .map(s => s.trim().replace(/\/+$/, ''))
+    .filter(Boolean);
+const UPSTREAM_RESOLVER = UPSTREAM_RESOLVERS[0];
+const PLUGINS_MANIFEST_URL = 'https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/plugins.json';
+const SCRAPERS_MANIFEST_URL = 'https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/scrapers.json';
 const BRAND_LOGO = 'https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg';
 const APP_PIN = process.env.APP_PIN || '778899';
+const ANDROID_APK_URL = 'https://github.com/shahrukh-hack/yogesh-streamer-multiplatform/releases/download/v2.0.0/YogeshStreamer-v2.0.0.apk';
+const ANDROID_RELEASES_URL = 'https://github.com/shahrukh-hack/yogesh-streamer-multiplatform/releases';
+const ANDROID_SHORT_URL = 'tinyurl.com/y-streamer-apk';
 
 // In-memory manifest cache
 let cachedManifest = null;
 let lastManifestFetch = 0;
 const MANIFEST_CACHE_TTL = 1800000; // 30 minutes
+
+// In-memory stream resolution cache (5 minutes TTL for instant response)
+const streamCache = new Map();
+const STREAM_CACHE_TTL = 300000; // 5 minutes
 
 function fetchJson(targetUrl) {
     return new Promise((resolve, reject) => {
@@ -24,7 +37,7 @@ function fetchJson(targetUrl) {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 'Accept': 'application/json, text/plain, */*'
             },
-            timeout: 15000
+            timeout: 10000
         }, (res) => {
             if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
                 return fetchJson(res.headers.location).then(resolve).catch(reject);
@@ -51,6 +64,117 @@ function fetchJson(targetUrl) {
     });
 }
 
+async function fetchJsonWithFailover(apiPath) {
+    let lastError = null;
+    const cleanPath = apiPath.startsWith('/') ? apiPath : `/${apiPath}`;
+    for (const base of UPSTREAM_RESOLVERS) {
+        try {
+            const targetUrl = `${base}${cleanPath}`;
+            const res = await fetchJson(targetUrl);
+            if (res) return res;
+        } catch (err) {
+            lastError = err;
+            console.warn(`Upstream resolver ${base} failed for ${cleanPath}: ${err.message}`);
+        }
+    }
+    throw lastError || new Error(`All upstream resolvers failed for ${cleanPath}`);
+}
+
+
+// ========================================================
+// ⚡ NATIVE IN-PROCESS SCRAPERS (REVERSE ENGINEERED FROM CS3)
+// ========================================================
+const FANCODE_API_URL = 'https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.json';
+const DOMAINS_API_URL = 'https://raw.githubusercontent.com/phisher98/TVVVV/refs/heads/main/domains.json';
+
+let cachedDomains = null;
+let lastDomainsFetch = 0;
+
+async function getLiveDomains() {
+    const now = Date.now();
+    if (cachedDomains && (now - lastDomainsFetch < 3600000)) {
+        return cachedDomains;
+    }
+    try {
+        const d = await fetchJson(DOMAINS_API_URL);
+        if (d && typeof d === 'object') {
+            cachedDomains = d;
+            lastDomainsFetch = now;
+            return cachedDomains;
+        }
+    } catch(e) {}
+    return { HDHUB4u: 'https://new11.hdhub4u.cl', vegamovies: 'https://vegamovies.lease' };
+}
+
+async function getNativeSportsCatalog() {
+    try {
+        const raw = await fetchJson(FANCODE_API_URL);
+        const matches = raw.matches || raw.liveMatches || [];
+        return matches.filter(m => m && m.match_id).map(m => {
+            const title = m.title || 'Live Match';
+            const category = m.category || 'Sports';
+            const poster = m.image || BRAND_LOGO;
+            const tournament = m.tournament || 'Live Tournament';
+            const teams = Array.isArray(m.team) ? m.team.map(t => t.name).join(' vs ') : title;
+            return {
+                id: `native:fc:${m.match_id}`,
+                name: `⚡ ${title} (${category})`,
+                type: 'tv',
+                poster: poster,
+                background: poster,
+                description: `🏆 ${tournament} | ${teams} | Direct 0ms HLS Stream`
+            };
+        });
+    } catch(err) {
+        console.error('Error fetching native sports catalog:', err.message);
+        return [];
+    }
+}
+
+async function getNativeSportsStream(matchId) {
+    try {
+        const raw = await fetchJson(FANCODE_API_URL);
+        const matches = raw.matches || raw.liveMatches || [];
+        const match = matches.find(m => String(m.match_id) === String(matchId));
+        if (!match) return { streams: [] };
+
+        const streams = [];
+        const primaryUrl = match.STREAMING_CDN?.Primary_Playback_URL || match.STREAMING_CDN?.fancode_cdn;
+        if (primaryUrl && primaryUrl.startsWith('http')) {
+            streams.push({
+                name: `⚡ [Web Play] Live Stream (Adaptive 1080p)`,
+                title: `${match.title} - Official Master Stream`,
+                url: primaryUrl,
+                isWebPlayable: true
+            });
+        }
+
+        if (Array.isArray(match.auto_streams)) {
+            match.auto_streams.forEach(as => {
+                const lines = (as.auto || '').split('\n');
+                let curRes = 'HD';
+                lines.forEach(l => {
+                    if (l.includes('RESOLUTION=')) {
+                        const m = l.match(/RESOLUTION=\d+x(\d+)/);
+                        if (m && m[1]) curRes = `${m[1]}p`;
+                    } else if (l.startsWith('http')) {
+                        streams.push({
+                            name: `⚡ [Web Play] ${curRes} Stream`,
+                            title: `${match.title} (${curRes})`,
+                            url: l.trim(),
+                            isWebPlayable: true
+                        });
+                    }
+                });
+            });
+        }
+        return { streams };
+    } catch(err) {
+        console.error('Error resolving native sports stream:', err.message);
+        return { streams: [] };
+    }
+}
+
 async function getRebrandedManifest() {
     const now = Date.now();
     if (cachedManifest && (now - lastManifestFetch) < MANIFEST_CACHE_TTL) {
@@ -58,7 +182,7 @@ async function getRebrandedManifest() {
     }
 
     try {
-        const upstream = await fetchJson(`${UPSTREAM_RESOLVER}/manifest.json`);
+        const upstream = await fetchJsonWithFailover('/manifest.json');
         if (upstream && Array.isArray(upstream.catalogs)) {
             // Rebrand catalogs: convert "other" into "movie" so Stremio can display them in Discover
             const rebrandedCatalogs = upstream.catalogs.map(c => {
@@ -98,20 +222,39 @@ async function getRebrandedManifest() {
                 };
             });
 
-            // Priority sorting: verified web-ready HLS catalogs & live sports first
+            // Filter out dead/abandoned NetMirror scrapers upstream (0 streams, blank titles)
+            const deadCatalogIds = new Set([
+                'cnc_Netflix_other',
+                'cnc_PrimeVideo_other',
+                'cnc_Hotstar_other',
+                'cnc_Disney_other',
+                'cnc_Marvel_other',
+                'cnc_StarWars_other',
+                'cnc_Pixar_other',
+                'cnc_Kisskh_other'
+            ]);
+            const filteredCatalogs = rebrandedCatalogs.filter(c => !deadCatalogIds.has(c.id));
+
+            // Priority sorting: verified working streaming catalogs & live sports first
             const priorityIds = [
                 'cnc_CastleTVUseVLC_other',
-                'cnc_Kisskh_other',
-                'cnc_SportzXLiveEvents_tv',
-                'cnc_SportzXHighlights_tv',
-                'cnc_PlayZTVLiveEvents_tv',
+                'cnc_PlayFyLiveEvents_tv',
+                'cnc_PlayFyHighlights_tv',
+                'cnc_HDHub4U_other',
+                'cnc_Rogmovies_other',
                 'cnc_LivXowLiveEvents_tv',
+                'cnc_PlayZTVLiveEvents_tv',
+                'cnc_JIOTVPlusWW_tv',
+                'cnc_ReANIME_Reanime_other',
+                'cnc_RingZ_other',
+                'cnc_IPTV_tv',
                 'cnc_MovieBoxIN_other',
-                'cnc_Movix_other',
-                'cnc_MultiMovies_other'
+                'cnc_MultiMovies_other',
+                'cnc_SportzXLiveEvents_tv',
+                'cnc_SportzXHighlights_tv'
             ];
 
-            rebrandedCatalogs.sort((a, b) => {
+            filteredCatalogs.sort((a, b) => {
                 const idxA = priorityIds.indexOf(a.id);
                 const idxB = priorityIds.indexOf(b.id);
                 if (idxA !== -1 && idxB !== -1) return idxA - idxB;
@@ -120,6 +263,17 @@ async function getRebrandedManifest() {
                 return 0;
             });
 
+                        // Prepend Native In-House Scraper Catalog (Reverse-Engineered from CS3)
+            const nativeSportsCatalog = {
+                type: 'tv',
+                id: 'native_live_sports_tv',
+                name: '⚡ Live Cricket & Sports (Direct 0ms HD)',
+                extra: [
+                    { name: 'search', isRequired: false },
+                    { name: 'skip', isRequired: false }
+                ]
+            };
+            const finalCatalogs = [nativeSportsCatalog, ...filteredCatalogs];
             cachedManifest = {
                 id: 'org.yogeshstreamer.addon',
                 version: '1.2.1',
@@ -129,6 +283,7 @@ async function getRebrandedManifest() {
                 background: BRAND_LOGO,
                 types: ['movie', 'series', 'tv'],
                 idPrefixes: ['tt', 'cnc:'],
+                catalogs: finalCatalogs,
                 resources: [
                     'stream',
                     'catalog',
@@ -143,8 +298,7 @@ async function getRebrandedManifest() {
                     configurable: false,
                     configurationRequired: false,
                     adult: false
-                },
-                catalogs: rebrandedCatalogs
+                }
             };
             lastManifestFetch = now;
             return cachedManifest;
@@ -299,6 +453,25 @@ function renderLandingHtml(host) {
         .btn-app:hover {
             background: rgba(255, 255, 255, 0.16);
         }
+        .btn-android {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 16px;
+            padding: 15px 24px;
+            border-radius: 14px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+        }
+        .btn-android:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.6);
+        }
         .btn-secondary {
             background: transparent;
             color: #d1d5db;
@@ -366,9 +539,26 @@ function renderLandingHtml(host) {
             <a class="btn-primary" href="/app" style="background: linear-gradient(135deg, #00E5FF 0%, #0066FF 100%); color: #FFF; box-shadow: 0 4px 20px rgba(0, 229, 255, 0.4);">
                 ✨ Launch Standalone Web App (No Stremio Needed)
             </a>
+            <a class="btn-android" href="${ANDROID_APK_URL}">
+                🤖 Download Native Android App (APK v2.0.0)
+            </a>
             <a class="btn-primary" href="${stremioWebUrl}" target="_blank">📱 1-Tap Install in Stremio Web (iOS / Mac / PC)</a>
             <a class="btn-app" href="${stremioProtocolUrl}">🚀 Open in Stremio App (Android / Windows / Linux)</a>
             <button class="btn-secondary" onclick="navigator.clipboard.writeText('${manifestUrl}'); alert('Copied Manifest URL to Clipboard!')">📋 Copy Addon Manifest URL</button>
+        </div>
+
+        <div class="guide" style="border-color: rgba(16, 185, 129, 0.4); margin-top: 14px; background: rgba(6, 78, 59, 0.15);">
+            <h3 style="color: #34d399;">🤖 Native Android App (Phone, Tablet, Google TV, Fire TV)</h3>
+            <p style="font-size: 13px; color: #b5b5c0; margin-bottom: 12px;">High-performance native Android app built with Google Media3 ExoPlayer hardware decoding for seamless 4K/1080p playback and live streams.</p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="${ANDROID_APK_URL}" style="flex: 1; min-width: 170px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: #fff; text-decoration: none; padding: 12px 16px; border-radius: 10px; font-weight: 700; font-size: 13px; text-align: center; display: inline-block;">
+                    ⬇️ Download APK v2.0.0 (Direct)
+                </a>
+                <a href="${ANDROID_RELEASES_URL}" target="_blank" style="flex: 1; min-width: 140px; background: rgba(255,255,255,0.08); color: #fff; text-decoration: none; padding: 12px 16px; border-radius: 10px; font-weight: 600; font-size: 13px; text-align: center; border: 1px solid rgba(255,255,255,0.2); display: inline-block;">
+                    📦 GitHub Releases
+                </a>
+            </div>
+            <div class="code-box" style="border-color: rgba(16, 185, 129, 0.4); color: #4ade80;">TV Downloader short link: ${ANDROID_SHORT_URL}</div>
         </div>
 
         <div class="guide">
@@ -391,14 +581,24 @@ function renderLandingHtml(host) {
                     <span style="font-size: 11px; color: #aaa; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">1. Direct TV Browser App (Zero Install):</span>
                     <div style="font-size: 16px; font-weight: 800; color: #00F0FF; font-family: monospace; margin-top: 4px;">tinyurl.com/y-stream-tv</div>
                 </div>
+                <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 10px; padding: 10px 14px; text-align: left;">
+                    <span style="font-size: 11px; color: #aaa; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">2. Android TV / Fire TV APK Download:</span>
+                    <div style="font-size: 16px; font-weight: 800; color: #10B981; font-family: monospace; margin-top: 4px;">${ANDROID_SHORT_URL}</div>
+                </div>
                 <div style="background: rgba(255, 215, 0, 0.08); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 10px; padding: 10px 14px; text-align: left;">
-                    <span style="font-size: 11px; color: #aaa; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">2. Stremio TV Addon Manifest:</span>
+                    <span style="font-size: 11px; color: #aaa; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">3. Stremio TV Addon Manifest:</span>
                     <div style="font-size: 16px; font-weight: 800; color: #FFD700; font-family: monospace; margin-top: 4px;">tinyurl.com/y-stremio-tv</div>
                 </div>
             </div>
-            <div style="text-align: center; margin-top: 14px;">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https%3A%2F%2Ftinyurl.com%2Fy-stream-tv" alt="Scan to open on phone" style="width: 140px; height: 140px; border-radius: 12px; border: 2px solid #FFD700; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); display: inline-block;">
-                <div style="font-size: 11px; color: #888; margin-top: 6px;">📷 Scan with Phone Camera to Open Instantly</div>
+            <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 14px;">
+                <div style="text-align: center;">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=https%3A%2F%2Ftinyurl.com%2Fy-stream-tv" alt="Scan to open web app" style="width: 120px; height: 120px; border-radius: 12px; border: 2px solid #00E5FF; box-shadow: 0 0 12px rgba(0, 229, 255, 0.3); display: inline-block;">
+                    <div style="font-size: 11px; color: #00E5FF; margin-top: 6px; font-weight: 700;">📱 Web App QR</div>
+                </div>
+                <div style="text-align: center;">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=https%3A%2F%2Ftinyurl.com%2Fy-streamer-apk" alt="Scan to download APK" style="width: 120px; height: 120px; border-radius: 12px; border: 2px solid #10B981; box-shadow: 0 0 12px rgba(16, 185, 129, 0.3); display: inline-block;">
+                    <div style="font-size: 11px; color: #34d399; margin-top: 6px; font-weight: 700;">🤖 Android APK QR</div>
+                </div>
             </div>
         </div>
     </div>
@@ -423,6 +623,13 @@ const server = http.createServer(async (req, res) => {
     if (pathname === '/' || pathname === '/index.html') {
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         res.end(renderLandingHtml(host));
+        return;
+    }
+
+    // Direct Android APK Download Redirect
+    if (pathname === '/apk' || pathname === '/download' || pathname === '/android' || pathname === '/app.apk') {
+        res.writeHead(302, { 'Location': ANDROID_APK_URL });
+        res.end();
         return;
     }
 
@@ -519,7 +726,41 @@ const server = http.createServer(async (req, res) => {
     // Health check
     if (pathname === '/health') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ status: 'ok', service: 'yogesh-streamer-bridge' }));
+        res.end(JSON.stringify({ status: 'ok', service: 'yogesh-streamer-bridge', resolvers: UPSTREAM_RESOLVERS.length }));
+        return;
+    }
+
+    // Universal Decompiled Scrapers API (Reverse Engineered from CS3)
+    if (pathname === '/api/scrapers' || pathname === '/api/providers') {
+        try {
+            const data = await fetchJson(SCRAPERS_MANIFEST_URL);
+            res.writeHead(200, {
+                'Content-Type': 'application/json; charset=utf-8',
+                'Access-Control-Allow-Origin': '*',
+                'Cache-Control': 'public, max-age=1800'
+            });
+            res.end(JSON.stringify(data || { scrapers: [] }));
+        } catch (e) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Failed to fetch scrapers: ' + e.message }));
+        }
+        return;
+    }
+
+    // Official Yogesh Streamer Plugins Catalog API (from yogesh-streamer-plugins)
+    if (pathname === '/api/plugins' || pathname === '/api/extensions') {
+        try {
+            const plugins = await fetchJson(PLUGINS_MANIFEST_URL);
+            res.writeHead(200, {
+                'Content-Type': 'application/json; charset=utf-8',
+                'Access-Control-Allow-Origin': '*',
+                'Cache-Control': 'public, max-age=1800'
+            });
+            res.end(JSON.stringify(plugins || []));
+        } catch (e) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Failed to fetch plugins manifest: ' + e.message }));
+        }
         return;
     }
 
@@ -536,8 +777,8 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
-    // HLS & Mixed Content Stream Proxy: /proxy/stream?url=<target_url>
-    if (pathname === '/proxy/stream') {
+    // HLS & Mixed Content Stream Proxy: /proxy/stream, /proxy/stream/playlist.m3u8, /proxy/stream/segment.ts
+    if (pathname === '/proxy/stream' || pathname.startsWith('/proxy/stream/')) {
         const targetUrl = parsedUrl.query.url;
         if (!targetUrl) {
             res.writeHead(400, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
@@ -549,12 +790,20 @@ const server = http.createServer(async (req, res) => {
             const parsedTarget = url.parse(targetUrl);
             const client = parsedTarget.protocol === 'https:' ? https : http;
 
+            const targetReferer = parsedUrl.query.referer || (parsedTarget.protocol + '//' + parsedTarget.host + '/');
+            const targetUa = parsedUrl.query.ua || req.headers['user-agent'] || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
+
+            const proxyReqHeaders = {
+                'User-Agent': targetUa,
+                'Accept': '*/*',
+                'Referer': targetReferer
+            };
+            if (req.headers.range) {
+                proxyReqHeaders['Range'] = req.headers.range;
+            }
+
             const proxyReq = client.get(targetUrl, {
-                headers: {
-                    'User-Agent': req.headers['user-agent'] || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-                    'Accept': '*/*',
-                    'Referer': parsedTarget.protocol + '//' + parsedTarget.host + '/'
-                },
+                headers: proxyReqHeaders,
                 timeout: 20000
             }, (proxyRes) => {
                 if (proxyRes.statusCode >= 300 && proxyRes.statusCode < 400 && proxyRes.headers.location) {
@@ -562,13 +811,17 @@ const server = http.createServer(async (req, res) => {
                     if (redir.startsWith('/')) {
                         redir = `${parsedTarget.protocol}//${parsedTarget.host}${redir}`;
                     }
-                    res.writeHead(302, { 'Location': `/proxy/stream?url=${encodeURIComponent(redir)}`, 'Access-Control-Allow-Origin': '*' });
+                    const refQ = parsedUrl.query.referer ? `&referer=${encodeURIComponent(parsedUrl.query.referer)}` : '';
+                    const uaQ = parsedUrl.query.ua ? `&ua=${encodeURIComponent(parsedUrl.query.ua)}` : '';
+                    const isRedirM3u8 = redir.includes('.m3u8') || pathname.endsWith('.m3u8');
+                    const redirPath = isRedirM3u8 ? '/proxy/stream/playlist.m3u8' : '/proxy/stream/segment.ts';
+                    res.writeHead(302, { 'Location': `${redirPath}?url=${encodeURIComponent(redir)}${refQ}${uaQ}`, 'Access-Control-Allow-Origin': '*' });
                     res.end();
                     return;
                 }
 
                 const contentType = proxyRes.headers['content-type'] || '';
-                const isM3u8 = contentType.includes('mpegurl') || targetUrl.includes('.m3u8');
+                const isM3u8 = contentType.includes('mpegurl') || targetUrl.includes('.m3u8') || pathname.endsWith('.m3u8');
 
                 if (isM3u8) {
                     let playlistData = '';
@@ -576,35 +829,71 @@ const server = http.createServer(async (req, res) => {
                     proxyRes.on('end', () => {
                         const baseUrl = targetUrl.substring(0, targetUrl.lastIndexOf('/') + 1);
                         const lines = playlistData.split(/\r?\n/);
+                        const extraParams = (parsedUrl.query.referer ? `&referer=${encodeURIComponent(parsedUrl.query.referer)}` : '') +
+                                            (parsedUrl.query.ua ? `&ua=${encodeURIComponent(parsedUrl.query.ua)}` : '');
+                        const isSecure = !host.includes('localhost') && !host.includes('127.0.0.1');
+                        const proto = isSecure ? 'https' : 'http';
+
                         const rewritten = lines.map(line => {
-                            const trimmed = line.trim();
-                            if (!trimmed || trimmed.startsWith('#')) return line;
+                            let trimmed = line.trim();
+                            if (!trimmed) return line;
+
+                            // Rewrite URIs in HLS directives (#EXT-X-MEDIA, #EXT-X-KEY, #EXT-X-MAP, etc.)
+                            if (trimmed.startsWith('#')) {
+                                if (trimmed.includes('URI="')) {
+                                    return trimmed.replace(/URI="([^"]+)"/g, (match, u) => {
+                                        let fullUri = u;
+                                        if (!fullUri.startsWith('http://') && !fullUri.startsWith('https://')) {
+                                            fullUri = baseUrl + fullUri;
+                                        }
+                                        const isSubPlaylist = fullUri.includes('.m3u8');
+                                        const proxyPath = isSubPlaylist ? '/proxy/stream/playlist.m3u8' : '/proxy/stream/segment.ts';
+                                        return `URI="${proto}://${host}${proxyPath}?url=${encodeURIComponent(fullUri)}${extraParams}"`;
+                                    });
+                                }
+                                return line;
+                            }
+
                             let fullChunk = trimmed;
                             if (!fullChunk.startsWith('http://') && !fullChunk.startsWith('https://')) {
                                 fullChunk = baseUrl + fullChunk;
                             }
-                            if (fullChunk.startsWith('http://')) {
-                                return `/proxy/stream?url=${encodeURIComponent(fullChunk)}`;
-                            }
-                            return fullChunk;
+                            const isSubPlaylist = fullChunk.includes('.m3u8');
+                            const proxyPath = isSubPlaylist ? '/proxy/stream/playlist.m3u8' : '/proxy/stream/segment.ts';
+                            return `${proto}://${host}${proxyPath}?url=${encodeURIComponent(fullChunk)}${extraParams}`;
                         });
 
                         const out = rewritten.join('\n');
                         res.writeHead(proxyRes.statusCode || 200, {
                             'Content-Type': 'application/vnd.apple.mpegurl; charset=utf-8',
                             'Access-Control-Allow-Origin': '*',
+                            'Access-Control-Expose-Headers': 'Content-Length, Content-Range',
                             'Cache-Control': 'no-cache'
                         });
                         res.end(out);
                     });
                 } else {
+                    let chunkContentType = contentType;
+                    const lowerTarget = targetUrl.toLowerCase();
+                    if (pathname.endsWith('.ts') || lowerTarget.includes('.ts') || lowerTarget.includes('.jpg') || lowerTarget.includes('.png') || lowerTarget.includes('.jpeg')) {
+                        chunkContentType = 'video/MP2T';
+                    } else if (pathname.endsWith('.m4s') || lowerTarget.includes('.m4s')) {
+                        chunkContentType = 'video/iso.segment';
+                    } else if (!chunkContentType || chunkContentType === 'application/octet-stream') {
+                        chunkContentType = 'video/MP2T';
+                    }
+
                     const headers = {
-                        'Content-Type': contentType || 'video/MP2T',
+                        'Content-Type': chunkContentType,
                         'Access-Control-Allow-Origin': '*',
-                        'Cache-Control': 'no-cache'
+                        'Access-Control-Expose-Headers': 'Content-Length, Content-Range',
+                        'Cache-Control': 'public, max-age=3600'
                     };
                     if (proxyRes.headers['content-length']) {
                         headers['Content-Length'] = proxyRes.headers['content-length'];
+                    }
+                    if (proxyRes.headers['content-range']) {
+                        headers['Content-Range'] = proxyRes.headers['content-range'];
                     }
                     res.writeHead(proxyRes.statusCode || 200, headers);
                     proxyRes.pipe(res);
@@ -657,29 +946,52 @@ const server = http.createServer(async (req, res) => {
             return;
         }
 
+        // ⚡ Native Reverse-Engineered Stream Resolver Check
+        if (rawId.startsWith('native:fc:')) {
+            const matchId = rawId.replace('native:fc:', '');
+            const result = await getNativeSportsStream(matchId);
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify(result));
+            return;
+        }
+
+        // ⚡ In-Memory Stream Cache Check (0ms Instant Delivery with smart TTL)
+        const isLive = type === 'tv' || rawId.includes('Live') || rawId.includes('tv') || rawId.includes('Sports');
+        const effectiveTtl = isLive ? 30000 : STREAM_CACHE_TTL; // 30s for live sports to ensure fresh signatures, 5m for on-demand movies
+        const cacheKey = `${type}:${rawId}`;
+        const cached = streamCache.get(cacheKey) || streamCache.get(rawId);
+        if (cached && (Date.now() - cached.timestamp < effectiveTtl)) {
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ streams: cached.streams }));
+            return;
+        }
+
         try {
-            let targetType = type;
             let data = null;
 
-            // 1. Try requested targetType
-            try {
-                const upstreamUrl = `${UPSTREAM_RESOLVER}/stream/${encodeURIComponent(targetType)}/${encodeURIComponent(rawId)}.json`;
-                data = await fetchJson(upstreamUrl);
-            } catch (e) {}
-
-            // 2. If no streams returned, try fallback types (especially tv and other for live events and movies)
-            if ((!data || !Array.isArray(data.streams) || data.streams.length === 0) && rawId.startsWith('cnc:')) {
-                const altTypes = ['tv', 'other', 'movie', 'series'].filter(t => t !== targetType);
-                for (const alt of altTypes) {
-                    try {
-                        const altUrl = `${UPSTREAM_RESOLVER}/stream/${encodeURIComponent(alt)}/${encodeURIComponent(rawId)}.json`;
-                        const altData = await fetchJson(altUrl);
-                        if (altData && Array.isArray(altData.streams) && altData.streams.length > 0) {
-                            data = altData;
-                            break;
-                        }
-                    } catch (e) {}
+            // 🎯 Type Candidate Ordering: Upstream CNCVerse registers movie & web series catalogs
+            // under "other", while live sports/TV are under "tv". Querying "other" first for movies/series
+            // eliminates 15s-30s upstream timeouts!
+            let candidateTypes = [type];
+            if (rawId.startsWith('cnc:')) {
+                if (type === 'tv') {
+                    candidateTypes = ['tv', 'other'];
+                } else {
+                    candidateTypes = ['other', 'movie', 'tv', 'series'];
                 }
+            } else {
+                candidateTypes = [type, 'movie', 'series', 'other'].filter((v, i, a) => a.indexOf(v) === i);
+            }
+
+            for (const cand of candidateTypes) {
+                try {
+                    const streamPath = `/stream/${encodeURIComponent(cand)}/${encodeURIComponent(rawId)}.json`;
+                    const result = await fetchJsonWithFailover(streamPath);
+                    if (result && Array.isArray(result.streams) && result.streams.length > 0) {
+                        data = result;
+                        break;
+                    }
+                } catch (e) {}
             }
 
             let streams = Array.isArray(data?.streams) ? data.streams : [];
@@ -705,13 +1017,29 @@ const server = http.createServer(async (req, res) => {
                 title = title.replace(/CNCVerse Bridge/gi, 'Yogesh Streamer');
 
                 let streamUrl = (stream.url || '').trim();
-                const lowerUrl = streamUrl.toLowerCase();
+
+                // 🚀 Extract direct MPEG-DASH MPD and ClearKey if wrapped by upstream HLS converter
+                let directMpd = null;
+                let clearkey = stream.clearkey || null;
+                const dMatch = streamUrl.match(/[?&]d=([^&]+)/);
+                if (dMatch && dMatch[1]) {
+                    directMpd = decodeURIComponent(dMatch[1]);
+                }
+                if (!clearkey) {
+                    const kMatch = streamUrl.match(/[?&]clearkey=([^&]+)/);
+                    if (kMatch && kMatch[1]) {
+                        clearkey = decodeURIComponent(kMatch[1]);
+                    }
+                }
+
+                const lowerUrl = (directMpd || streamUrl).toLowerCase();
                 const isMkv = lowerUrl.includes('.mkv') || lowerUrl.includes('pub-') || lowerUrl.includes('r2.dev');
                 const isHls = lowerUrl.includes('.m3u8') || lowerUrl.includes('klnwm.com') || lowerUrl.includes('hlscob.com') || lowerUrl.includes('kwsvon.com') || lowerUrl.includes('mlcoxn.com') || lowerUrl.includes('cdnvideo11.shop');
+                const isDash = lowerUrl.includes('.mpd');
 
                 if (isMkv) {
                     name = `🚀 [MKV / VLC] ${name}`;
-                } else if (isHls) {
+                } else if (isHls || isDash) {
                     name = `⚡ [Web Play] ${name}`;
                 } else {
                     name = `🎬 ${name}`;
@@ -720,21 +1048,66 @@ const server = http.createServer(async (req, res) => {
                 const isSecure = !host.includes('localhost') && !host.includes('127.0.0.1');
                 const proto = isSecure ? 'https' : 'http';
 
-                if (streamUrl.startsWith('http://cncverse.dpdns.org')) {
-                    streamUrl = streamUrl.replace('http://cncverse.dpdns.org', 'https://cncverse.dpdns.org');
-                } else if (streamUrl.startsWith('http://')) {
-                    streamUrl = `${proto}://${host}/proxy/stream?url=${encodeURIComponent(streamUrl)}`;
+                const reqHeaders = stream.behaviorHints?.proxyHeaders?.request || {};
+                const streamReferer = reqHeaders.Referer || reqHeaders.referer || '';
+                const streamUa = reqHeaders['User-Agent'] || reqHeaders['user-agent'] || '';
+
+                let finalPlayUrl = streamUrl;
+                if (streamUrl.includes('/d/master.m3u8') || (streamUrl.includes('clearkey=') && streamUrl.includes('.m3u8'))) {
+                    // Decrypted HTTPS HLS stream for Live Sports/Cricket & Live TV (plays everywhere on VLC, iPhone, Android, and Smart TVs)
+                    finalPlayUrl = streamUrl.replace('http://140.238.244.130', 'https://cncverse.dpdns.org');
+                } else if (streamUrl.startsWith('http://cncverse.dpdns.org')) {
+                    finalPlayUrl = streamUrl.replace('http://cncverse.dpdns.org', 'https://cncverse.dpdns.org');
+                } else if (streamUrl.startsWith('http://140.238.244.130')) {
+                    finalPlayUrl = streamUrl.replace('http://140.238.244.130', 'https://cncverse.dpdns.org');
+                } else if (directMpd && directMpd.startsWith('https://') && !clearkey) {
+                    finalPlayUrl = directMpd;
+                } else if (streamUrl.startsWith('http://') || streamReferer) {
+                    let proxyParams = `url=${encodeURIComponent(streamUrl)}`;
+                    if (streamReferer) proxyParams += `&referer=${encodeURIComponent(streamReferer)}`;
+                    if (streamUa) proxyParams += `&ua=${encodeURIComponent(streamUa)}`;
+                    finalPlayUrl = `${proto}://${host}/proxy/stream/playlist.m3u8?${proxyParams}`;
                 }
+
+                // Sanitize Subtitle URLs to prevent Mixed Content blocking over HTTPS
+                const sanitizedSubtitles = Array.isArray(stream.subtitles) ? stream.subtitles.map(sub => {
+                    let subUrl = (sub && sub.url) ? sub.url.trim() : '';
+                    if (subUrl.startsWith('http://140.238.244.130')) {
+                        subUrl = subUrl.replace('http://140.238.244.130', 'https://cncverse.dpdns.org');
+                    } else if (subUrl.startsWith('http://')) {
+                        subUrl = `${proto}://${host}/proxy/stream/playlist.m3u8?url=${encodeURIComponent(subUrl)}`;
+                    }
+                    return {
+                        ...sub,
+                        url: subUrl
+                    };
+                }) : [];
 
                 return {
                     ...stream,
-                    url: streamUrl,
+                    url: finalPlayUrl,
+                    hlsUrl: streamUrl,
+                    mpdUrl: directMpd,
+                    clearkey: clearkey,
                     name,
                     title,
                     isMkv,
-                    isWebPlayable: !isMkv
+                    isWebPlayable: !isMkv,
+                    subtitles: sanitizedSubtitles
                 };
             });
+
+            // Save to in-memory cache if streams found
+            if (brandedStreams.length > 0) {
+                streamCache.set(cacheKey, {
+                    streams: brandedStreams,
+                    timestamp: Date.now()
+                });
+                streamCache.set(rawId, {
+                    streams: brandedStreams,
+                    timestamp: Date.now()
+                });
+            }
 
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify({ streams: brandedStreams }));
@@ -748,6 +1121,12 @@ const server = http.createServer(async (req, res) => {
 
     // Catalog route: /catalog/:type/:id.json or with extra args
     if (pathname.startsWith('/catalog/')) {
+        if (pathname.includes('native_live_sports_tv')) {
+            const metas = await getNativeSportsCatalog();
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ metas }));
+            return;
+        }
         try {
             // If Stremio is requesting /catalog/movie/cnc_..._other.json, map to /catalog/other/cnc_..._other.json upstream
             let mappedPath = pathname;
@@ -757,8 +1136,7 @@ const server = http.createServer(async (req, res) => {
                 isMovieMappedFromOther = true;
             }
 
-            const upstreamUrl = `${UPSTREAM_RESOLVER}${mappedPath}`;
-            const data = await fetchJson(upstreamUrl);
+            const data = await fetchJsonWithFailover(mappedPath);
 
             let metas = Array.isArray(data?.metas) ? data.metas : [];
             if (isMovieMappedFromOther) {
@@ -780,6 +1158,14 @@ const server = http.createServer(async (req, res) => {
 
     // Meta route: /meta/:type/:id.json
     if (pathname.startsWith('/meta/')) {
+        if (pathname.includes('native:fc:')) {
+            const matchId = pathname.split('native:fc:')[1].replace('.json', '');
+            const catalog = await getNativeSportsCatalog();
+            const item = catalog.find(m => m.id === `native:fc:${matchId}`);
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ meta: item || null }));
+            return;
+        }
         const afterPrefix = pathname.slice('/meta/'.length);
         const firstSlash = afterPrefix.indexOf('/');
         if (firstSlash === -1) {
@@ -810,8 +1196,7 @@ const server = http.createServer(async (req, res) => {
                 isMovieMappedFromOther = true;
             }
 
-            const upstreamUrl = `${UPSTREAM_RESOLVER}/meta/${encodeURIComponent(targetType)}/${encodeURIComponent(rawId)}.json`;
-            const data = await fetchJson(upstreamUrl);
+            const data = await fetchJsonWithFailover(`/meta/${encodeURIComponent(targetType)}/${encodeURIComponent(rawId)}.json`);
 
             if (data?.meta && (isMovieMappedFromOther || data.meta.type === 'other')) {
                 data.meta.type = type;
@@ -850,8 +1235,7 @@ const server = http.createServer(async (req, res) => {
                 targetType = 'other';
             }
 
-            const upstreamUrl = `${UPSTREAM_RESOLVER}/subtitles/${encodeURIComponent(targetType)}/${encodeURIComponent(rawId)}.json`;
-            const data = await fetchJson(upstreamUrl);
+            const data = await fetchJsonWithFailover(`/subtitles/${encodeURIComponent(targetType)}/${encodeURIComponent(rawId)}.json`);
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify(data || { subtitles: [] }));
         } catch (err) {
@@ -871,5 +1255,21 @@ server.listen(PORT, () => {
     console.log(`🌟 Yogesh Streamer Multi-Device Bridge Online!`);
     console.log(`📡 Listening on http://localhost:${PORT}`);
     console.log(`📋 Manifest URL: http://localhost:${PORT}/manifest.json`);
+    console.log(`🔌 Active Resolvers: ${UPSTREAM_RESOLVERS.join(', ')}`);
     console.log(`====================================================`);
+
+    // 💓 Auto Keep-Alive Heartbeat (prevents Render / cloud platform cold starts)
+    if (process.env.KEEP_ALIVE !== 'false') {
+        const HEARTBEAT_INTERVAL = 14 * 60 * 1000; // 14 minutes
+        setInterval(() => {
+            const pingTarget = process.env.PUBLIC_URL || `http://localhost:${PORT}/health`;
+            try {
+                const parsed = url.parse(pingTarget);
+                const client = parsed.protocol === 'https:' ? https : http;
+                client.get(pingTarget, (pingRes) => {
+                    pingRes.resume();
+                }).on('error', () => {});
+            } catch (e) {}
+        }, HEARTBEAT_INTERVAL);
+    }
 });

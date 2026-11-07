@@ -1,0 +1,21 @@
+{
+  "name": "yogesh-streamer-bridge",
+  "version": "1.0.0",
+  "description": "Official Yogesh Streamer Multi-Device Stremio Addon & Stream Bridge",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "stremio",
+    "stremio-addon",
+    "streaming",
+    "media",
+    "yogesh-streamer"
+  ],
+  "author": "Yogesh Streamer Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
