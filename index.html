@@ -1213,6 +1213,25 @@
             }
         }
 
+        .sheet-fav-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-dim);
+            color: var(--gold);
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        .sheet-fav-btn:hover, .sheet-fav-btn:focus {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: var(--gold);
+            transform: scale(1.08);
+        }
         .sheet-close-btn {
             background: rgba(255, 255, 255, 0.1);
             border: none;
@@ -2766,7 +2785,12 @@
             <div class="sheet-drag-handle"></div>
             <div class="sheet-top">
                 <div class="sheet-heading" id="sheet-title-text">Select Quality & Server</div>
-                <button class="sheet-close-btn focusable" tabindex="0" onclick="closeStreamPicker()"><i class="fas fa-times"></i></button>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button class="sheet-fav-btn focusable" id="sheet-fav-btn" tabindex="0" onclick="toggleCurrentPickerFavorite()" title="Bookmark to Watchlist">
+                        <i class="far fa-bookmark" id="sheet-fav-icon"></i>
+                    </button>
+                    <button class="sheet-close-btn focusable" tabindex="0" onclick="closeStreamPicker()"><i class="fas fa-times"></i></button>
+                </div>
             </div>
             <div class="stream-options-list" id="stream-options-container">
                 <div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>
@@ -4661,12 +4685,34 @@
         }
 
         // 🎬 Stream Selection Bottom Sheet Modal
+        let currentPickerItem = null;
+
+        function updatePickerFavoriteUI() {
+            const icon = document.getElementById('sheet-fav-icon');
+            if (!icon || !currentPickerItem) return;
+            if (isFavorite(currentPickerItem.id)) {
+                icon.className = 'fas fa-bookmark';
+                icon.style.color = 'var(--gold)';
+            } else {
+                icon.className = 'far fa-bookmark';
+                icon.style.color = 'var(--text-sub)';
+            }
+        }
+
+        function toggleCurrentPickerFavorite() {
+            if (!currentPickerItem) return;
+            toggleFavoriteItem(currentPickerItem);
+            updatePickerFavoriteUI();
+        }
+
         async function openStreamPicker(type, id, title) {
             if (window.location.hash !== '#stream-picker') {
                 history.pushState({ modal: 'stream-picker' }, '', '#stream-picker');
             }
 
             document.getElementById('sheet-title-text').innerText = cleanTitle(title);
+            currentPickerItem = { id, name: title, type: type || 'movie', poster: '' };
+            updatePickerFavoriteUI();
             const container = document.getElementById('stream-options-container');
             container.innerHTML = '<div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>';
             document.getElementById('stream-picker-modal').classList.add('open');
