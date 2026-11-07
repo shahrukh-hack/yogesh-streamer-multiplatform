@@ -1692,9 +1692,10 @@
             transition: opacity 0.35s ease, visibility 0.35s ease;
         }
         #pin-lock-modal.unlocked {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            display: none !important;
         }
         .pin-card {
             width: 100%;
@@ -2605,6 +2606,21 @@
             <div class="chip-btn focusable" tabindex="0" onclick="filterHomeCatalog('ANIME', this)">⚔️ Anime &amp; K-Drama</div>
         </div>
         <!-- 🕒 CONTINUE WATCHING CAROUSEL (Netflix/Prime Style with saved playback progress) -->
+        <!-- ⭐ MY WATCHLIST / FAVORITES SECTION -->
+        <div id="watchlist-section" class="catalog-row-section" style="display: none; margin-bottom: 24px;">
+            <div class="section-headline">
+                <div class="section-title-text">
+                    <i class="fas fa-bookmark" style="color: var(--gold);"></i> My Watchlist 
+                    <span class="catalog-badge-pill" id="watchlist-count" style="background: rgba(255,215,0,0.15); color: var(--gold); border: 1px solid rgba(255,215,0,0.3);">0 Titles</span>
+                </div>
+            </div>
+            <div class="carousel-container">
+                <button class="carousel-arrow left focusable" tabindex="0" onclick="scrollTrack('watchlist-rail', -480)"><i class="fas fa-chevron-left"></i></button>
+                <div class="carousel-track" id="watchlist-rail"></div>
+                <button class="carousel-arrow right focusable" tabindex="0" onclick="scrollTrack('watchlist-rail', 480)"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+
         <div id="continue-watching-section" class="continue-watching-section catalog-row-section" style="display: none; padding: 0 16px;">
             <div class="catalog-header-row" style="margin-bottom: 12px;">
                 <div class="catalog-title-wrap" style="display: flex; align-items: center; gap: 8px;">
@@ -3025,7 +3041,10 @@
 
                 setTimeout(() => {
                     const modal = document.getElementById('pin-lock-modal');
-                    if (modal) modal.classList.add('unlocked');
+                    if (modal) {
+                        modal.classList.add('unlocked');
+                        modal.style.display = 'none';
+                    }
                     document.body.classList.remove('pin-locked');
                     enteredPinBuffer = '';
                     updatePinDots();
@@ -3070,7 +3089,10 @@
             const session = localStorage.getItem('y_streamer_pin_session');
             const modal = document.getElementById('pin-lock-modal');
             if (session) {
-                if (modal) modal.classList.add('unlocked');
+                if (modal) {
+                    modal.classList.add('unlocked');
+                    modal.style.display = 'none';
+                }
                 document.body.classList.remove('pin-locked');
                 ensureAppBootstrapped();
             } else {
@@ -5608,7 +5630,80 @@
         // ==========================================
         // 🕒 CONTINUE WATCHING ENGINE (ALL DEVICES)
         // ==========================================
-        const CW_STORAGE_KEY = 'y_streamer_continue_watching';
+        // ==========================================
+        // ⭐ MY WATCHLIST / FAVORITES ENGINE
+        // ==========================================
+        const FAV_STORAGE_KEY = 'y_streamer_favorites';
+
+        function getFavoritesList() {
+            try {
+                const raw = localStorage.getItem(FAV_STORAGE_KEY);
+                return raw ? JSON.parse(raw) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function isFavorite(id) {
+            const list = getFavoritesList();
+            return list.some(item => item.id === id);
+        }
+
+        function toggleFavoriteItem(item, event) {
+            if (event) event.stopPropagation();
+            const list = getFavoritesList();
+            const idx = list.findIndex(i => i.id === item.id);
+            if (idx !== -1) {
+                list.splice(idx, 1);
+                showToast(`Removed "${cleanTitle(item.name)}" from Watchlist`);
+            } else {
+                list.unshift({
+                    id: item.id,
+                    name: item.name,
+                    poster: item.poster,
+                    type: item.type || 'movie',
+                    addedAt: Date.now()
+                });
+                showToast(`⭐ Added "${cleanTitle(item.name)}" to Watchlist!`);
+            }
+            localStorage.setItem(FAV_STORAGE_KEY, JSON.stringify(list));
+            renderWatchlist();
+            pushLocalProgressToCloud();
+        }
+
+        function renderWatchlist() {
+            const sec = document.getElementById('watchlist-section');
+            const rail = document.getElementById('watchlist-rail');
+            const badge = document.getElementById('watchlist-count');
+            if (!sec || !rail) return;
+
+            const list = getFavoritesList();
+            if (list.length === 0) {
+                sec.style.display = 'none';
+                return;
+            }
+
+            sec.style.display = 'block';
+            if (badge) badge.innerText = `${list.length} ${list.length === 1 ? 'Title' : 'Titles'}`;
+
+            rail.innerHTML = list.map(item => {
+                const displayTitle = cleanTitle(item.name);
+                return `
+                    <div class="media-poster-card focusable" tabindex="0" onclick="openStreamPicker('${item.type || 'movie'}', '${item.id}', '${displayTitle.replace(/'/g, "\'")}')">
+                        <div class="poster-frame">
+                            <img src="${item.poster || BRAND_LOGO}" alt="${displayTitle}" onerror="this.src='${BRAND_LOGO}'">
+                            <button class="cw-delete-btn focusable" title="Remove from Watchlist" onclick="toggleFavoriteItem({id:'${item.id}', name:'${displayTitle.replace(/'/g, "\'")}'}, event)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <div class="badge-card-quality" style="background:var(--gold); color:#000; font-weight:800;">⭐ SAVED</div>
+                        </div>
+                        <div class="poster-title" title="${item.name}">${displayTitle}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+                const CW_STORAGE_KEY = 'y_streamer_continue_watching';
 
         function getContinueWatchingList() {
             try {
@@ -5998,11 +6093,12 @@
         async function pushLocalProgressToCloud(showFeedback = false) {
             const code = getOrCreateSyncCode();
             const cw = getContinueWatchingList();
+            const favs = getFavoritesList();
             try {
                 const res = await fetch(`${API_BASE}/api/sync/${code}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ continueWatching: cw })
+                    body: JSON.stringify({ continueWatching: cw, favorites: favs })
                 });
                 const json = await res.json();
                 if (json?.success && showFeedback) {
@@ -6032,6 +6128,24 @@
                         renderContinueWatching();
                     }
                 }
+
+                // Merge remote favorites with local
+                const remoteFavs = json?.data?.favorites || [];
+                if (remoteFavs.length > 0) {
+                    const localFavs = getFavoritesList();
+                    const ids = new Set(localFavs.map(x => x.id));
+                    let favAdded = 0;
+                    remoteFavs.forEach(r => {
+                        if (!ids.has(r.id)) {
+                            localFavs.push(r);
+                            favAdded++;
+                        }
+                    });
+                    if (favAdded > 0) {
+                        localStorage.setItem(FAV_STORAGE_KEY, JSON.stringify(localFavs));
+                        renderWatchlist();
+                    }
+                }
             } catch(e) {}
         }
 
@@ -6039,6 +6153,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 renderContinueWatching();
+                renderWatchlist();
                 pullRemoteProgressFromCloud();
             }, 300);
         });
