@@ -3252,13 +3252,38 @@
             const sportsGrid = document.getElementById('sports-catalogs-grid');
 
             try {
-                const res = await fetch(`${API_BASE}/manifest.json`);
-                const manifest = await res.json();
+                const manifestUrls = [
+                    `${API_BASE}/manifest.json`,
+                    'https://yogesh-streamer-bridge.onrender.com/manifest.json',
+                    'https://cncverse.dpdns.org/manifest.json'
+                ];
+                let manifest = null;
+                for (const u of manifestUrls) {
+                    try {
+                        const res = await fetch(u);
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (Array.isArray(data?.catalogs) && data.catalogs.length > 0) {
+                                manifest = data;
+                                break;
+                            }
+                        }
+                    } catch(e) {}
+                }
+
                 allBridgeCatalogs = Array.isArray(manifest?.catalogs) ? manifest.catalogs : [];
 
+                // Resilient Offline/Cold-Boot Fallback: ensure UI never fails to bootstrap
                 if (allBridgeCatalogs.length === 0) {
-                    homeGrid.innerHTML = '<div style="color: var(--text-sub); padding: 24px;">No catalogs returned by cloud resolver.</div>';
-                    return;
+                    allBridgeCatalogs = [
+                        { id: 'cnc_CastleTVUseVLC_other', name: 'Castle Cinema', type: 'movie' },
+                        { id: 'cnc_HDHub4U_other', name: 'HDHub4u', type: 'movie' },
+                        { id: 'cnc_VegaMovies_other', name: 'VegaMovies', type: 'movie' },
+                        { id: 'cnc_Rogmovies_other', name: 'Rogmovies', type: 'series' },
+                        { id: 'cnc_PlayFyLiveEvents_tv', name: 'PlayFy Live Events', type: 'tv' },
+                        { id: 'cnc_JIOTVPlusIND3_tv', name: 'JIO TV Plus', type: 'tv' },
+                        { id: 'cnc_MultiMovies_other', name: 'MultiMovies', type: 'movie' }
+                    ];
                 }
 
                 homeGrid.innerHTML = '';
@@ -3308,7 +3333,7 @@
 
                 // 🌟 Smart Prioritization: verified working streaming catalogs first
                 movieCatalogs.sort((a, b) => {
-                    const topMovies = ['native_hdhub4u_movies', 'cnc_CastleTVUseVLC_other', 'cnc_HDHub4U_other', 'cnc_Rogmovies_other', 'cnc_VegaMovies_other', 'cnc_4KHDHUB_other', 'cnc_ReANIME_other', 'cnc_RingZ_other', 'cnc_MovieBoxIN_other', 'cnc_MultiMovies_other'];
+                    const topMovies = ['native_hdhub4u_movies', 'native_vegamovies_movies', 'cnc_CastleTVUseVLC_other', 'cnc_HDHub4U_other', 'cnc_Rogmovies_other', 'cnc_VegaMovies_other', 'cnc_4KHDHUB_other', 'cnc_ReANIME_other', 'cnc_RingZ_other', 'cnc_MovieBoxIN_other', 'cnc_MultiMovies_other'];
                     const isDeadA = deadScraperIds.has(a.id);
                     const isDeadB = deadScraperIds.has(b.id);
                     if (isDeadA && !isDeadB) return 1;
@@ -3387,7 +3412,7 @@
                 });
 
                 // Spotlight 4: 🍿 VegaMovies (2160p HDR Multi-Audio Cinema)
-                movieCatalogs.filter(c => c.id === 'cnc_VegaMovies_other').forEach(cat => {
+                movieCatalogs.filter(c => c.id === 'native_vegamovies_movies' || c.id === 'cnc_VegaMovies_other').forEach(cat => {
                     if (!homeAddedIds.has(cat.id)) {
                         homeAddedIds.add(cat.id);
                         buildCatalogRowElement(cat, homeGrid, 'home', true, homeRank++);
@@ -3876,6 +3901,84 @@
 
             gujaratiCurrentModalFilter = initialFilter;
             renderGujaratiFullGridItems();
+        }
+
+
+        // 🌟 Curated Category Metadata Resolver (Matches Android HomeScreen.kt)
+        function getCuratedCategoryMeta(catId, catName) {
+            const id = catId || '';
+            const name = catName || '';
+
+            if (id === 'cnc_CastleTVUseVLC_other' || id.includes('Castle')) {
+                return {
+                    title: '🎬 Bollywood Blockbusters',
+                    subtitle: '1080p Ultra HD • Hindi & Multi-Audio Hits',
+                    badge: '▶ 1080p Web',
+                    badgeClass: 'badge-stream-web'
+                };
+            }
+            if (id === 'cnc_HDHub4U_other' || id.includes('HDHub')) {
+                return {
+                    title: '🌟 South Hindi Dubbed Hits',
+                    subtitle: '4K UHD • Tollywood & Kollywood in Hindi',
+                    badge: '⚡ 4K UHD',
+                    badgeClass: 'badge-stream-web'
+                };
+            }
+            if (id === 'cnc_VegaMovies_other' || id.includes('Vega')) {
+                return {
+                    title: '🍿 Hollywood in Hindi & 4K UHD',
+                    subtitle: '2160p HDR • Multi-Audio Dual Dubs',
+                    badge: '💎 2160p HDR',
+                    badgeClass: 'badge-stream-web'
+                };
+            }
+            if (id === 'cnc_Rogmovies_other' || id.includes('Rogmovies')) {
+                return {
+                    title: '📺 Binge-Worthy Web Series',
+                    subtitle: 'Complete Seasons • Anime • Hindi Originals',
+                    badge: '🔥 Complete Seasons',
+                    badgeClass: 'badge-stream-web'
+                };
+            }
+            if (id === 'cnc_MultiMovies_other' || id.includes('MultiMovies')) {
+                return {
+                    title: '🔥 Trending Indian Cinema',
+                    subtitle: 'High Bitrate • Multi-Audio & Dubbed',
+                    badge: '▶ Fast Stream',
+                    badgeClass: 'badge-stream-web'
+                };
+            }
+            if (id === 'cnc_MovieBoxIN_other' || id.includes('MovieBox')) {
+                return {
+                    title: '🎥 All-Time Cinema Classics',
+                    subtitle: 'Bollywood, Regional & World Cinema',
+                    badge: '⭐ Verified',
+                    badgeClass: 'badge-stream-web'
+                };
+            }
+            if (id.includes('PlayFy') || id.includes('Sportz') || id.includes('LivXow') || id.includes('PlayZ')) {
+                return {
+                    title: '🏏 Live Cricket & Sports Arena',
+                    subtitle: '0ms FanCode • Cricify • Star Sports',
+                    badge: '🔴 LIVE 0ms',
+                    badgeClass: 'badge-stream-web'
+                };
+            }
+            if (id.includes('JIO') || id.includes('SUNNXT') || id.includes('Hotstar')) {
+                return {
+                    title: '📡 24/7 Live TV Channels',
+                    subtitle: 'Indian Regional, News & Music Channels',
+                    badge: '📺 24/7 Live',
+                    badgeClass: 'badge-stream-web'
+                };
+            }
+            return {
+                title: typeof cleanTitle === 'function' ? cleanTitle(name) : (name || 'Featured Collection'),
+                subtitle: 'Verified Cloud Stream',
+                badge: '▶ Stream',
+                badgeClass: 'badge-stream-web'
+            };
         }
 
         function buildCatalogRowElement(cat, parentContainer, tabPrefix, loadImmediate, rankOffset) {
