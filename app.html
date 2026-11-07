@@ -2038,15 +2038,19 @@
             <i class="fas fa-tv"></i>
             <span>Series</span>
         </a>
-        <a class="bottom-nav-item focusable" tabindex="0" role="button" onclick="switchNavTab('tab-sports', 3)">
+        <a class="bottom-nav-item focusable" tabindex="0" role="button" onclick="switchNavTab('tab-anime', 3)">
+            <i class="fas fa-dragon" style="color: #ec4899;"></i>
+            <span>Anime</span>
+        </a>
+        <a class="bottom-nav-item focusable" tabindex="0" role="button" onclick="switchNavTab('tab-sports', 4)">
             <i class="fas fa-baseball-bat-ball"></i>
             <span>Sports</span>
         </a>
-        <a class="bottom-nav-item focusable" tabindex="0" role="button" onclick="switchNavTab('tab-livetv', 4)">
+        <a class="bottom-nav-item focusable" tabindex="0" role="button" onclick="switchNavTab('tab-livetv', 5)">
             <i class="fas fa-satellite-dish"></i>
             <span>Live TV</span>
         </a>
-        <a class="bottom-nav-item focusable" tabindex="0" role="button" onclick="switchNavTab('tab-search', 5)">
+        <a class="bottom-nav-item focusable" tabindex="0" role="button" onclick="switchNavTab('tab-search', 7)">
             <i class="fas fa-search"></i>
             <span>Search</span>
         </a>
@@ -3226,10 +3230,12 @@
 
             const matchedMovies = allLoadedMovies.filter(m => (m.name || '').toLowerCase().includes(q));
             const matchedSeries = allLoadedSeries.filter(s => (s.name || '').toLowerCase().includes(q));
+            const matchedAnime = (window.cachedAniKotoMetas || []).filter(a => (a.name || '').toLowerCase().includes(q));
             const matchedSports = allLoadedSports.filter(s => (s.name || '').toLowerCase().includes(q));
             const matchedChannels = allLoadedChannels.filter(c => (c.name || '').toLowerCase().includes(q));
+            const matchedPlugins = (allPluginsList || []).filter(p => (p.name || p.internalName || '').toLowerCase().includes(q));
 
-            const total = matchedMovies.length + matchedSeries.length + matchedSports.length + matchedChannels.length;
+            const total = matchedMovies.length + matchedSeries.length + matchedAnime.length + matchedSports.length + matchedChannels.length + matchedPlugins.length;
 
             if (total === 0) {
                 container.innerHTML = `
@@ -3243,6 +3249,46 @@
             }
 
             let html = `<div style="font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 16px;">Found ${total} Results across Cloud Engines:</div>`;
+
+            if (matchedAnime.length > 0) {
+                html += `
+                    <div class="rail-section">
+                        <div class="rail-title"><i class="fas fa-dragon" style="color:#ec4899;"></i> Anime Series (${matchedAnime.length})</div>
+                        <div class="rail-track">
+                            ${matchedAnime.map(a => `
+                                <div class="media-card focusable" tabindex="0" onclick="openStreamPicker('series', '${a.id}', '${escapeHtml(a.name)}')">
+                                    <div class="poster-wrap">
+                                        <img class="poster-img" src="${a.poster || BRAND_LOGO}" onerror="this.src='${BRAND_LOGO}'" alt="${escapeHtml(a.name)}">
+                                        <span class="badge-stream-web" style="position: absolute; top: 6px; right: 6px; font-size: 8px;">1080p HLS</span>
+                                        <div class="card-play-overlay"><i class="fas fa-play"></i></div>
+                                    </div>
+                                    <div class="card-meta">
+                                        <div class="card-title">${cleanTitle(a.name)}</div>
+                                        <div class="card-sub">AniKoto Multi-Audio</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (matchedPlugins.length > 0) {
+                html += `
+                    <div class="rail-section">
+                        <div class="rail-title"><i class="fas fa-puzzle-piece" style="color:var(--cyan);"></i> CloudStream Extensions (${matchedPlugins.length})</div>
+                        <div class="rail-track">
+                            ${matchedPlugins.map(p => `
+                                <div class="engine-card focusable" tabindex="0" onclick="openPluginHubModal(); document.getElementById('plugin-search-input').value='${escapeHtml(p.name)}'; filterPluginsList('${escapeHtml(p.name)}');">
+                                    <img class="engine-icon" src="${p.iconUrl || BRAND_LOGO}" onerror="this.src='${BRAND_LOGO}'" alt="${p.name}">
+                                    <div class="engine-name">${p.name || p.internalName}</div>
+                                    <span class="engine-badge badge-cs3">v${p.version || 1} CS3</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
 
             if (matchedMovies.length > 0) {
                 html += `
@@ -3349,10 +3395,28 @@
         // ==========================================
         // 📋 STREAM PICKER & CINEMA PLAYER
         // ==========================================
-        async function openStreamPicker(type, id, title) {
+        async function openStreamPicker(type, id, title, episodeNum = 1) {
             document.getElementById('sheet-title-text').innerText = cleanTitle(title);
             const container = document.getElementById('stream-options-container');
-            container.innerHTML = '<div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>';
+            
+            // Render episode selector for anime / series
+            let epSelectorHtml = '';
+            if (type === 'series') {
+                const baseId = id.split(':')[0] + ':' + id.split(':')[1] + ':' + id.split(':')[2];
+                epSelectorHtml = `
+                    <div style="margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px;">
+                        <div style="font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 6px; text-transform: uppercase;">Episode Selection:</div>
+                        <div style="display: flex; gap: 6px; overflow-x: auto; padding: 2px 0;">
+                            ${[1, 2, 3, 4, 5, 6, 7, 8].map(ep => `
+                                <button class="chip-item ${ep === episodeNum ? 'active' : ''} focusable" style="padding: 4px 10px; font-size: 11px;" onclick="openStreamPicker('${type}', '${baseId}:1:${ep}', '${escapeHtml(title)}', ${ep})">Ep ${ep}</button>
+                            `).join('')}
+                            <input type="number" min="1" max="3000" placeholder="Ep #" style="width: 62px; background: rgba(0,0,0,0.6); border: 1px solid var(--border-gold); color: #fff; padding: 4px 8px; border-radius: 6px; font-size: 11px;" onkeydown="if(event.key==='Enter'&&this.value){openStreamPicker('${type}', '${baseId}:1:'+this.value, '${escapeHtml(title)}', parseInt(this.value));}">
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = epSelectorHtml + '<div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>';
             document.getElementById('stream-picker-modal').classList.add('open');
 
             try {
