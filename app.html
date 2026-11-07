@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -2697,6 +2697,7 @@
         async function bootstrapStreamingEngine() {
             renderContinueWatching();
             initGujaratiLibrary();
+            harvestGujaratiFromCloud();
 
             try {
                 const manifestUrls = [
@@ -4128,29 +4129,64 @@
         }
 
         function openGujaratiVaultModal() {
+            renderGujaratiVaultGrid(dynamicGujaratiMovies);
+            document.getElementById('gujarati-vault-modal').classList.add('open');
+        }
+
+        function renderGujaratiVaultGrid(items) {
             const grid = document.getElementById('gujarati-vault-grid');
             grid.innerHTML = '';
-            dynamicGujaratiMovies.forEach(item => {
+            if (!items || items.length === 0) {
+                grid.innerHTML = '<div style="color:var(--text-muted); padding:40px; text-align:center; grid-column:1/-1;">No Gujarati titles match this filter.</div>';
+                return;
+            }
+
+            items.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'poster-card focusable';
                 card.tabIndex = 0;
                 card.innerHTML = `
                     <div class="poster-image-box">
-                        <div class="card-badges"><span class="badge-quality">GUJARATI</span></div>
-                        <img src="${item.poster || BRAND_LOGO}" alt="${item.name}">
+                        <div class="card-badges">
+                            <span class="badge-quality">🦁 GUJARATI</span>
+                            ${item.cat === 'SERIES' ? '<span class="badge-audio">Series</span>' : '<span class="badge-audio">Movie</span>'}
+                        </div>
+                        <img src="${item.poster || BRAND_LOGO}" alt="${cleanTitle(item.name)}" loading="lazy">
                         <div class="card-overlay-play"><i class="fas fa-play"></i></div>
                         <div class="card-play-pill"><i class="fas fa-play"></i> Watch Now</div>
                     </div>
                     <div class="card-title">${cleanTitle(item.name)}</div>
-                    <div class="card-meta"><span>Regional</span><span>★ ${item.imdbRating || '8.0'}</span></div>
+                    <div class="card-meta"><span>Regional Cinema</span><span>★ ${item.imdbRating || '8.2'}</span></div>
                 `;
                 card.onclick = () => {
                     closeGujaratiVaultModal(true);
-                    openStreamPicker('movie', item.id, item.name);
+                    openStreamPicker(item.type || 'movie', item.id, item.name);
                 };
                 grid.appendChild(card);
             });
-            document.getElementById('gujarati-vault-modal').classList.add('open');
+        }
+
+        function filterGujaratiVault(cat, btn) {
+            if (btn) {
+                document.querySelectorAll('#gujarati-chips .chip-pill').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
+
+            if (cat === 'ALL') {
+                renderGujaratiVaultGrid(dynamicGujaratiMovies);
+            } else if (cat === 'MOVIE') {
+                const filtered = dynamicGujaratiMovies.filter(m => m.cat !== 'SERIES');
+                renderGujaratiVaultGrid(filtered);
+            } else if (cat === 'SERIES') {
+                const filtered = dynamicGujaratiMovies.filter(m => m.cat === 'SERIES');
+                renderGujaratiVaultGrid(filtered);
+            } else if (cat === 'OTT') {
+                const filtered = dynamicGujaratiMovies.filter(m => {
+                    const txt = ((m.name || '') + ' ' + (m.description || '')).toLowerCase();
+                    return txt.includes('shemaroo') || txt.includes('oho') || txt.includes('jojo') || txt.includes('vitthal');
+                });
+                renderGujaratiVaultGrid(filtered);
+            }
         }
 
         function closeGujaratiVaultModal(fromPop = false) {
