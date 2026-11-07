@@ -80,6 +80,39 @@ async function fetchJsonWithFailover(apiPath) {
     throw lastError || new Error(`All upstream resolvers failed for ${cleanPath}`);
 }
 
+function fetchHtml(targetUrl, extraHeaders = {}, timeoutMs = 8000) {
+    return new Promise((resolve, reject) => {
+        const parsed = url.parse(targetUrl);
+        const client = parsed.protocol === 'https:' ? https : http;
+
+        const req = client.get(targetUrl, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                ...extraHeaders
+            },
+            timeout: timeoutMs
+        }, (res) => {
+            if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+                const nextUrl = res.headers.location.startsWith('http') ? res.headers.location : url.resolve(targetUrl, res.headers.location);
+                return fetchHtml(nextUrl, extraHeaders, timeoutMs).then(resolve).catch(reject);
+            }
+            if (res.statusCode !== 200) {
+                return reject(new Error(`HTTP ${res.statusCode} from ${targetUrl}`));
+            }
+            let body = '';
+            res.on('data', chunk => body += chunk);
+            res.on('end', () => resolve(body));
+        });
+
+        req.on('error', reject);
+        req.on('timeout', () => {
+            req.destroy();
+            reject(new Error(`Timeout fetching ${targetUrl}`));
+        });
+    });
+}
+
 
 // ========================================================
 // ⚡ NATIVE IN-PROCESS SCRAPERS (REVERSE ENGINEERED FROM CS3)
@@ -171,6 +204,127 @@ async function getNativeSportsStream(matchId) {
         return { streams };
     } catch(err) {
         console.error('Error resolving native sports stream:', err.message);
+        return { streams: [] };
+    }
+}
+
+// 💎 Native In-House Scraper: HDHub4u 4K & 1080p Direct Extractor (Zero Bridge Dependency)
+let cachedHDHubCatalog = null;
+let lastHDHubCatalogFetch = 0;
+
+async function getNativeHDHub4uCatalog() {
+    const now = Date.now();
+    if (cachedHDHubCatalog && (now - lastHDHubCatalogFetch < 900000)) { // 15 mins cache
+        return cachedHDHubCatalog;
+    }
+
+    try {
+        const domains = await getLiveDomains();
+        const baseDomain = domains.HDHUB4u || 'https://new11.hdhub4u.cl';
+        const html = await fetchHtml(baseDomain);
+        
+        const regex = /<a[^>]+href="([^"]+)"[^>]*>[\s\S]*?<img[^>]+src="([^"]+)"[^>]*alt="([^"]*)"/gi;
+        let match;
+        const items = [];
+        const seenSlugs = new Set();
+        
+        while ((match = regex.exec(html)) !== null) {
+            const href = match[1];
+            const poster = match[2];
+            const rawTitle = match[3];
+            
+            if (rawTitle && href && href !== '/' && !href.includes('/disclaimer/') && !href.includes('app-download')) {
+                const slug = href.replace(/^https?:\/\/[^\/]+/, '').replace(/^\//, '').replace(/\/$/, '');
+                if (slug && !seenSlugs.has(slug)) {
+                    seenSlugs.add(slug);
+                    const cleanTitle = rawTitle.replace(/&#038;/g, '&').replace(/\|.*$/, '').trim();
+                    const isSeries = cleanTitle.toLowerCase().includes('season') || cleanTitle.toLowerCase().includes('series') || cleanTitle.toLowerCase().includes('ep-');
+                    const fullPoster = poster.startsWith('http') ? poster : `${baseDomain}${poster}`;
+                    
+                    items.push({
+                        id: `native:hdhub:${slug}`,
+                        name: cleanTitle,
+                        type: isSeries ? 'series' : 'movie',
+                        poster: fullPoster,
+                        background: fullPoster,
+                        description: `${cleanTitle} • Available in 4K UHD & 1080p Multi-Audio directly extracted from HDHub4u high-speed mirrors.`,
+                        genres: isSeries ? ['Web Series', 'Drama'] : ['Movie', 'Action']
+                    });
+                }
+            }
+        }
+        
+        if (items.length > 0) {
+            cachedHDHubCatalog = items;
+            lastHDHubCatalogFetch = now;
+            return items;
+        }
+    } catch(err) {
+        console.error('Error fetching native HDHub4u catalog:', err.message);
+    }
+    return cachedHDHubCatalog || [];
+}
+
+async function getNativeHDHub4uStreams(slug) {
+    try {
+        const domains = await getLiveDomains();
+        const baseDomain = domains.HDHUB4u || 'https://new11.hdhub4u.cl';
+        const moviePageUrl = `${baseDomain}/${slug}/`;
+        const pageHtml = await fetchHtml(moviePageUrl);
+
+        // Find quality links (hubcdn, hubdrive, hubcloud, etc.)
+        const linkRegex = /href="([^"]+)"[^>]*>([^<]+)<\/a>/gi;
+        let lMatch;
+        const qualityLinks = [];
+        while ((lMatch = linkRegex.exec(pageHtml)) !== null) {
+            const lHref = lMatch[1];
+            const lText = lMatch[2].trim();
+            if (lHref.includes('hubcdn') || lHref.includes('hubdrive') || lHref.includes('hubcloud') || lHref.includes('greenmotors')) {
+                qualityLinks.push({ url: lHref, text: lText });
+            }
+        }
+
+        const streams = [];
+
+        // Resolve each hub file link to direct video bucket (e.g. Cloudflare R2 / HubCDN direct)
+        for (const item of qualityLinks.slice(0, 4)) {
+            try {
+                const hubHtml = await fetchHtml(item.url, { 'Referer': moviePageUrl }, 4500);
+                const base64Match = hubHtml.match(/\?r=([a-zA-Z0-9+/=]+)/);
+                if (base64Match) {
+                    const decoded = Buffer.from(base64Match[1], 'base64').toString('utf8');
+                    const linkParam = decoded.match(/link=([^&]+)/);
+                    if (linkParam) {
+                        const directUrl = decodeURIComponent(linkParam[1]);
+                        const qName = item.text.replace(/⚡/g, '').trim() || 'Direct Video';
+                        streams.push({
+                            name: `💎 [Direct R2] ${qName}`,
+                            title: `${qName} • High-Speed Direct Stream (Multi-Audio)`,
+                            url: directUrl,
+                            isWebPlayable: true,
+                            behaviorHints: { notWebReady: false }
+                        });
+                    }
+                }
+            } catch(e) {
+                // If resolving direct link times out, skip to next
+            }
+        }
+
+        if (streams.length === 0 && qualityLinks.length > 0) {
+            qualityLinks.forEach(q => {
+                streams.push({
+                    name: `💎 HDHub4u ${q.text}`,
+                    title: `${q.text} (Web Stream)`,
+                    url: q.url,
+                    behaviorHints: { notWebReady: false }
+                });
+            });
+        }
+
+        return { streams };
+    } catch(err) {
+        console.error(`Error resolving HDHub4u stream for ${slug}:`, err.message);
         return { streams: [] };
     }
 }
@@ -273,7 +427,16 @@ async function getRebrandedManifest() {
                     { name: 'skip', isRequired: false }
                 ]
             };
-            const finalCatalogs = [nativeSportsCatalog, ...filteredCatalogs];
+            const nativeHDHubCatalog = {
+                type: 'movie',
+                id: 'native_hdhub4u_movies',
+                name: '💎 HDHub4u (4K & 1080p Direct Engine)',
+                extra: [
+                    { name: 'search', isRequired: false },
+                    { name: 'skip', isRequired: false }
+                ]
+            };
+            const finalCatalogs = [nativeSportsCatalog, nativeHDHubCatalog, ...filteredCatalogs];
             cachedManifest = {
                 id: 'org.yogeshstreamer.addon',
                 version: '1.2.1',
@@ -955,6 +1118,14 @@ const server = http.createServer(async (req, res) => {
             return;
         }
 
+        if (rawId.startsWith('native:hdhub:')) {
+            const slug = rawId.replace('native:hdhub:', '');
+            const result = await getNativeHDHub4uStreams(slug);
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify(result));
+            return;
+        }
+
         // ⚡ In-Memory Stream Cache Check (0ms Instant Delivery with smart TTL)
         const isLive = type === 'tv' || rawId.includes('Live') || rawId.includes('tv') || rawId.includes('Sports');
         const effectiveTtl = isLive ? 30000 : STREAM_CACHE_TTL; // 30s for live sports to ensure fresh signatures, 5m for on-demand movies
@@ -1127,6 +1298,12 @@ const server = http.createServer(async (req, res) => {
             res.end(JSON.stringify({ metas }));
             return;
         }
+        if (pathname.includes('native_hdhub4u_movies')) {
+            const metas = await getNativeHDHub4uCatalog();
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ metas }));
+            return;
+        }
         try {
             // If Stremio is requesting /catalog/movie/cnc_..._other.json, map to /catalog/other/cnc_..._other.json upstream
             let mappedPath = pathname;
@@ -1162,6 +1339,14 @@ const server = http.createServer(async (req, res) => {
             const matchId = pathname.split('native:fc:')[1].replace('.json', '');
             const catalog = await getNativeSportsCatalog();
             const item = catalog.find(m => m.id === `native:fc:${matchId}`);
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ meta: item || null }));
+            return;
+        }
+        if (pathname.includes('native:hdhub:')) {
+            const slug = pathname.split('native:hdhub:')[1].replace('.json', '');
+            const catalog = await getNativeHDHub4uCatalog();
+            const item = catalog.find(m => m.id === `native:hdhub:${slug}`);
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify({ meta: item || null }));
             return;
