@@ -2122,12 +2122,13 @@
                 <div class="source-select-wrap">
                     <span style="font-size: 12px; font-weight: 700; color: var(--text-sub);">Source Engine:</span>
                     <select id="series-source-select" class="source-select focusable" tabindex="0" onchange="changeSeriesSource(this.value)">
-                        <option value="ALL">🌐 All Series Engines (2,200+)</option>
-                        <option value="cnc_MovieBoxIN_other">🌟 MovieBox IN (OTT Series)</option>
+                        <option value="cnc_CastleTV_other" selected>🏰 Castle TV Series & Shows (Instant Web Play)</option>
+                        <option value="ALL">🌐 All Verified Series Engines (2,500+)</option>
+                        <option value="cnc_HDHub4U_other">💎 HDHub4u Series & Seasons (4K MKV / VLC)</option>
+                        <option value="cnc_Rogmovies_other">🍿 RogMovies Web Series (VLC / MX)</option>
                         <option value="cnc_Toonix_other">🌟 Toonix (1,630+ Anime & Toons)</option>
                         <option value="cnc_ReANIME_other">🌟 Re:ANIME HD</option>
-                        <option value="cnc_AniPM_other">🌟 AniPM Hub</option>
-                        <option value="cnc_GoTaku_other">🌟 GoTaku Anime</option>
+                        <option value="cnc_MovieBoxIN_other">⚠️ MovieBox IN (Limited OTT - Upstream Maintenance)</option>
                     </select>
                 </div>
             </div>
@@ -2356,6 +2357,60 @@
     <!-- ========================================== -->
     <!-- 🎬 CINEMA VIDEO PLAYER MODAL               -->
     <!-- ========================================== -->
+    <!-- ========================================== -->
+    <!-- 🚀 EXTERNAL PLAYER (VLC / MX) MODAL        -->
+    <!-- ========================================== -->
+    <div id="external-player-modal" class="stream-picker-modal" onclick="closeExternalPlayerModal()">
+        <div class="stream-picker-sheet" style="max-width: 580px;" onclick="event.stopPropagation()">
+            <div class="sheet-header">
+                <div>
+                    <h3 class="sheet-title" id="ext-player-title">Play in External Player</h3>
+                    <div style="font-size: 11px; color: var(--gold); font-weight: 700; margin-top: 2px;">🚀 4K Ultra HD • High-Bitrate Master Feed</div>
+                </div>
+                <button class="focusable" tabindex="0" onclick="closeExternalPlayerModal()" style="background: transparent; border: none; color: var(--text-sub); font-size: 18px; cursor: pointer;"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="sheet-body" style="gap: 16px;">
+                <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 10px; padding: 12px 14px; display: flex; gap: 12px; align-items: center;">
+                    <i class="fas fa-circle-info" style="color: #F59E0B; font-size: 24px; flex-shrink: 0;"></i>
+                    <div style="font-size: 12px; color: #FFFFFF; line-height: 1.5;">
+                        <b>Direct Stream Link Copied to Clipboard!</b><br>
+                        This stream is a 4K MKV / Master container. Browsers cannot decode MKV video/audio directly. Select your player below to watch:
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button type="button" class="btn-primary focusable" id="ext-btn-vlc" style="justify-content: center; gap: 10px; padding: 14px; font-size: 14px; font-weight: 700; background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); color: #fff;">
+                        <i class="fas fa-play"></i> Launch in VLC Media Player
+                    </button>
+
+                    <button type="button" class="btn-secondary focusable" id="ext-btn-mx" style="justify-content: center; gap: 10px; padding: 14px; font-size: 14px; font-weight: 700; border-color: rgba(255,255,255,0.2);">
+                        <i class="fas fa-mobile-screen"></i> Launch in MX Player (Android)
+                    </button>
+
+                    <button type="button" class="btn-secondary focusable" id="ext-btn-copy" style="justify-content: center; gap: 10px; padding: 14px; font-size: 14px; font-weight: 700; border-color: var(--border-gold); color: var(--gold);">
+                        <i class="fas fa-copy"></i> Copy Direct Stream URL
+                    </button>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px; font-size: 11px; color: var(--text-sub); line-height: 1.6;">
+                    <div style="font-weight: 700; color: #fff; margin-bottom: 6px;"><i class="fas fa-tv" style="color:var(--gold);"></i> How to play on Windows PC, Mac, or Smart TV:</div>
+                    <div style="display: flex; gap: 8px; margin-bottom: 4px;">
+                        <span style="color:var(--gold); font-weight: 800;">1.</span>
+                        <span>Click <b>Copy Direct Stream URL</b> above (already copied to clipboard).</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-bottom: 4px;">
+                        <span style="color:var(--gold); font-weight: 800;">2.</span>
+                        <span>Open <b>VLC Media Player</b> on your computer or TV.</span>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <span style="color:var(--gold); font-weight: 800;">3.</span>
+                        <span>Press <kbd style="background:#222; padding:2px 6px; border-radius:4px; border:1px solid #444; color:#fff;">Ctrl+N</kbd> (or <i>Media → Open Network Stream</i>), paste the URL, and click <b>Play</b>.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="cinema-player-modal" class="cinema-player-modal">
         <div class="player-header">
             <button class="focusable" tabindex="0" onclick="closeCinemaPlayer()" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: #fff; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;"><i class="fas fa-arrow-left"></i></button>
@@ -3208,27 +3263,33 @@
         // ==========================================
         let allLoadedSeries = [];
 
-        async function loadSeriesPage(sourceId = 'ALL') {
+        async function loadSeriesPage(sourceId = 'cnc_CastleTV_other') {
             const grid = document.getElementById('series-grid');
             grid.innerHTML = '<div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>';
 
             try {
                 let targets = sourceId === 'ALL'
                     ? [
-                        'cnc_MovieBoxIN_other',
+                        'cnc_CastleTV_other',
+                        'cnc_HDHub4U_other',
+                        'cnc_Rogmovies_other',
                         'cnc_Toonix_other',
                         'cnc_ReANIME_other',
-                        'cnc_AniPM_other',
-                        'cnc_GoTaku_other'
+                        'cnc_AniPM_other'
                       ]
                     : [sourceId];
 
                 allLoadedSeries = [];
                 const fetchPromises = targets.map(catId => 
-                    fetch(`${API_BASE}/catalog/movie/${catId}.json`)
+                    fetch(`${API_BASE}/catalog/other/${catId}.json`)
                         .then(r => r.json())
                         .then(d => Array.isArray(d?.metas) ? d.metas : [])
-                        .catch(() => [])
+                        .catch(() => 
+                            fetch(`${API_BASE}/catalog/movie/${catId}.json`)
+                                .then(r => r.json())
+                                .then(d => Array.isArray(d?.metas) ? d.metas : [])
+                                .catch(() => [])
+                        )
                 );
 
                 const results = await Promise.allSettled(fetchPromises);
@@ -3730,10 +3791,14 @@
             document.getElementById('sheet-title-text').innerText = cleanTitle(title);
             const container = document.getElementById('stream-options-container');
 
-            // Render episode selector for anime / series
+            // Render episode selector for anime / series when ID supports colon episode schema
             let epSelectorHtml = '';
-            if (type === 'series') {
-                const baseId = id.split(':')[0] + ':' + id.split(':')[1] + ':' + id.split(':')[2];
+            if (type === 'series' && id && !id.startsWith('cnc:TW92aWVCb3h') && !id.startsWith('cnc:Q2FzdGxlVFY') && !id.startsWith('cnc:SERIdWI0dQ') && !id.startsWith('cnc:Um9nbW92aWVz')) {
+                const parts = id.split(':');
+                let baseId = parts[0];
+                if (parts.length >= 3 && !isNaN(parts[parts.length - 1])) {
+                    baseId = parts.slice(0, -2).join(':');
+                }
                 epSelectorHtml = `
                     <div style="margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px;">
                         <div style="font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 6px; text-transform: uppercase;">Episode Selection:</div>
@@ -3751,16 +3816,47 @@
             document.getElementById('stream-picker-modal').classList.add('open');
 
             try {
-                const res = await fetch(`${API_BASE}/stream/${type || 'movie'}/${encodeURIComponent(id)}.json`);
-                const data = await res.json();
-                let streams = Array.isArray(data?.streams) ? data.streams : [];
+                let streams = [];
+                // 1. Primary Query
+                try {
+                    const res = await fetch(`${API_BASE}/stream/${type || 'movie'}/${encodeURIComponent(id)}.json`);
+                    const data = await res.json();
+                    if (Array.isArray(data?.streams) && data.streams.length > 0) {
+                        streams = data.streams;
+                    }
+                } catch(e) {}
+
+                // 2. Intelligent Auto-Fallback: Query other candidate types if 0 streams returned
+                if (streams.length === 0) {
+                    const fallbackTypes = ['other', 'movie', 'series'].filter(t => t !== (type || 'movie'));
+                    for (const fbType of fallbackTypes) {
+                        try {
+                            const res = await fetch(`${API_BASE}/stream/${fbType}/${encodeURIComponent(id)}.json`);
+                            const data = await res.json();
+                            if (Array.isArray(data?.streams) && data.streams.length > 0) {
+                                streams = data.streams;
+                                break;
+                            }
+                        } catch(e) {}
+                    }
+                }
 
                 if (streams.length === 0) {
+                    const isMovieBox = (id || '').includes('MovieBox') || (id || '').includes('TW92aWVCb3h');
                     container.innerHTML = `
-                        <div style="text-align:center; padding:30px 20px; color:var(--text-sub);">
-                            <i class="fas fa-film" style="font-size:32px; color:var(--gold); margin-bottom:10px;"></i>
-                            <div style="font-size:15px; font-weight:700; color:#fff;">No direct streams found</div>
-                            <div style="font-size:12px; margin-top:6px;">This title link is temporarily offline or undergoing maintenance.</div>
+                        <div style="text-align:center; padding:35px 20px; color:var(--text-sub);">
+                            <i class="fas fa-circle-exclamation" style="font-size:36px; color:var(--gold); margin-bottom:12px;"></i>
+                            <div style="font-size:16px; font-weight:700; color:#fff;">No Direct Streams Found</div>
+                            <div style="font-size:13px; line-height:1.5; margin-top:8px; max-width:440px; margin-left:auto; margin-right:auto;">
+                                ${isMovieBox 
+                                    ? '<b>MovieBox IN upstream scraper</b> is currently timing out or restricting web series endpoints. Please switch source to <b>Castle TV Series</b> (Instant Web Play) or <b>HDHub4u</b>.'
+                                    : 'This title is temporarily undergoing upstream server maintenance. Please try an alternate source or engine from the source dropdown.'}
+                            </div>
+                            <div style="margin-top:18px;">
+                                <button type="button" class="btn-primary focusable" onclick="closeStreamPicker(); navigateToPage('series');" style="display:inline-flex; align-items:center; gap:8px; padding:10px 20px; font-size:13px; background:var(--gold); color:#000; font-weight:700; border-radius:8px; cursor:pointer;">
+                                    <i class="fas fa-arrow-left"></i> Browse Castle TV Series
+                                </button>
+                            </div>
                         </div>
                     `;
                     return;
@@ -4318,6 +4414,12 @@
                 } else if (document.getElementById('gujarati-vault-modal').classList.contains('open')) {
                     e.preventDefault();
                     closeGujaratiVaultModal();
+                } else if (document.getElementById('plugin-hub-modal')?.classList.contains('open')) {
+                    e.preventDefault();
+                    closePluginHubModal();
+                } else if (document.getElementById('sync-modal')?.classList.contains('open')) {
+                    e.preventDefault();
+                    closeSyncModal();
                 } else if (document.getElementById('settings-modal').classList.contains('open')) {
                     e.preventDefault();
                     closeSettingsModal();
@@ -4329,17 +4431,58 @@
             const current = document.activeElement;
             const idx = focusables.indexOf(current);
 
-            if (idx === -1) {
+            if (idx === -1 || !current) {
                 if (focusables.length > 0) focusables[0].focus();
                 return;
             }
 
+            // Horizontal navigation
             if (e.key === 'ArrowRight' && idx < focusables.length - 1) {
                 focusables[idx + 1].focus();
+                focusables[idx + 1].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
                 e.preventDefault();
+                return;
             } else if (e.key === 'ArrowLeft' && idx > 0) {
                 focusables[idx - 1].focus();
+                focusables[idx - 1].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
                 e.preventDefault();
+                return;
+            }
+
+            // 📺 2D Spatial Navigation for Android TV / Smart TV D-Pad (ArrowUp & ArrowDown)
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                const currentRect = current.getBoundingClientRect();
+                const isDown = e.key === 'ArrowDown';
+
+                const candidates = focusables.filter(el => {
+                    if (el === current || !el.offsetParent) return false;
+                    const r = el.getBoundingClientRect();
+                    return isDown ? (r.top >= currentRect.bottom - 8) : (r.bottom <= currentRect.top + 8);
+                });
+
+                if (candidates.length > 0) {
+                    const currentCenter = { x: currentRect.left + currentRect.width / 2, y: currentRect.top + currentRect.height / 2 };
+                    let bestCandidate = candidates[0];
+                    let minDistance = Infinity;
+
+                    candidates.forEach(el => {
+                        const r = el.getBoundingClientRect();
+                        const center = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+                        const dx = center.x - currentCenter.x;
+                        const dy = center.y - currentCenter.y;
+                        const dist = Math.sqrt(dx * dx + (dy * dy * 1.8));
+                        if (dist < minDistance) {
+                            minDistance = dist;
+                            bestCandidate = el;
+                        }
+                    });
+
+                    if (bestCandidate) {
+                        bestCandidate.focus();
+                        bestCandidate.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                        e.preventDefault();
+                    }
+                }
             }
         }
 
@@ -4376,31 +4519,85 @@
             return false;
         }
 
+        let activeExternalUrl = '';
+        let activeExternalTitle = '';
+
         function openInExternalPlayer(rawUrl, rawTitle = 'Stream') {
             let url = rawUrl;
             let title = rawTitle;
             try { url = decodeURIComponent(rawUrl); } catch(e) {}
             try { title = decodeURIComponent(rawTitle); } catch(e) {}
 
+            activeExternalUrl = url;
+            activeExternalTitle = title;
+
+            // 1. Auto-copy stream link to clipboard immediately
+            navigator.clipboard.writeText(url).then(() => {
+                showToast("Direct Stream Link Copied to Clipboard!", "fa-copy");
+            }).catch(() => {});
+
             const ua = navigator.userAgent.toLowerCase();
             const isAndroid = /android/i.test(ua);
             const isIOS = /iphone|ipad|ipod/i.test(ua);
 
+            // 2. Setup External Player Modal
+            const modal = document.getElementById('external-player-modal');
+            const titleEl = document.getElementById('ext-player-title');
+            if (titleEl) titleEl.innerText = cleanTitle(title);
+
+            const btnVlc = document.getElementById('ext-btn-vlc');
+            if (btnVlc) {
+                btnVlc.onclick = () => {
+                    if (isAndroid) {
+                        window.location.href = `intent:${url}#Intent;package=org.videolan.vlc;type=video/*;title=${encodeURIComponent(title)};end`;
+                    } else if (isIOS) {
+                        window.location.href = `vlc://${url}`;
+                    } else {
+                        window.location.href = `vlc://${url}`;
+                        navigator.clipboard.writeText(url).then(() => {
+                            showToast("Link copied! In VLC, press Ctrl+N and paste.", "fa-circle-check");
+                        });
+                    }
+                };
+            }
+
+            const btnMx = document.getElementById('ext-btn-mx');
+            if (btnMx) {
+                btnMx.onclick = () => {
+                    if (isAndroid) {
+                        window.location.href = `intent:${url}#Intent;package=com.mxtech.videoplayer.ad;type=video/*;title=${encodeURIComponent(title)};end`;
+                    } else {
+                        navigator.clipboard.writeText(url).then(() => {
+                            showToast("Link copied for MX Player!", "fa-copy");
+                        });
+                    }
+                };
+            }
+
+            const btnCopy = document.getElementById('ext-btn-copy');
+            if (btnCopy) {
+                btnCopy.onclick = () => {
+                    navigator.clipboard.writeText(url).then(() => {
+                        showToast("Direct 4K Stream Link Copied!", "fa-circle-check");
+                    });
+                };
+            }
+
+            // 3. Trigger device auto-wake if mobile
             if (isAndroid) {
                 const intentUrl = `intent:${url}#Intent;package=org.videolan.vlc;type=video/*;title=${encodeURIComponent(title)};end`;
                 window.location.href = intentUrl;
-                setTimeout(() => {
-                    window.location.href = `vlc://${url}`;
-                }, 1200);
             } else if (isIOS) {
                 window.location.href = `vlc://${url}`;
-                setTimeout(() => {
-                    window.location.href = `infuse://${url}`;
-                }, 1200);
-            } else {
-                window.location.href = `vlc://${url}`;
             }
-            showToast("Opening in VLC / External Player...", "fa-play");
+
+            // 4. Open modal for guidance & one-click actions
+            if (modal) modal.classList.add('open');
+        }
+
+        function closeExternalPlayerModal() {
+            const modal = document.getElementById('external-player-modal');
+            if (modal) modal.classList.remove('open');
         }
 
         function copyStreamUrl(rawUrl) {
