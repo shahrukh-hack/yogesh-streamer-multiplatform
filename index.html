@@ -3940,6 +3940,23 @@
             }
 
             const activeStream = (activeStreamList && activeStreamList[activeStreamIndex]) || null;
+
+            // 💬 Attach WebVTT Subtitles (Anime & Multi-Audio Movies)
+            if (activeStream && Array.isArray(activeStream.subtitles)) {
+                activeStream.subtitles.forEach((sub, idx) => {
+                    if (sub && (sub.url || sub.file)) {
+                        const track = document.createElement('track');
+                        track.kind = 'subtitles';
+                        track.label = sub.label || sub.lang || `Track ${idx + 1}`;
+                        track.srclang = (sub.lang || 'en').slice(0, 2).toLowerCase();
+                        track.src = sub.url || sub.file;
+                        if (sub.default || idx === 0) {
+                            track.default = true;
+                        }
+                        video.appendChild(track);
+                    }
+                });
+            }
             const activeClearkey = (activeStream && activeStream.clearkey) ? activeStream.clearkey : null;
 
             // 🚀 Google Shaka Player Engine with ClearKey DRM Handshake (Live Cricket & Live TV)
