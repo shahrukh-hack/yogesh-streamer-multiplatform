@@ -3308,7 +3308,7 @@
 
                 // 🌟 Smart Prioritization: verified working streaming catalogs first
                 movieCatalogs.sort((a, b) => {
-                    const topMovies = ['native_hdhub4u_movies', 'cnc_CastleTVUseVLC_other', 'cnc_HDHub4U_other', 'cnc_Rogmovies_other', 'cnc_VegaMovies_other', 'cnc_4KHDHUB_other', 'cnc_ReANIME_other', 'cnc_RingZ_other', 'cnc_MovieBoxIN_other', 'cnc_MultiMovies_other'];
+                    const topMovies = ['native_hdhub4u_movies', 'native_vegamovies_movies', 'cnc_CastleTVUseVLC_other', 'cnc_HDHub4U_other', 'cnc_Rogmovies_other', 'cnc_VegaMovies_other', 'cnc_4KHDHUB_other', 'cnc_ReANIME_other', 'cnc_RingZ_other', 'cnc_MovieBoxIN_other', 'cnc_MultiMovies_other'];
                     const isDeadA = deadScraperIds.has(a.id);
                     const isDeadB = deadScraperIds.has(b.id);
                     if (isDeadA && !isDeadB) return 1;
@@ -3387,7 +3387,7 @@
                 });
 
                 // Spotlight 4: 🍿 VegaMovies (2160p HDR Multi-Audio Cinema)
-                movieCatalogs.filter(c => c.id === 'cnc_VegaMovies_other').forEach(cat => {
+                movieCatalogs.filter(c => c.id === 'native_vegamovies_movies' || c.id === 'cnc_VegaMovies_other').forEach(cat => {
                     if (!homeAddedIds.has(cat.id)) {
                         homeAddedIds.add(cat.id);
                         buildCatalogRowElement(cat, homeGrid, 'home', true, homeRank++);

@@ -347,6 +347,112 @@ async function getNativeHDHub4uStreams(slug) {
     }
 }
 
+// 🍿 Native In-House Scraper: VegaMovies 4K UHD & Dual Audio Direct Extractor (Zero Bridge Dependency)
+let cachedVegaCatalog = null;
+let lastVegaCatalogFetch = 0;
+
+async function getNativeVegaMoviesCatalog() {
+    const now = Date.now();
+    if (cachedVegaCatalog && (now - lastVegaCatalogFetch < 900000)) { // 15 mins cache
+        return cachedVegaCatalog;
+    }
+
+    try {
+        const domains = await getLiveDomains();
+        const baseDomain = domains.vegamovies || 'https://vegamovies.lease';
+        const html = await fetchHtml(baseDomain);
+
+        const regex = /<a[^>]+href="([^"]+)"[^>]*>[\s\S]*?<img[^>]+src="([^"]+)"[^>]*alt="([^"]*)"/gi;
+        let match;
+        const items = [];
+        const seenSlugs = new Set();
+
+        while ((match = regex.exec(html)) !== null) {
+            const href = match[1];
+            const poster = match[2];
+            const rawTitle = match[3];
+
+            if (rawTitle && href && href.includes('/download-')) {
+                const slug = href.replace(/^https?:\/\/[^\/]+/, '').replace(/^\//, '').replace(/\/$/, '');
+                if (slug && !seenSlugs.has(slug)) {
+                    seenSlugs.add(slug);
+                    const cleanTitle = rawTitle.replace(/^Download\s+/i, '').replace(/&#038;/g, '&').replace(/WEB-DL.*$/i, '').replace(/BluRay.*$/i, '').trim();
+                    const isSeries = slug.includes('season') || cleanTitle.toLowerCase().includes('season');
+                    const fullPoster = poster.startsWith('http') ? poster : `${baseDomain}${poster}`;
+
+                    items.push({
+                        id: `native:vega:${slug}`,
+                        name: cleanTitle,
+                        type: isSeries ? 'series' : 'movie',
+                        poster: fullPoster,
+                        background: fullPoster,
+                        description: `${cleanTitle} • Available in 4K UHD, HDR & Dual Audio directly extracted from VegaMovies.`,
+                        genres: isSeries ? ['Web Series', 'Dual Audio'] : ['Movie', '4K UHD']
+                    });
+                }
+            }
+        }
+
+        if (items.length > 0) {
+            cachedVegaCatalog = items;
+            lastVegaCatalogFetch = now;
+            return items;
+        }
+    } catch(err) {
+        console.error('Error fetching native VegaMovies catalog:', err.message);
+    }
+    return cachedVegaCatalog || [];
+}
+
+async function getNativeVegaMoviesStreams(slug) {
+    try {
+        const domains = await getLiveDomains();
+        const baseDomain = domains.vegamovies || 'https://vegamovies.lease';
+        const moviePageUrl = `${baseDomain}/${slug}/`;
+        const pageHtml = await fetchHtml(moviePageUrl);
+
+        // Find nexdrive links
+        const nexRegex = /href="([^"]*nexdrive[^"]*)"/gi;
+        let nMatch;
+        const nexLinks = [];
+        while ((nMatch = nexRegex.exec(pageHtml)) !== null) {
+            if (!nexLinks.includes(nMatch[1])) {
+                nexLinks.push(nMatch[1]);
+            }
+        }
+
+        const streams = [];
+
+        for (const nexUrl of nexLinks.slice(0, 4)) {
+            try {
+                const nexHtml = await fetchHtml(nexUrl, { 'Referer': moviePageUrl }, 4500);
+                const fastMatch = /href="([^"]*fastdl[^"]*)"/i.exec(nexHtml);
+                if (fastMatch) {
+                    const fastUrl = fastMatch[1];
+                    const fastHtml = await fetchHtml(fastUrl, { 'Referer': nexUrl }, 4500);
+                    const linkMatch = /link=(https:\/\/video-downloads\.googleusercontent\.com\/[^"&]+)/i.exec(fastHtml);
+                    if (linkMatch) {
+                        const directUrl = linkMatch[1];
+                        streams.push({
+                            name: `🍿 VegaMovies 4K HDR`,
+                            title: `Google Direct Fast Server ${streams.length + 1}`,
+                            url: directUrl,
+                            behaviorHints: {
+                                notWebReady: false
+                            }
+                        });
+                    }
+                }
+            } catch(e) {}
+        }
+
+        return { streams };
+    } catch(err) {
+        console.error(`Error resolving VegaMovies stream for ${slug}:`, err.message);
+        return { streams: [] };
+    }
+}
+
 async function getRebrandedManifest() {
     const now = Date.now();
     if (cachedManifest && (now - lastManifestFetch) < MANIFEST_CACHE_TTL) {
@@ -454,7 +560,16 @@ async function getRebrandedManifest() {
                     { name: 'skip', isRequired: false }
                 ]
             };
-            const finalCatalogs = [nativeSportsCatalog, nativeHDHubCatalog, ...filteredCatalogs];
+            const nativeVegaCatalog = {
+                type: 'movie',
+                id: 'native_vegamovies_movies',
+                name: '🍿 VegaMovies (4K HDR & Dual Audio)',
+                extra: [
+                    { name: 'search', isRequired: false },
+                    { name: 'skip', isRequired: false }
+                ]
+            };
+            const finalCatalogs = [nativeSportsCatalog, nativeHDHubCatalog, nativeVegaCatalog, ...filteredCatalogs];
             cachedManifest = {
                 id: 'org.yogeshstreamer.addon',
                 version: '1.2.1',
@@ -821,7 +936,12 @@ const server = http.createServer(async (req, res) => {
                 ? path.join(__dirname, 'app.html') 
                 : path.join(__dirname, 'index.html');
             const appHtml = fs.readFileSync(htmlPath, 'utf8');
-            res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+            res.writeHead(200, { 
+                'Content-Type': 'text/html; charset=utf-8',
+                'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            });
             res.end(appHtml);
         } catch (e) {
             res.writeHead(500, { 'Content-Type': 'text/plain' });
@@ -844,7 +964,8 @@ const server = http.createServer(async (req, res) => {
             };
             res.writeHead(200, {
                 'Content-Type': mimeTypes[ext] || 'application/octet-stream',
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',
+                'Cache-Control': pathname === '/sw.js' ? 'no-cache, no-store, must-revalidate, max-age=0' : 'public, max-age=86400'
             });
             fs.createReadStream(assetPath).pipe(res);
             return;
@@ -1213,6 +1334,14 @@ const server = http.createServer(async (req, res) => {
             return;
         }
 
+        if (rawId.startsWith('native:vega:')) {
+            const slug = rawId.replace('native:vega:', '');
+            const result = await getNativeVegaMoviesStreams(slug);
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify(result));
+            return;
+        }
+
         // ⚡ In-Memory Stream Cache Check (0ms Instant Delivery with smart TTL)
         const isLive = type === 'tv' || rawId.includes('Live') || rawId.includes('tv') || rawId.includes('Sports');
         const effectiveTtl = isLive ? 30000 : STREAM_CACHE_TTL; // 30s for live sports to ensure fresh signatures, 5m for on-demand movies
@@ -1391,6 +1520,12 @@ const server = http.createServer(async (req, res) => {
             res.end(JSON.stringify({ metas }));
             return;
         }
+        if (pathname.includes('native_vegamovies_movies')) {
+            const metas = await getNativeVegaMoviesCatalog();
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ metas }));
+            return;
+        }
         try {
             // If Stremio is requesting /catalog/movie/cnc_..._other.json, map to /catalog/other/cnc_..._other.json upstream
             let mappedPath = pathname;
@@ -1434,6 +1569,14 @@ const server = http.createServer(async (req, res) => {
             const slug = pathname.split('native:hdhub:')[1].replace('.json', '');
             const catalog = await getNativeHDHub4uCatalog();
             const item = catalog.find(m => m.id === `native:hdhub:${slug}`);
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ meta: item || null }));
+            return;
+        }
+        if (pathname.includes('native:vega:')) {
+            const slug = pathname.split('native:vega:')[1].replace('.json', '');
+            const catalog = await getNativeVegaMoviesCatalog();
+            const item = catalog.find(m => m.id === `native:vega:${slug}`);
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify({ meta: item || null }));
             return;
