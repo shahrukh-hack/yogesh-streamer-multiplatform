@@ -1,6 +1,8 @@
-const CACHE_NAME = 'yogesh-streamer-v2.3.0-pwa';
+const CACHE_NAME = 'yogesh-streamer-v2.4.0-pwa';
 const STATIC_ASSETS = [
     '/manifest.webmanifest',
+    '/app',
+    '/logo.jpg',
     'https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/logo.jpg',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
     'https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js',
@@ -32,11 +34,24 @@ self.addEventListener('fetch', (event) => {
     const req = event.request;
     const url = new URL(req.url);
 
-    // Never cache app HTML shell, video chunks, live streams, or API endpoints
-    if (url.pathname === '/app' ||
-        url.pathname === '/app.html' ||
-        url.pathname === '/watch' ||
-        url.pathname.includes('/proxy/') ||
+    // App HTML shell (/app, /app.html, /watch): Network-first with offline cache fallback
+    if (url.pathname === '/app' || url.pathname === '/app.html' || url.pathname === '/watch') {
+        event.respondWith(
+            fetch(req)
+                .then((networkRes) => {
+                    if (networkRes && networkRes.status === 200) {
+                        const copy = networkRes.clone();
+                        caches.open(CACHE_NAME).then(c => c.put(req, copy));
+                    }
+                    return networkRes;
+                })
+                .catch(() => caches.match(req))
+        );
+        return;
+    }
+
+    // Live video streams, chunks & API endpoints must never be cached
+    if (url.pathname.includes('/proxy/') ||
         url.pathname.includes('/stream/') ||
         url.pathname.includes('/catalog/') ||
         url.pathname.includes('/manifest.json') ||
