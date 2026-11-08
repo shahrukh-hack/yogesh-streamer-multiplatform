@@ -2679,9 +2679,24 @@
                 <button class="focusable" tabindex="0" onclick="closeSyncModal()" style="background: transparent; border: none; color: var(--text-sub); font-size: 18px; cursor: pointer;"><i class="fas fa-times"></i></button>
             </div>
             <div class="sheet-body" style="gap: 14px; text-align: center;">
-                <p style="font-size: 12px; color: var(--text-sub);">Sync continue watching progress and favorites across your Phone, PC & Smart TV.</p>
-                <div style="font-size: 24px; font-weight: 900; letter-spacing: 4px; color: var(--gold); background: var(--bg-card); padding: 12px; border-radius: var(--radius-md); border: 1px dashed var(--border-gold);" id="sync-code-display">------</div>
-                <button class="btn-stream-play focusable" tabindex="0" onclick="copySyncCode()"><i class="fas fa-copy"></i> Copy Sync Code</button>
+                <p style="font-size: 12px; color: var(--text-sub); line-height: 1.5;">Sync continue watching progress and favorites across your Phone, PC & Smart TV.</p>
+                
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px;">
+                    <div style="font-size: 11px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; margin-bottom: 6px;">Your Device Sync Code</div>
+                    <div style="font-size: 24px; font-weight: 900; letter-spacing: 4px; color: var(--gold); background: var(--bg-card); padding: 10px; border-radius: var(--radius-sm); border: 1px dashed var(--border-gold);" id="sync-code-display">------</div>
+                    <div style="display: flex; gap: 8px; margin-top: 10px;">
+                        <button type="button" class="btn-primary focusable" style="flex: 1; padding: 10px; font-size: 12px; justify-content: center;" onclick="copySyncCode()"><i class="fas fa-copy"></i> Copy</button>
+                        <button type="button" class="btn-secondary focusable" style="flex: 1; padding: 10px; font-size: 12px; justify-content: center; border-style: solid; border-color: var(--border-gold); color: var(--gold);" onclick="pushCloudSync(true)"><i class="fas fa-cloud-arrow-up"></i> Upload</button>
+                    </div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px; text-align: left;">
+                    <div style="font-size: 11px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; margin-bottom: 8px;">Connect Another Device</div>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="input-sync-code" placeholder="Enter 6-digit Code" maxlength="8" style="flex: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 8px 12px; color: #fff; font-size: 13px; text-transform: uppercase; font-weight: 700; letter-spacing: 2px;" onkeydown="if(event.key==='Enter') pullCloudSync();">
+                        <button type="button" class="btn-primary focusable" style="padding: 8px 16px; font-size: 12px; justify-content: center;" onclick="pullCloudSync()"><i class="fas fa-link"></i> Link</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -5408,8 +5423,10 @@
                 code = Math.random().toString(36).substring(2, 8).toUpperCase();
                 localStorage.setItem('y_streamer_sync_code', code);
             }
-            document.getElementById('sync-code-display').innerText = code;
+            const display = document.getElementById('sync-code-display');
+            if (display) display.innerText = code;
             document.getElementById('sync-modal').classList.add('open');
+            pushCloudSync(false);
         }
 
         function closeSyncModal(fromPop = false) {
@@ -5419,8 +5436,62 @@
         function copySyncCode() {
             const code = document.getElementById('sync-code-display').innerText;
             navigator.clipboard.writeText(code).then(() => {
-                alert(`Sync Code "${code}" copied to clipboard!`);
-            }).catch(() => {});
+                showToast(`Sync Code "${code}" copied to clipboard!`, 'fa-copy');
+            }).catch(() => {
+                showToast(`Sync Code: ${code}`, 'fa-copy');
+            });
+        }
+
+        async function pushCloudSync(showNotification = true) {
+            const code = localStorage.getItem('y_streamer_sync_code');
+            if (!code) return;
+            const cw = JSON.parse(localStorage.getItem(CW_STORAGE_KEY) || '[]');
+            const wl = JSON.parse(localStorage.getItem(WATCHLIST_STORAGE_KEY) || '[]');
+            try {
+                const res = await fetch(`${API_BASE}/api/sync/${code}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ continueWatching: cw, favorites: wl })
+                });
+                const data = await res.json();
+                if (data.success && showNotification) {
+                    showToast(`Cloud Sync: Saved ${cw.length} watch states & ${wl.length} favorites!`, 'fa-cloud-arrow-up');
+                }
+            } catch(e) {
+                if (showNotification) showToast('Sync failed: Network error', 'fa-circle-exclamation');
+            }
+        }
+
+        async function pullCloudSync(targetCode) {
+            const input = document.getElementById('input-sync-code');
+            const code = (targetCode || (input ? input.value : '')).trim().toUpperCase();
+            if (!code || code.length < 3) {
+                showToast('Please enter a valid Sync Code', 'fa-circle-exclamation');
+                return;
+            }
+            try {
+                const res = await fetch(`${API_BASE}/api/sync/${code}`);
+                const result = await res.json();
+                if (result.success && result.data) {
+                    if (Array.isArray(result.data.continueWatching)) {
+                        localStorage.setItem(CW_STORAGE_KEY, JSON.stringify(result.data.continueWatching));
+                        renderContinueWatching();
+                    }
+                    if (Array.isArray(result.data.favorites)) {
+                        localStorage.setItem(WATCHLIST_STORAGE_KEY, JSON.stringify(result.data.favorites));
+                        renderWatchlistRail();
+                    }
+                    localStorage.setItem('y_streamer_sync_code', code);
+                    const display = document.getElementById('sync-code-display');
+                    if (display) display.innerText = code;
+                    closeSyncModal();
+                    showToast(`Device Linked! Synced with (${code})`, 'fa-circle-check');
+                } else {
+                    showToast('Sync Code not found on server', 'fa-circle-xmark');
+                }
+            } catch(e) {
+                showToast('Cloud connection error', 'fa-circle-exclamation');
+            }
         }
 
         // ==========================================
