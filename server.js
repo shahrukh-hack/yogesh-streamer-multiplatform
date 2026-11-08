@@ -435,8 +435,6 @@ async function getNativeHDHub4uStreams(slug) {
             }
         }
 
-        const streams = [];
-
         // Resolve each hub file link to direct video bucket (e.g. Cloudflare R2 / HubCDN direct)
         for (const item of qualityLinks.slice(0, 4)) {
             try {
