@@ -2179,46 +2179,61 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
+    function filterCatalogByQuery(metas, pathname) {
+    const searchMatch = pathname.match(/search=([^/.]+)/);
+    if (!searchMatch || !Array.isArray(metas)) return metas;
+    const q = decodeURIComponent(searchMatch[1]).toLowerCase().trim();
+    if (!q) return metas;
+    return metas.filter(m => (m.name || '').toLowerCase().includes(q) || (m.description || '').toLowerCase().includes(q));
+}
+
     // Catalog route: /catalog/:type/:id.json or with extra args
     if (pathname.startsWith('/catalog/')) {
                 if (pathname.includes('native_web_series') || pathname.includes('native_ott_series')) {
-            const metas = await getNativeWebSeriesCatalog();
+            const rawMetas = await getNativeWebSeriesCatalog();
+            const metas = filterCatalogByQuery(rawMetas, pathname);
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify({ metas }));
             return;
         }
         if (pathname.includes('native_gujarati_movies') || pathname.includes('native_gujarati_vault')) {
-            const metas = getNativeGujaratiCatalog();
+            const rawMetas = getNativeGujaratiCatalog();
+            const metas = filterCatalogByQuery(rawMetas, pathname);
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify({ metas }));
             return;
         }
         if (pathname.includes('native_live_tv')) {
-            const metas = await getNativeLiveTVCatalog();
+            const rawMetas = await getNativeLiveTVCatalog();
+            const metas = filterCatalogByQuery(rawMetas, pathname);
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify({ metas }));
             return;
         }
         if (pathname.includes('native_live_sports_tv')) {
-            const metas = await getNativeSportsCatalog();
+            const rawMetas = await getNativeSportsCatalog();
+            const metas = filterCatalogByQuery(rawMetas, pathname);
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify({ metas }));
             return;
         }
         if (pathname.includes('native_hdhub4u_movies')) {
-            const metas = await getNativeHDHub4uCatalog();
+            const rawMetas = await getNativeHDHub4uCatalog();
+            const metas = filterCatalogByQuery(rawMetas, pathname);
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify({ metas }));
             return;
         }
         if (pathname.includes('native_vegamovies_movies')) {
-            const metas = await getNativeVegaMoviesCatalog();
+            const rawMetas = await getNativeVegaMoviesCatalog();
+            const metas = filterCatalogByQuery(rawMetas, pathname);
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify({ metas }));
             return;
         }
         if (pathname.includes('native_animeworld_series') || pathname.includes('native_anikoto_series')) {
-            const metas = await getNativeAniKotoCatalog();
+            const rawMetas = await getNativeAniKotoCatalog();
+            const metas = filterCatalogByQuery(rawMetas, pathname);
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify({ metas }));
             return;
