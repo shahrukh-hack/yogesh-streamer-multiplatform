@@ -1122,10 +1122,118 @@
             z-index: 99999;
             display: none;
             flex-direction: column;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
         }
 
         .cinema-player-modal.open {
             display: flex;
+        }
+
+        .cinema-player-modal.open.minimized {
+            transform: translateY(105vh);
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        /* 🎵 FLOATING MINI-PLAYER BAR (YouTube/Spotify Style) */
+        .mini-player-bar {
+            position: fixed;
+            bottom: calc(var(--bottom-nav-height, 65px) + 8px);
+            left: 12px;
+            right: 12px;
+            height: 64px;
+            background: rgba(13, 19, 34, 0.95);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--border-gold);
+            border-radius: var(--radius-md);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(235, 182, 76, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 14px;
+            z-index: 9999;
+            cursor: pointer;
+            transition: transform 0.25s ease, opacity 0.25s ease;
+            animation: slideUpMini 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @media (min-width: 860px) {
+            .mini-player-bar {
+                bottom: 24px;
+                left: auto;
+                right: 24px;
+                width: 380px;
+            }
+        }
+        @keyframes slideUpMini {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .mini-player-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+            flex: 1;
+        }
+        .mini-player-thumb-wrap {
+            position: relative;
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            flex-shrink: 0;
+            background: #000;
+        }
+        .mini-player-thumb-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .mini-player-info {
+            min-width: 0;
+            flex: 1;
+        }
+        .mini-player-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #FFFFFF;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .mini-player-sub {
+            font-size: 11px;
+            color: var(--gold);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+        }
+        .mini-player-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .btn-mini-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-subtle);
+            color: #FFFFFF;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.15s, color 0.15s, transform 0.15s;
+        }
+        .btn-mini-control:hover {
+            background: var(--gold);
+            color: #000;
+            transform: scale(1.08);
         }
 
         .player-header {
@@ -2724,7 +2832,10 @@
 
     <div id="cinema-player-modal" class="cinema-player-modal">
         <div class="player-header">
-            <button class="focusable" tabindex="0" onclick="closeCinemaPlayer()" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: #fff; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;"><i class="fas fa-arrow-left"></i></button>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <button class="focusable" tabindex="0" onclick="minimizeCinemaPlayer()" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: #fff; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;" title="Minimize Player (Keep Listening / Browsing)"><i class="fas fa-chevron-down"></i></button>
+                <button class="focusable" tabindex="0" onclick="terminatePlayback()" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: #fff; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;" title="Close Player (Stop Playback)"><i class="fas fa-times"></i></button>
+            </div>
             <div class="player-title" id="player-title-text">Playing Stream</div>
             <div class="player-actions-right">
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-prev-ep" onclick="playPreviousEpisode()" style="display: none;"><i class="fas fa-backward-step"></i> Prev Ep</button>
@@ -2758,6 +2869,26 @@
                     <button class="btn-up-next-credits focusable" tabindex="0" onclick="dismissUpNext()">Watch Credits</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 🎵 FLOATING MINI-PLAYER BAR (YouTube Style)-->
+    <!-- ========================================== -->
+    <div id="mini-player-bar" class="mini-player-bar" style="display: none;" onclick="expandCinemaPlayer()">
+        <div class="mini-player-left">
+            <div class="mini-player-thumb-wrap">
+                <img id="mini-player-thumb" src="/logo.jpg" alt="Poster">
+            </div>
+            <div class="mini-player-info">
+                <div class="mini-player-title" id="mini-player-title">Now Playing</div>
+                <div class="mini-player-sub" id="mini-player-sub">Tap to expand player</div>
+            </div>
+        </div>
+        <div class="mini-player-controls" onclick="event.stopPropagation()">
+            <button class="btn-mini-control focusable" id="btn-mini-playpause" onclick="toggleMiniPlayPause()" title="Play / Pause"><i class="fas fa-pause"></i></button>
+            <button class="btn-mini-control focusable" onclick="expandCinemaPlayer()" title="Full Player"><i class="fas fa-expand"></i></button>
+            <button class="btn-mini-control focusable" onclick="terminatePlayback()" title="Close Player"><i class="fas fa-times"></i></button>
         </div>
     </div>
 
@@ -4951,7 +5082,11 @@
             // Handle Web Player Iframe Embeds
             if ((url.includes('/stream/') || url.includes('/embed/') || url.includes('megaplay')) && !url.includes('.m3u8') && !url.includes('.mpd') && !url.includes('.mp4') && !url.includes('proxy/stream')) {
                 container.innerHTML = `<iframe src="${url}" style="width:100%; height:100%; border:none;" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>`;
-                document.getElementById('cinema-player-modal').classList.add('open');
+                const cinemaModal = document.getElementById('cinema-player-modal');
+            cinemaModal.classList.remove('minimized');
+            cinemaModal.classList.add('open');
+            const activeMini = document.getElementById('mini-player-bar');
+            if (activeMini) activeMini.style.display = 'none';
                 return;
             }
 
@@ -5182,6 +5317,60 @@
             }, 750);
         }
 
+        function minimizeCinemaPlayer() {
+            const modal = document.getElementById('cinema-player-modal');
+            const mini = document.getElementById('mini-player-bar');
+            if (!modal || !mini) return;
+
+            modal.classList.add('minimized');
+            mini.style.display = 'flex';
+
+            const video = document.querySelector('#player-screen-wrap video');
+            const titleEl = document.getElementById('mini-player-title');
+            const subEl = document.getElementById('mini-player-sub');
+            const ppBtn = document.getElementById('btn-mini-playpause');
+
+            if (titleEl) titleEl.innerText = cleanTitle(activeStreamTitle || 'Now Playing');
+            if (subEl) {
+                if (currentSeriesContext && currentSeriesContext.type === 'series') {
+                    subEl.innerText = `Episode ${currentSeriesContext.episodeNum || 1} • Tap to expand`;
+                } else if (isAudioOnlyMode) {
+                    subEl.innerText = `Audio-Only Radio • Tap to expand`;
+                } else {
+                    subEl.innerText = `Tap to expand cinema player`;
+                }
+            }
+            if (ppBtn && video) {
+                ppBtn.innerHTML = video.paused ? '<i class="fas fa-play"></i>' : '<i class="fas fa-pause"></i>';
+            }
+        }
+
+        function expandCinemaPlayer() {
+            const modal = document.getElementById('cinema-player-modal');
+            const mini = document.getElementById('mini-player-bar');
+            if (modal) modal.classList.remove('minimized');
+            if (mini) mini.style.display = 'none';
+        }
+
+        function toggleMiniPlayPause() {
+            const video = document.querySelector('#player-screen-wrap video');
+            const ppBtn = document.getElementById('btn-mini-playpause');
+            if (!video) return;
+            if (video.paused) {
+                video.play().catch(() => {});
+                if (ppBtn) ppBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            } else {
+                video.pause();
+                if (ppBtn) ppBtn.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        }
+
+        function terminatePlayback() {
+            const mini = document.getElementById('mini-player-bar');
+            if (mini) mini.style.display = 'none';
+            closeCinemaPlayer();
+        }
+
         function closeCinemaPlayer(fromPopstate = false) {
             const modal = document.getElementById('cinema-player-modal');
             modal.classList.remove('open');
@@ -5217,6 +5406,10 @@
                     screen.orientation.unlock();
                 }
             } catch(e) {}
+
+            const miniBar = document.getElementById('mini-player-bar');
+            if (miniBar) miniBar.style.display = 'none';
+            modal.classList.remove('minimized');
 
             renderContinueWatching();
         }
