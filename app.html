@@ -1838,6 +1838,31 @@
             border-color: var(--live-red);
         }
 
+        .shortcut-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #FFFFFF;
+        }
+        .shortcut-row kbd {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--border-gold);
+            color: var(--gold);
+            font-family: monospace;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 7px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            min-width: 24px;
+            text-align: center;
+        }
+
         /* High-Definition Accessible Subtitles Styling */
         video::cue {
             background-color: rgba(0, 0, 0, 0.82);
@@ -1964,6 +1989,7 @@
 
         <div class="header-actions">
             <button id="btn-pwa-install" class="btn-header-action focusable" tabindex="0" title="Install Yogesh Streamer Web App" style="display: none; color: var(--gold);" onclick="installPWA()"><i class="fas fa-download"></i></button>
+            <button class="btn-header-action focusable" tabindex="0" onclick="openShortcutsModal()" title="Keyboard & TV Remote Shortcuts (?)"><i class="fas fa-keyboard"></i></button>
             <a href="/apk" target="_blank" class="btn-header-action focusable" tabindex="0" title="Download Android TV / Phone APK v5.5.0" style="color: #34d399; text-decoration: none; display: flex; align-items: center; justify-content: center;"><i class="fab fa-android"></i></a>
             <button class="btn-header-action focusable" tabindex="0" onclick="openSyncModal()" title="Cloud Sync"><i class="fas fa-cloud-arrow-up"></i></button>
             <button class="btn-header-action focusable" tabindex="0" onclick="lockApp()" title="PIN Lock"><i class="fas fa-lock"></i></button>
@@ -2727,6 +2753,39 @@
                     <div style="font-size: 13px; font-weight: 700; color: #FFFFFF; margin-bottom: 6px;"><i class="fab fa-android" style="color: #34d399;"></i> Yogesh Streamer Android APK</div>
                     <div style="font-size: 11px; color: var(--text-sub); margin-bottom: 12px;">For dedicated Android TV, TV Boxes & Phones (Native .cs3 Engine)</div>
                     <a href="/apk" target="_blank" class="btn-stream-play focusable" tabindex="0" style="text-decoration: none; display: inline-flex;"><i class="fas fa-download"></i> Download Official APK v5.5.0</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ⌨️ KEYBOARD SHORTCUTS CHEATSHEET MODAL     -->
+    <!-- ========================================== -->
+    <div id="shortcuts-modal" class="stream-picker-modal" onclick="closeShortcutsModal()">
+        <div class="stream-picker-sheet" style="max-width: 520px;" onclick="event.stopPropagation()">
+            <div class="sheet-header">
+                <div>
+                    <h3 class="sheet-title"><i class="fas fa-keyboard" style="color: var(--gold);"></i> Keyboard & Remote Shortcuts</h3>
+                    <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">Smart TV D-Pad & Desktop Media Center Hotkeys</div>
+                </div>
+                <button class="focusable" tabindex="0" onclick="closeShortcutsModal()" style="background: transparent; border: none; color: var(--text-sub); font-size: 18px; cursor: pointer;"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="sheet-body" style="gap: 8px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px;">
+                    <div class="shortcut-row"><kbd>Space</kbd> / <kbd>Enter</kbd> <span>Play / Pause</span></div>
+                    <div class="shortcut-row"><kbd>←</kbd> / <kbd>→</kbd> <span>Seek -10s / +10s</span></div>
+                    <div class="shortcut-row"><kbd>↑</kbd> / <kbd>↓</kbd> <span>Volume +/- 10%</span></div>
+                    <div class="shortcut-row"><kbd>F</kbd> <span>Fullscreen Mode</span></div>
+                    <div class="shortcut-row"><kbd>M</kbd> <span>Mute / Unmute</span></div>
+                    <div class="shortcut-row"><kbd>P</kbd> <span>Picture-in-Picture</span></div>
+                    <div class="shortcut-row"><kbd>S</kbd> <span>Playback Speed (1x-2x)</span></div>
+                    <div class="shortcut-row"><kbd>Z</kbd> <span>Sleep Timer (15-60m)</span></div>
+                    <div class="shortcut-row"><kbd>Q</kbd> <span>Quality (1080p-480p)</span></div>
+                    <div class="shortcut-row"><kbd>A</kbd> <span>Audio Language</span></div>
+                    <div class="shortcut-row"><kbd>C</kbd> <span>Subtitles (CC)</span></div>
+                    <div class="shortcut-row"><kbd>O</kbd> <span>Audio-Only Radio</span></div>
+                    <div class="shortcut-row"><kbd>/</kbd> <span>Universal Search</span></div>
+                    <div class="shortcut-row"><kbd>Esc</kbd> <span>Close Player</span></div>
                 </div>
             </div>
         </div>
@@ -5613,6 +5672,14 @@
             document.getElementById('settings-modal').classList.remove('open');
         }
 
+        function openShortcutsModal() {
+            document.getElementById('shortcuts-modal').classList.add('open');
+        }
+
+        function closeShortcutsModal() {
+            document.getElementById('shortcuts-modal').classList.remove('open');
+        }
+
         function openSyncModal() {
             let code = localStorage.getItem('y_streamer_sync_code');
             if (!code) {
@@ -5792,6 +5859,9 @@
                 } else if (document.getElementById('plugin-hub-modal')?.classList.contains('open')) {
                     e.preventDefault();
                     closePluginHubModal();
+                } else if (document.getElementById('shortcuts-modal')?.classList.contains('open')) {
+                    e.preventDefault();
+                    closeShortcutsModal();
                 } else if (document.getElementById('sync-modal')?.classList.contains('open')) {
                     e.preventDefault();
                     closeSyncModal();
@@ -6103,6 +6173,11 @@
         // ⌨️ GLOBAL KEYBOARD SHORTCUTS ('/' FOR SEARCH)
         // ==========================================
         window.addEventListener('keydown', (e) => {
+            if ((e.key === '?' || (e.key === '/' && e.shiftKey)) && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+                openShortcutsModal();
+                return;
+            }
             if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
                 e.preventDefault();
                 switchNavTab('tab-search', 8);
