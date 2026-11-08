@@ -2307,6 +2307,20 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
+    // Network Speed Test binary payload for in-app bandwidth diagnostic
+    if (pathname === '/api/speedtest' || pathname === '/speedtest.bin') {
+        const size = 1024 * 1024; // 1MB payload
+        const buf = crypto.randomBytes(size);
+        res.writeHead(200, {
+            'Content-Type': 'application/octet-stream',
+            'Content-Length': size,
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Access-Control-Allow-Origin': '*'
+        });
+        res.end(buf);
+        return;
+    }
+
     // Universal Decompiled Scrapers API (Reverse Engineered from CS3)
     if (pathname === '/api/scrapers' || pathname === '/api/providers') {
         try {

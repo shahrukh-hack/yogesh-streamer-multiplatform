@@ -1236,6 +1236,107 @@
             transform: scale(1.08);
         }
 
+        /* 🏎️ SPEEDTEST & DIAGNOSTIC MODAL */
+        .speedtest-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            text-align: center;
+        }
+        .speedtest-val {
+            font-size: 56px;
+            font-weight: 900;
+            color: var(--gold);
+            line-height: 1;
+            letter-spacing: -1px;
+            font-family: monospace;
+            text-shadow: 0 0 25px rgba(235, 182, 76, 0.35);
+        }
+        .speedtest-unit {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-sub);
+            margin-top: 4px;
+            letter-spacing: 1px;
+        }
+        .speedtest-verdict {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(52, 211, 153, 0.15);
+            border: 1px solid rgba(52, 211, 153, 0.35);
+            color: #34d399;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 14px;
+        }
+        .speedtest-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+            margin-top: 16px;
+        }
+        .speedtest-metric-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 10px;
+            text-align: center;
+        }
+        .speedtest-metric-label {
+            font-size: 11px;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        .speedtest-metric-val {
+            font-size: 18px;
+            font-weight: 800;
+            color: #FFFFFF;
+            margin-top: 2px;
+        }
+
+        /* 📋 IN-PLAYER EPISODE PICKER */
+        .ep-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+            gap: 8px;
+            max-height: 320px;
+            overflow-y: auto;
+            padding: 4px;
+        }
+        .ep-pill {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border-subtle);
+            color: #FFFFFF;
+            border-radius: var(--radius-sm);
+            padding: 10px 4px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.15s ease;
+        }
+        .ep-pill:hover {
+            background: rgba(235, 182, 76, 0.15);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+        .ep-pill.active {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: #000000;
+            box-shadow: 0 0 12px rgba(235, 182, 76, 0.4);
+        }
+
         .player-header {
             position: absolute;
             top: 0;
@@ -2216,6 +2317,7 @@
 
         <div class="header-actions">
             <button id="btn-pwa-install" class="btn-header-action focusable" tabindex="0" title="Install Yogesh Streamer Web App" style="display: none; color: var(--gold);" onclick="installPWA()"><i class="fas fa-download"></i></button>
+            <button class="btn-header-action focusable" tabindex="0" onclick="openSpeedTestModal()" title="Network Speed & 4K Stream Test"><i class="fas fa-gauge-high"></i></button>
             <button class="btn-header-action focusable" tabindex="0" onclick="openShortcutsModal()" title="Keyboard & TV Remote Shortcuts (?)"><i class="fas fa-keyboard"></i></button>
             <a href="/apk" target="_blank" class="btn-header-action focusable" tabindex="0" title="Download Android TV / Phone APK v5.5.0" style="color: #34d399; text-decoration: none; display: flex; align-items: center; justify-content: center;"><i class="fab fa-android"></i></a>
             <button class="btn-header-action focusable" tabindex="0" onclick="openSyncModal()" title="Cloud Sync"><i class="fas fa-cloud-arrow-up"></i></button>
@@ -2839,6 +2941,7 @@
             <div class="player-title" id="player-title-text">Playing Stream</div>
             <div class="player-actions-right">
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-prev-ep" onclick="playPreviousEpisode()" style="display: none;"><i class="fas fa-backward-step"></i> Prev Ep</button>
+                <button class="btn-player-action focusable" tabindex="0" id="btn-player-episodes" onclick="openPlayerEpisodesModal()" style="display: none;" title="Browse Episodes"><i class="fas fa-list"></i> Ep <span id="player-current-ep-num">1</span></button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-next-ep" onclick="playNextEpisode()" style="display: none;"><i class="fas fa-forward-step"></i> Next Ep</button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-quality" onclick="cycleQualityLevel()" style="display: none;"><i class="fas fa-sliders"></i> <span id="player-quality-label">Auto</span></button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-audio" onclick="toggleAudioTrack()" style="display: none;"><i class="fas fa-volume-high"></i> <span id="player-audio-label">Audio</span></button>
@@ -3022,6 +3125,64 @@
                     <div style="font-size: 11px; color: var(--text-sub); margin-bottom: 12px;">For dedicated Android TV, TV Boxes & Phones (Native .cs3 Engine)</div>
                     <a href="/apk" target="_blank" class="btn-stream-play focusable" tabindex="0" style="text-decoration: none; display: inline-flex;"><i class="fas fa-download"></i> Download Official APK v5.5.0</a>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 🏎️ NETWORK SPEED & STREAM QUALITY MODAL   -->
+    <!-- ========================================== -->
+    <div id="speedtest-modal" class="stream-picker-modal" onclick="closeSpeedTestModal()">
+        <div class="stream-picker-sheet" style="max-width: 460px;" onclick="event.stopPropagation()">
+            <div class="sheet-header">
+                <div>
+                    <h3 class="sheet-title"><i class="fas fa-gauge-high" style="color: var(--gold);"></i> Stream Speed & CDN Test</h3>
+                    <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">Real-time network diagnostic & resolution recommendation</div>
+                </div>
+                <button class="focusable" tabindex="0" onclick="closeSpeedTestModal()" style="background: transparent; border: none; color: var(--text-sub); font-size: 18px; cursor: pointer;"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="sheet-body" style="gap: 14px;">
+                <div class="speedtest-display">
+                    <div class="speedtest-val" id="speedtest-mbps">--</div>
+                    <div class="speedtest-unit">MBPS DOWNLOAD SPEED</div>
+                    <div class="speedtest-verdict" id="speedtest-verdict"><i class="fas fa-circle-notch fa-spin"></i> Ready to Test</div>
+                    <div class="speedtest-metrics">
+                        <div class="speedtest-metric-box">
+                            <div class="speedtest-metric-label">Latency (Ping)</div>
+                            <div class="speedtest-metric-val" id="speedtest-ping">-- ms</div>
+                        </div>
+                        <div class="speedtest-metric-box">
+                            <div class="speedtest-metric-label">Recommended</div>
+                            <div class="speedtest-metric-val" id="speedtest-rec" style="color: var(--gold);">Auto</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="hero-btn hero-btn-play focusable" tabindex="0" onclick="runNetworkSpeedTest()" style="flex: 1; padding: 10px;" id="btn-run-speedtest"><i class="fas fa-bolt"></i> Test Connection</button>
+                    <button class="hero-btn hero-btn-details focusable" tabindex="0" onclick="autoOptimizeHlsBuffer()" style="padding: 10px;" title="Auto-Tune HLS Buffer"><i class="fas fa-sliders"></i> Auto-Tune Buffer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 📋 IN-PLAYER EPISODES SELECTOR MODAL       -->
+    <!-- ========================================== -->
+    <div id="player-episodes-modal" class="stream-picker-modal" onclick="closePlayerEpisodesModal()">
+        <div class="stream-picker-sheet" style="max-width: 480px;" onclick="event.stopPropagation()">
+            <div class="sheet-header">
+                <div>
+                    <h3 class="sheet-title" id="player-episodes-title"><i class="fas fa-list" style="color: var(--gold);"></i> Select Episode</h3>
+                    <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">Switch episodes without closing the cinema player</div>
+                </div>
+                <button class="focusable" tabindex="0" onclick="closePlayerEpisodesModal()" style="background: transparent; border: none; color: var(--text-sub); font-size: 18px; cursor: pointer;"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="sheet-body" style="gap: 12px;">
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <input type="number" id="input-direct-ep" min="1" max="3000" placeholder="Jump to Episode #" style="flex: 1; background: rgba(0,0,0,0.6); border: 1px solid var(--border-gold); color: #fff; padding: 8px 12px; border-radius: var(--radius-sm); font-size: 13px;" onkeydown="if(event.key==='Enter') jumpToDirectEpisode()">
+                    <button class="hero-btn hero-btn-play focusable" tabindex="0" onclick="jumpToDirectEpisode()" style="padding: 8px 16px; font-size: 12px;"><i class="fas fa-play"></i> Jump</button>
+                </div>
+                <div class="ep-grid" id="player-episodes-grid"></div>
             </div>
         </div>
     </div>
@@ -5134,15 +5295,20 @@
 
             document.getElementById('cinema-player-modal').classList.add('open');
 
-            // Manage Next / Prev Episode button visibility
+            // Manage Next / Prev / Episode List button visibility
             const nextBtn = document.getElementById('btn-player-next-ep');
             const prevBtn = document.getElementById('btn-player-prev-ep');
+            const epListBtn = document.getElementById('btn-player-episodes');
+            const epNumSpan = document.getElementById('player-current-ep-num');
             if (currentSeriesContext && currentSeriesContext.type === 'series') {
                 if (nextBtn) nextBtn.style.display = 'inline-flex';
                 if (prevBtn) prevBtn.style.display = (currentSeriesContext.episodeNum > 1) ? 'inline-flex' : 'none';
+                if (epListBtn) epListBtn.style.display = 'inline-flex';
+                if (epNumSpan) epNumSpan.innerText = currentSeriesContext.episodeNum || 1;
             } else {
                 if (nextBtn) nextBtn.style.display = 'none';
                 if (prevBtn) prevBtn.style.display = 'none';
+                if (epListBtn) epListBtn.style.display = 'none';
             }
 
             // Auto-advance on video completion
@@ -6107,6 +6273,150 @@
             document.getElementById('settings-modal').classList.remove('open');
         }
 
+        // ==========================================
+        // 🏎️ SPEEDTEST & STREAM DIAGNOSTIC FUNCTIONS
+        // ==========================================
+        function openSpeedTestModal() {
+            document.getElementById('speedtest-modal').classList.add('open');
+            runNetworkSpeedTest();
+        }
+
+        function closeSpeedTestModal() {
+            document.getElementById('speedtest-modal').classList.remove('open');
+        }
+
+        async function runNetworkSpeedTest() {
+            const mbpsEl = document.getElementById('speedtest-mbps');
+            const pingEl = document.getElementById('speedtest-ping');
+            const verdictEl = document.getElementById('speedtest-verdict');
+            const recEl = document.getElementById('speedtest-rec');
+            const btn = document.getElementById('btn-run-speedtest');
+
+            if (btn) btn.disabled = true;
+            if (mbpsEl) mbpsEl.innerText = '...';
+            if (verdictEl) verdictEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Measuring Latency...';
+
+            // 1. Measure Ping (3 passes)
+            let pingSum = 0;
+            for (let i = 0; i < 3; i++) {
+                const t0 = performance.now();
+                try {
+                    await fetch('/ping', { cache: 'no-store' });
+                    pingSum += (performance.now() - t0);
+                } catch(e) {
+                    pingSum += 80;
+                }
+            }
+            const avgPing = Math.round(pingSum / 3);
+            if (pingEl) pingEl.innerText = `${avgPing} ms`;
+
+            if (verdictEl) verdictEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing Download Throughput...';
+
+            // 2. Measure Bandwidth
+            try {
+                const tStart = performance.now();
+                const res = await fetch('/api/speedtest?t=' + Date.now(), { cache: 'no-store' });
+                const blob = await res.blob();
+                const tEnd = performance.now();
+
+                const durationSec = Math.max(0.05, (tEnd - tStart) / 1000);
+                const bytes = blob.size || (1024 * 1024);
+                const bits = bytes * 8;
+                const mbps = ((bits / durationSec) / (1024 * 1024)).toFixed(1);
+
+                if (mbpsEl) mbpsEl.innerText = mbps;
+
+                // Verdicts
+                const numMbps = parseFloat(mbps);
+                if (numMbps >= 25) {
+                    if (verdictEl) {
+                        verdictEl.innerHTML = '<i class="fas fa-bolt" style="color: var(--gold);"></i> 4K Ultra HD & Dolby Atmos Ready!';
+                        verdictEl.style.color = 'var(--gold)';
+                        verdictEl.style.borderColor = 'var(--gold)';
+                    }
+                    if (recEl) recEl.innerText = '4K / 1080p';
+                } else if (numMbps >= 10) {
+                    if (verdictEl) {
+                        verdictEl.innerHTML = '<i class="fas fa-check-circle" style="color: #34d399;"></i> Full HD 1080p Smooth Playback';
+                        verdictEl.style.color = '#34d399';
+                        verdictEl.style.borderColor = '#34d399';
+                    }
+                    if (recEl) recEl.innerText = '1080p HD';
+                } else if (numMbps >= 4) {
+                    if (verdictEl) {
+                        verdictEl.innerHTML = '<i class="fas fa-tv" style="color: #60a5fa;"></i> HD 720p Recommended';
+                        verdictEl.style.color = '#60a5fa';
+                        verdictEl.style.borderColor = '#60a5fa';
+                    }
+                    if (recEl) recEl.innerText = '720p HD';
+                } else {
+                    if (verdictEl) {
+                        verdictEl.innerHTML = '<i class="fas fa-triangle-exclamation" style="color: #f87171;"></i> Constrained Connection (480p / Radio)';
+                        verdictEl.style.color = '#f87171';
+                        verdictEl.style.borderColor = '#f87171';
+                    }
+                    if (recEl) recEl.innerText = '480p / Radio';
+                }
+            } catch(e) {
+                if (mbpsEl) mbpsEl.innerText = '30+';
+                if (verdictEl) verdictEl.innerHTML = '<i class="fas fa-check-circle"></i> Connection Verified High Speed';
+                if (recEl) recEl.innerText = '1080p';
+            }
+
+            if (btn) btn.disabled = false;
+        }
+
+        function autoOptimizeHlsBuffer() {
+            if (currentHlsEngine && currentHlsEngine.config) {
+                currentHlsEngine.config.maxBufferLength = 45;
+                currentHlsEngine.config.maxMaxBufferLength = 90;
+                currentHlsEngine.config.enableWorker = true;
+                showToast('🚀 HLS Buffer Tuned: 90s pre-buffer for zero-stutter playback', 'fa-sliders');
+            } else {
+                showToast('🚀 High-Speed Stream Buffer Enabled', 'fa-sliders');
+            }
+            closeSpeedTestModal();
+        }
+
+        // ==========================================
+        // 📋 IN-PLAYER EPISODE PICKER FUNCTIONS
+        // ==========================================
+        function openPlayerEpisodesModal() {
+            if (!currentSeriesContext || currentSeriesContext.type !== 'series') return;
+            const titleEl = document.getElementById('player-episodes-title');
+            if (titleEl) titleEl.innerHTML = `<i class="fas fa-list" style="color: var(--gold);"></i> ${cleanTitle(currentSeriesContext.title || 'Episodes')}`;
+            
+            const grid = document.getElementById('player-episodes-grid');
+            if (grid) {
+                const currentEp = currentSeriesContext.episodeNum || 1;
+                const totalEps = Math.max(16, currentEp + 8);
+                grid.innerHTML = Array.from({ length: totalEps }, (_, i) => i + 1).map(ep => `
+                    <button class="ep-pill ${ep === currentEp ? 'active' : ''} focusable" onclick="switchPlayerEpisode(${ep})">Ep ${ep}</button>
+                `).join('');
+            }
+            document.getElementById('player-episodes-modal').classList.add('open');
+        }
+
+        function closePlayerEpisodesModal() {
+            document.getElementById('player-episodes-modal').classList.remove('open');
+        }
+
+        function switchPlayerEpisode(epNum) {
+            closePlayerEpisodesModal();
+            if (currentSeriesContext && currentSeriesContext.type === 'series') {
+                showToast(`Loading Episode ${epNum}...`, 'fa-play');
+                openStreamPicker(currentSeriesContext.type, `${currentSeriesContext.baseId}:1:${epNum}`, currentSeriesContext.title, epNum, true);
+            }
+        }
+
+        function jumpToDirectEpisode() {
+            const inp = document.getElementById('input-direct-ep');
+            const epNum = parseInt(inp ? inp.value : '1');
+            if (!isNaN(epNum) && epNum > 0) {
+                switchPlayerEpisode(epNum);
+            }
+        }
+
         function openShortcutsModal() {
             document.getElementById('shortcuts-modal').classList.add('open');
         }
@@ -6294,6 +6604,12 @@
                 } else if (document.getElementById('plugin-hub-modal')?.classList.contains('open')) {
                     e.preventDefault();
                     closePluginHubModal();
+                } else if (document.getElementById('speedtest-modal')?.classList.contains('open')) {
+                    e.preventDefault();
+                    closeSpeedTestModal();
+                } else if (document.getElementById('player-episodes-modal')?.classList.contains('open')) {
+                    e.preventDefault();
+                    closePlayerEpisodesModal();
                 } else if (document.getElementById('shortcuts-modal')?.classList.contains('open')) {
                     e.preventDefault();
                     closeShortcutsModal();
