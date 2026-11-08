@@ -1851,6 +1851,55 @@
             text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95);
         }
 
+        /* 🎧 Audio-Only Background Radio Mode */
+        .audio-only-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, #111827 0%, #070A12 100%);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            z-index: 5;
+            pointer-events: none;
+        }
+        .audio-only-active .audio-only-overlay {
+            display: flex;
+        }
+        .audio-only-active video {
+            opacity: 0 !important;
+        }
+        .audio-only-logo {
+            width: 110px;
+            height: 110px;
+            border-radius: 24px;
+            border: 2px solid var(--border-gold);
+            box-shadow: 0 0 35px rgba(229, 169, 59, 0.4);
+            object-fit: cover;
+        }
+        .audio-soundwave {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            height: 40px;
+        }
+        .soundwave-bar {
+            width: 5px;
+            background: var(--gold);
+            border-radius: 999px;
+            animation: soundwave-anim 1.2s ease-in-out infinite alternate;
+        }
+        .soundwave-bar:nth-child(1) { height: 16px; animation-delay: 0.1s; }
+        .soundwave-bar:nth-child(2) { height: 28px; animation-delay: 0.3s; }
+        .soundwave-bar:nth-child(3) { height: 38px; animation-delay: 0.2s; }
+        .soundwave-bar:nth-child(4) { height: 24px; animation-delay: 0.4s; }
+        .soundwave-bar:nth-child(5) { height: 18px; animation-delay: 0.25s; }
+        @keyframes soundwave-anim {
+            0% { transform: scaleY(0.3); opacity: 0.5; }
+            100% { transform: scaleY(1.3); opacity: 1; }
+        }
+
     </style>
 </head>
 <body>
@@ -2539,6 +2588,7 @@
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-quality" onclick="cycleQualityLevel()" style="display: none;"><i class="fas fa-sliders"></i> <span id="player-quality-label">Auto</span></button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-audio" onclick="toggleAudioTrack()" style="display: none;"><i class="fas fa-volume-high"></i> <span id="player-audio-label">Audio</span></button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-subs" onclick="toggleSubtitlesTrack()" style="display: none;" title="Subtitles (CC)"><i class="fas fa-closed-captioning"></i> <span id="player-subs-label">CC</span></button>
+                <button class="btn-player-action focusable" tabindex="0" id="btn-player-audio-only" onclick="toggleAudioOnlyMode()" title="Audio-Only Mode (Save 85% Battery & Data)"><i class="fas fa-headphones-simple"></i></button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-pip" onclick="togglePictureInPicture()" title="Picture-in-Picture"><i class="fas fa-clone"></i> PiP</button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-speed" onclick="cyclePlaybackSpeed()" title="Playback Speed"><i class="fas fa-gauge-high"></i> <span id="player-speed-label">1x</span></button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-sleep" onclick="openSleepTimerModal()" title="Sleep Timer"><i class="fas fa-moon"></i> <span id="player-sleep-label">Sleep</span></button>
@@ -4592,7 +4642,21 @@
                 return;
             }
 
-            container.innerHTML = '<video controls autoplay playsinline webkit-playsinline x-webkit-airplay="allow" disablePictureInPicture="false"></video>';
+            container.innerHTML = `
+                <video controls autoplay playsinline webkit-playsinline x-webkit-airplay="allow" disablePictureInPicture="false"></video>
+                <div class="audio-only-overlay">
+                    <img class="audio-only-logo" src="${BRAND_LOGO}" alt="Audio Only">
+                    <div class="audio-soundwave">
+                        <div class="soundwave-bar"></div>
+                        <div class="soundwave-bar"></div>
+                        <div class="soundwave-bar"></div>
+                        <div class="soundwave-bar"></div>
+                        <div class="soundwave-bar"></div>
+                    </div>
+                    <div style="font-size: 13px; font-weight: 700; color: #FFFFFF; letter-spacing: 0.5px;">Audio-Only Listening Mode</div>
+                    <div style="font-size: 11px; color: var(--gold); font-weight: 600;">Saving 85% Battery & Mobile Data</div>
+                </div>
+            `;
             const video = container.querySelector('video');
 
             // Mobile YouTube/Netflix style double-tap to seek (10s back / 10s forward)
@@ -4819,7 +4883,18 @@
             resetPlayerTrackControls();
             resetPlaybackSpeed();
             cancelSleepTimer(false);
-            document.getElementById('player-screen-wrap').innerHTML = '';
+            isAudioOnlyMode = false;
+            const aOnlyBtn = document.getElementById('btn-player-audio-only');
+            if (aOnlyBtn) {
+                aOnlyBtn.style.color = '#FFFFFF';
+                aOnlyBtn.style.borderColor = 'rgba(255, 255, 255, 0.25)';
+                aOnlyBtn.style.background = 'rgba(255, 255, 255, 0.15)';
+            }
+            const scrWrap = document.getElementById('player-screen-wrap');
+            if (scrWrap) {
+                scrWrap.classList.remove('audio-only-active');
+                scrWrap.innerHTML = '';
+            }
 
             // Release orientation lock
             try {
@@ -5020,6 +5095,33 @@
                 } else if (video && video.webkitExitFullscreen) {
                     video.webkitExitFullscreen();
                 }
+            }
+        }
+
+        let isAudioOnlyMode = false;
+
+        function toggleAudioOnlyMode() {
+            isAudioOnlyMode = !isAudioOnlyMode;
+            const container = document.getElementById('player-screen-wrap');
+            const btn = document.getElementById('btn-player-audio-only');
+            if (!container) return;
+
+            if (isAudioOnlyMode) {
+                container.classList.add('audio-only-active');
+                if (btn) {
+                    btn.style.color = 'var(--gold)';
+                    btn.style.borderColor = 'var(--gold)';
+                    btn.style.background = 'rgba(229, 169, 59, 0.25)';
+                }
+                showToast('Audio-Only Mode: ON (Saving 85% Battery & Data)', 'fa-headphones-simple');
+            } else {
+                container.classList.remove('audio-only-active');
+                if (btn) {
+                    btn.style.color = '#FFFFFF';
+                    btn.style.borderColor = 'rgba(255, 255, 255, 0.25)';
+                    btn.style.background = 'rgba(255, 255, 255, 0.15)';
+                }
+                showToast('Audio-Only Mode: OFF (Video Restored)', 'fa-video');
             }
         }
 
@@ -5644,6 +5746,9 @@
             } else if (e.key === 'c' || e.key === 'C') {
                 e.preventDefault();
                 toggleSubtitlesTrack();
+            } else if (e.key === 'o' || e.key === 'O') {
+                e.preventDefault();
+                toggleAudioOnlyMode();
             } else if (e.key === 'p' || e.key === 'P') {
                 e.preventDefault();
                 togglePictureInPicture();
@@ -6056,6 +6161,14 @@
                 });
             });
         }
+
+        // 🌐 Network Connectivity Guardian
+        window.addEventListener('offline', () => {
+            showToast('⚠️ No Internet Connection. You are currently offline.', 'fa-wifi');
+        });
+        window.addEventListener('online', () => {
+            showToast('📶 Internet Restored. Back online!', 'fa-wifi');
+        });
     </script>
 </body>
 </html>
