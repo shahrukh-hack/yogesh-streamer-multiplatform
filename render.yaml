@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: yogesh-streamer-bridge
+    env: node
+    plan: free
+    buildCommand: ""
+    startCommand: "node server.js"
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: KEEP_ALIVE
+        value: "true"
+      - key: APP_PIN
+        sync: false
