@@ -1247,6 +1247,60 @@
             transform: scale(1.08);
         }
 
+        /* 📱 MX PLAYER / VLC STYLE TOUCH GESTURE HUD */
+        .gesture-indicator-hud {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(13, 19, 34, 0.92);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--border-gold);
+            border-radius: var(--radius-md);
+            padding: 18px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            pointer-events: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(235, 182, 76, 0.25);
+            animation: fadeInGesture 0.15s ease-out;
+            min-width: 155px;
+        }
+        @keyframes fadeInGesture {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+        .gesture-indicator-hud i {
+            font-size: 32px;
+            color: var(--gold);
+        }
+        .gesture-hud-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            font-size: 13px;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+        .gesture-hud-track {
+            width: 130px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .gesture-hud-fill {
+            height: 100%;
+            width: 80%;
+            background: var(--gold);
+            border-radius: 3px;
+            transition: width 0.04s linear;
+        }
+
         /* 🏎️ SPEEDTEST & DIAGNOSTIC MODAL */
         .speedtest-display {
             display: flex;
@@ -2974,6 +3028,16 @@
             </div>
         </div>
         <div class="player-screen-wrap" id="player-screen-wrap">
+            <!-- 📱 Mobile Gesture HUD (Brightness & Volume) -->
+            <div id="player-gesture-hud" class="gesture-indicator-hud" style="display: none;">
+                <i id="gesture-hud-icon" class="fas fa-sun"></i>
+                <div class="gesture-hud-meta">
+                    <span id="gesture-hud-label">Brightness</span>
+                    <span id="gesture-hud-val">100%</span>
+                </div>
+                <div class="gesture-hud-track"><div id="gesture-hud-fill" class="gesture-hud-fill"></div></div>
+            </div>
+
             <!-- 🍿 Up Next Auto-Binge Overlay -->
             <div id="up-next-overlay" class="up-next-card" style="display: none;" onclick="event.stopPropagation()">
                 <div class="up-next-header">
@@ -5309,10 +5373,90 @@
             `;
             const video = container.querySelector('video');
 
-            // Mobile YouTube/Netflix style double-tap to seek (10s back / 10s forward)
+            // Mobile MX Player / VLC Style Gesture Controls (Brightness, Volume & Double-Tap)
+            let gestureTouchStartX = 0;
+            let gestureTouchStartY = 0;
+            let gestureStartVol = 1;
+            let gestureStartBri = 1;
+            let gestureActiveMode = null;
+            let currentBrightnessLevel = 1;
+            let gestureHudTimeout = null;
             let lastTapTime = 0;
             let lastTapX = 0;
+
+            function showGestureHud(mode, val) {
+                const hud = document.getElementById('player-gesture-hud');
+                const icon = document.getElementById('gesture-hud-icon');
+                const label = document.getElementById('gesture-hud-label');
+                const valEl = document.getElementById('gesture-hud-val');
+                const fill = document.getElementById('gesture-hud-fill');
+                if (!hud) return;
+
+                if (gestureHudTimeout) clearTimeout(gestureHudTimeout);
+                hud.style.display = 'flex';
+
+                if (mode === 'brightness') {
+                    if (icon) icon.className = val < 0.5 ? 'fas fa-sun-plant-wilt' : 'fas fa-sun';
+                    if (label) label.innerText = 'Brightness';
+                    const pct = Math.round(((val - 0.2) / 1.3) * 100);
+                    if (valEl) valEl.innerText = `${pct}%`;
+                    if (fill) fill.style.width = `${Math.max(0, Math.min(100, pct))}%`;
+                } else if (mode === 'volume') {
+                    if (icon) icon.className = val === 0 ? 'fas fa-volume-xmark' : (val < 0.5 ? 'fas fa-volume-low' : 'fas fa-volume-high');
+                    if (label) label.innerText = 'Volume';
+                    const pct = Math.round(val * 100);
+                    if (valEl) valEl.innerText = `${pct}%`;
+                    if (fill) fill.style.width = `${pct}%`;
+                }
+            }
+
+            function hideGestureHud() {
+                const hud = document.getElementById('player-gesture-hud');
+                if (hud) hud.style.display = 'none';
+            }
+
+            container.addEventListener('touchstart', (e) => {
+                if (!e.touches || e.touches.length !== 1) return;
+                gestureTouchStartX = e.touches[0].clientX;
+                gestureTouchStartY = e.touches[0].clientY;
+                gestureStartVol = video.volume;
+                gestureStartBri = currentBrightnessLevel;
+                gestureActiveMode = null;
+            }, { passive: true });
+
+            container.addEventListener('touchmove', (e) => {
+                if (!e.touches || e.touches.length !== 1) return;
+                const deltaX = e.touches[0].clientX - gestureTouchStartX;
+                const deltaY = e.touches[0].clientY - gestureTouchStartY;
+
+                if (!gestureActiveMode && Math.abs(deltaY) > 18) {
+                    if (gestureTouchStartX < window.innerWidth / 2) {
+                        gestureActiveMode = 'brightness';
+                    } else {
+                        gestureActiveMode = 'volume';
+                    }
+                }
+
+                if (gestureActiveMode === 'brightness') {
+                    const step = deltaY / 160;
+                    currentBrightnessLevel = Math.min(1.5, Math.max(0.2, gestureStartBri - step));
+                    video.style.filter = `brightness(${currentBrightnessLevel})`;
+                    showGestureHud('brightness', currentBrightnessLevel);
+                } else if (gestureActiveMode === 'volume') {
+                    const step = deltaY / 160;
+                    const newVol = Math.min(1, Math.max(0, gestureStartVol - step));
+                    video.volume = newVol;
+                    showGestureHud('volume', newVol);
+                }
+            }, { passive: true });
+
             container.addEventListener('touchend', (e) => {
+                if (gestureActiveMode) {
+                    gestureHudTimeout = setTimeout(hideGestureHud, 500);
+                    gestureActiveMode = null;
+                    return; // Prevent tap interference
+                }
+
                 if (!e.changedTouches || e.changedTouches.length === 0) return;
                 const touch = e.changedTouches[0];
                 const now = Date.now();
