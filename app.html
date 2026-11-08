@@ -2487,6 +2487,7 @@
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-next-ep" onclick="playNextEpisode()" style="display: none;"><i class="fas fa-forward-step"></i> Next Ep</button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-quality" onclick="cycleQualityLevel()" style="display: none;"><i class="fas fa-sliders"></i> <span id="player-quality-label">Auto</span></button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-audio" onclick="toggleAudioTrack()" style="display: none;"><i class="fas fa-volume-high"></i> <span id="player-audio-label">Audio</span></button>
+                <button class="btn-player-action focusable" tabindex="0" id="btn-player-pip" onclick="togglePictureInPicture()" title="Picture-in-Picture"><i class="fas fa-clone"></i> PiP</button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-server" onclick="tryNextStreamServer()"><i class="fas fa-server"></i> Switch Server</button>
                 <button class="btn-player-action focusable" tabindex="0" onclick="togglePlayerFullscreen()"><i class="fas fa-expand"></i></button>
             </div>
@@ -4834,6 +4835,22 @@
             }
         }
 
+        function togglePictureInPicture() {
+            const video = document.querySelector('#player-screen-wrap video');
+            if (!video) return;
+            if (document.pictureInPictureElement) {
+                document.exitPictureInPicture().catch(() => {});
+            } else if (document.pictureInPictureEnabled && video.requestPictureInPicture) {
+                video.requestPictureInPicture().then(() => {
+                    showToast('Picture-in-Picture Activated', 'fa-clone');
+                }).catch(() => {
+                    showToast('PiP not available for this stream', 'fa-circle-exclamation');
+                });
+            } else {
+                showToast('PiP not supported on this device', 'fa-circle-exclamation');
+            }
+        }
+
         // ==========================================
         // 🕒 CONTINUE WATCHING PROGRESS
         // ==========================================
@@ -5182,6 +5199,9 @@
             } else if (e.key === 'a' || e.key === 'A') {
                 e.preventDefault();
                 toggleAudioTrack();
+            } else if (e.key === 'p' || e.key === 'P') {
+                e.preventDefault();
+                togglePictureInPicture();
             }
         }
 
