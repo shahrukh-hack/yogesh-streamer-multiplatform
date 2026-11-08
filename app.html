@@ -937,6 +937,17 @@
             color: var(--text-muted);
         }
 
+                /* Clean OTT Layout: Hide brittle client-side category filter chips across all content pages */
+        #movies-chips,
+        #series-chips,
+        #anime-chips,
+        #sports-chips,
+        #livetv-chips,
+        #gujarati-chips,
+        #gujarati-vault-chips {
+            display: none !important;
+        }
+
         .chips-bar {
             display: flex;
             gap: 8px;
@@ -2682,11 +2693,14 @@
 
             <div class="chips-bar" id="sports-chips">
                 <button class="chip-pill active focusable" tabindex="0" onclick="filterSportsCategory('ALL', this)">All Matches</button>
-                <button class="chip-pill focusable" tabindex="0" onclick="filterSportsCategory('CRICKET', this)">🏏 Live Cricket</button>
-                <button class="chip-pill focusable" tabindex="0" onclick="filterSportsCategory('FOOTBALL', this)">⚽ Football</button>
-                <button class="chip-pill focusable" tabindex="0" onclick="filterSportsCategory('RACING', this)">🏎️ Motorsport</button>
-                <button class="chip-pill focusable" tabindex="0" onclick="filterSportsCategory('COMBAT', this)">🥊 WWE & Combat</button>
-                <button class="chip-pill focusable" tabindex="0" onclick="filterSportsCategory('HIGHLIGHTS', this)">🎬 Match Highlights</button>
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 6px;">
+                <div class="search-inline-bar">
+                    <i class="fas fa-search" style="color: var(--text-muted);"></i>
+                    <input type="text" id="sports-search-input" placeholder="Search live matches, teams or tournaments (e.g. India, Pakistan, T10, Premier League)..." oninput="filterSportsBySearch(this.value)">
+                </div>
+                <div id="sports-count-badge" style="font-size: 12px; font-weight: 700; color: var(--gold); white-space: nowrap;">Loading sports...</div>
             </div>
         </div>
 
@@ -4448,6 +4462,9 @@
                     return 0;
                 });
 
+                const badge = document.getElementById('sports-count-badge');
+                if (badge) badge.innerText = `${allLoadedSports.length} Live Feeds`;
+
                 renderSportsGrid(allLoadedSports);
             } catch (err) {
                 grid.innerHTML = '<div style="color:var(--text-muted); padding:30px; text-align:center;">Failed to load sports.</div>';
@@ -4488,6 +4505,24 @@
 
         function changeSportsSource(val) {
             loadSportsPage(val);
+        }
+
+        function filterSportsBySearch(query) {
+            const q = (query || '').trim().toLowerCase();
+            if (!q) {
+                renderSportsGrid(allLoadedSports);
+                const badge = document.getElementById('sports-count-badge');
+                if (badge) badge.innerText = `${allLoadedSports.length} Live Feeds`;
+                return;
+            }
+            const filtered = allLoadedSports.filter(s => {
+                const name = (s.name || '').toLowerCase();
+                const desc = (s.description || '').toLowerCase();
+                return name.includes(q) || desc.includes(q);
+            });
+            renderSportsGrid(filtered);
+            const badge = document.getElementById('sports-count-badge');
+            if (badge) badge.innerText = `${filtered.length} of ${allLoadedSports.length} Matches`;
         }
 
         function filterSportsCategory(cat, btn) {
