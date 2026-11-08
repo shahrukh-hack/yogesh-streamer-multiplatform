@@ -417,6 +417,8 @@ function unpackDeanEdwards(packed) {
 }
 
 
+const CASTLE_CURATED_SERIES = [{"id": "cnc:Q2FzdGxlVFY6Omh0dHBzOi8vYXBpLmhsb3diLmNvbS8xMDI2MjI0Mjc4OTcwMzIwNw==", "name": "Panchayat", "type": "series", "poster": "https://img1.fodcyy.com/image/cae47aafa442ab9d6f78541d4ab9a38a1f8e5edc.jpg", "cat": "SERIES", "imdbRating": "8.6", "description": "Panchayat • Castle TV In-App Web Play (No VLC Required)", "isWebPlayable": true}, {"id": "cnc:Q2FzdGxlVFY6Omh0dHBzOi8vYXBpLmhsb3diLmNvbS83ODQ3MTQzMjUyNTM1Mjk2", "name": "Mirzapur", "type": "series", "poster": "https://img1.fhxod.com/7d0be6c4-fbfe-4746-8324-4978b621a087.jpg", "cat": "SERIES", "imdbRating": "8.6", "description": "Mirzapur • Castle TV In-App Web Play (No VLC Required)", "isWebPlayable": true}, {"id": "cnc:Q2FzdGxlVFY6Omh0dHBzOi8vYXBpLmhsb3diLmNvbS85MjIzMTYxNDc5NzA0NTM0", "name": "The Family Man", "type": "series", "poster": "https://img1.fhxod.com/d8abc2fc-9386-477f-8ef2-2ec8ba0d022d.webp", "cat": "SERIES", "imdbRating": "8.6", "description": "The Family Man • Castle TV In-App Web Play (No VLC Required)", "isWebPlayable": true}, {"id": "cnc:Q2FzdGxlVFY6Omh0dHBzOi8vYXBpLmhsb3diLmNvbS84ODQ2NjQyNjk2MzkxNjgw", "name": "Special OPS", "type": "series", "poster": "https://img1.bhcxy.com/45853c67-c80c-46fe-a9e6-064716457ca2.jpeg", "cat": "SERIES", "imdbRating": "8.6", "description": "Special OPS • Castle TV In-App Web Play (No VLC Required)", "isWebPlayable": true}, {"id": "cnc:Q2FzdGxlVFY6Omh0dHBzOi8vYXBpLmhsb3diLmNvbS81NTkwMTA4MDIyNjUxOTA0", "name": "Sacred Games", "type": "series", "poster": "https://img1.bhcxy.com/film-movie-photo/e2f9f17524ef4decac90c6cfccbf8040.jpg", "cat": "SERIES", "imdbRating": "8.6", "description": "Sacred Games • Castle TV In-App Web Play (No VLC Required)", "isWebPlayable": true}, {"id": "cnc:Q2FzdGxlVFY6Omh0dHBzOi8vYXBpLmhsb3diLmNvbS81Njk5MzM2NTQxNzg5MTg0", "name": "Scam 1992 - The Harshad Mehta Story", "type": "series", "poster": "https://img1.bhcxy.com/image/4dc813cba366712f14529f18ca46a3c5.jpg", "cat": "SERIES", "imdbRating": "8.6", "description": "Scam 1992 - The Harshad Mehta Story • Castle TV In-App Web Play (No VLC Required)", "isWebPlayable": true}, {"id": "cnc:Q2FzdGxlVFY6Omh0dHBzOi8vYXBpLmhsb3diLmNvbS83OTM3MzcyODI1MTcyOTky", "name": "Farzi", "type": "series", "poster": "https://img1.fodcyy.com/image/fce2ce0a6aa3cbb6582556a1f907eb40.jpg", "cat": "SERIES", "imdbRating": "8.6", "description": "Farzi • Castle TV In-App Web Play (No VLC Required)", "isWebPlayable": true}, {"id": "cnc:Q2FzdGxlVFY6Omh0dHBzOi8vYXBpLmhsb3diLmNvbS82ODk4NjIwNTkxMDQ4NzA0", "name": "Asur: Welcome to Your Dark Side", "type": "series", "poster": "https://img1.fhxod.com/image/b947a3f59734b1991b284d86ad21cbca228dca88.jpg", "cat": "SERIES", "imdbRating": "8.6", "description": "Asur: Welcome to Your Dark Side • Castle TV In-App Web Play (No VLC Required)", "isWebPlayable": true}, {"id": "cnc:Q2FzdGxlVFY6Omh0dHBzOi8vYXBpLmhsb3diLmNvbS85ODQ1NTAxMDE4MjUyOTA5", "name": "Gullak", "type": "series", "poster": "https://img1.fhxod.com/image/06b65b2d5cc59c3f95a5fb3125356242f0f2982d.jpg", "cat": "SERIES", "imdbRating": "8.6", "description": "Gullak • Castle TV In-App Web Play (No VLC Required)", "isWebPlayable": true}, {"id": "cnc:Q2FzdGxlVFY6Omh0dHBzOi8vYXBpLmhsb3diLmNvbS83ODIyMDk0MzcyODQxNDcy", "name": "Kota Factory", "type": "series", "poster": "https://img1.fhxod.com/09397378-9ae0-4736-8c9c-49d45efe72fd.jpg", "cat": "SERIES", "imdbRating": "8.6", "description": "Kota Factory • Castle TV In-App Web Play (No VLC Required)", "isWebPlayable": true}, {"id": "cnc:Q2FzdGxlVFY6Omh0dHBzOi8vYXBpLmhsb3diLmNvbS85NTk5MDc3OTkyMzc5MTA1", "name": "Aspirants", "type": "series", "poster": "https://img1.fhxod.com/4274a2a0-c2c5-4b89-816c-1d60dd0b8b8c.jpg", "cat": "SERIES", "imdbRating": "8.6", "description": "Aspirants • Castle TV In-App Web Play (No VLC Required)", "isWebPlayable": true}, {"id": "cnc:Q2FzdGxlVFY6Omh0dHBzOi8vYXBpLmhsb3diLmNvbS84MTAxNDM5MTY4OTQ2MTc2", "name": "Taaza Khabar", "type": "series", "poster": "https://img1.fhxod.com/68e929b7-5846-4c5e-918b-c6eceb3e855e.jfif", "cat": "SERIES", "imdbRating": "8.6", "description": "Taaza Khabar • Castle TV In-App Web Play (No VLC Required)", "isWebPlayable": true}, {"id": "cnc:Q2FzdGxlVFY6Omh0dHBzOi8vYXBpLmhsb3diLmNvbS82OTQzNTg5NTU1OTAzNDg4", "name": "Loki", "type": "series", "poster": "https://img1.fhxod.com/image/e4f6d043cb4395c8f273a8e272bae6e088e6b791.jpg", "cat": "SERIES", "imdbRating": "8.6", "description": "Loki • Castle TV In-App Web Play (No VLC Required)", "isWebPlayable": true}, {"id": "cnc:Q2FzdGxlVFY6Omh0dHBzOi8vYXBpLmhsb3diLmNvbS84NjkzMjMyMzk3NjQ5OTIw", "name": "Wednesday", "type": "series", "poster": "https://img1.fodcyy.com/image/0637ed23d6ac03ca0dfd87a0469d9171b51900b7.jpg", "cat": "SERIES", "imdbRating": "8.6", "description": "Wednesday • Castle TV In-App Web Play (No VLC Required)", "isWebPlayable": true}, {"id": "cnc:Q2FzdGxlVFY6Omh0dHBzOi8vYXBpLmhsb3diLmNvbS85NDI3MjM4OTA4ODExNjU3", "name": "The Boys", "type": "series", "poster": "https://img1.fhxod.com/image/9017d5902c8a2a02f7aeb180456cabbc02bce00c.jpg", "cat": "SERIES", "imdbRating": "8.6", "description": "The Boys • Castle TV In-App Web Play (No VLC Required)", "isWebPlayable": true}, {"id": "cnc:Q2FzdGxlVFY6Omh0dHBzOi8vYXBpLmhsb3diLmNvbS84ODE5MzMxMDAwODE1NjE2", "name": "Stranger Things", "type": "series", "poster": "https://img1.fodcyy.com/image/5bbda328b46682363a3c940466d2e0617b53a2e0.jpg", "cat": "SERIES", "imdbRating": "8.6", "description": "Stranger Things • Castle TV In-App Web Play (No VLC Required)", "isWebPlayable": true}, {"id": "cnc:Q2FzdGxlVFY6Omh0dHBzOi8vYXBpLmhsb3diLmNvbS81NjU4MDk4MDk4MTU2NTQ0", "name": "Money Heist", "type": "series", "poster": "https://img1.fodcyy.com/image/0ac7e2779773ad917431254b26e41270.jpg", "cat": "SERIES", "imdbRating": "8.6", "description": "Money Heist • Castle TV In-App Web Play (No VLC Required)", "isWebPlayable": true}, {"id": "cnc:Q2FzdGxlVFY6Omh0dHBzOi8vYXBpLmhsb3diLmNvbS84NzI3Mjc0MTk3NDkwNjg4", "name": "Squid Game", "type": "series", "poster": "https://img1.fodcyy.com/image/9965fc61bd82704357e628fb62377e9acb07fb0a.jpg", "cat": "SERIES", "imdbRating": "8.6", "description": "Squid Game • Castle TV In-App Web Play (No VLC Required)", "isWebPlayable": true}];
+
 let cachedWebSeriesCatalog = null;
 let lastWebSeriesCatalogFetch = 0;
 
@@ -426,46 +428,14 @@ async function getNativeWebSeriesCatalog() {
         return cachedWebSeriesCatalog;
     }
 
+    const items = [...CASTLE_CURATED_SERIES];
+    const seenSlugs = new Set(CASTLE_CURATED_SERIES.map(s => s.id));
+
     try {
         const domains = await getLiveDomains();
         const baseDomain = domains.HDHUB4u || 'https://new12.hdhub4u.cl';
-        const items = [];
-        const seenSlugs = new Set();
 
-        // 1. Core Blockbuster Seeds (Always available with 100% working stream links)
-        const CORE_SERIES_SEEDS = [
-            {
-                id: 'cnc:SERIdWI0VTo6aHR0cHM6Ly9uZXcxMi5oZGh1YjR1LmNsL3BhbmNoYXlhdC1zZWFzb24tNC1oaW5kaS13ZWJyaXAtYWxsLWVwaXNvZGVzLw==',
-                name: 'Panchayat (Season 1 to 4) Complete Hindi WEB-DL 4K 1080p 720p & 480p [ALL Episodes] | Prime Video Series',
-                type: 'series',
-                poster: 'https://catimages.org/images/2024/05/28/Panchayat-S03-HDHub4u.Ms.jpg',
-                cat: 'SERIES',
-                imdbRating: '8.9'
-            },
-            {
-                id: 'cnc:SERIdWI0VTo6aHR0cHM6Ly9uZXcxMi5oZGh1YjR1LmNsL21pcmphcHVyLXNlYXNvbi0zLWhpbmRpLXdlYnJpcC1hbGwtZXBpc29kZXMv',
-                name: 'Mirzapur (Season 1 to 3) Complete Dual Audio [Hindi (DD5.1) + English] WEB-DL 1080p 720p & 480p | Prime Video Series',
-                type: 'series',
-                poster: 'https://catimages.org/images/2024/07/05/Mirzapur-S03-HDHub4u.Ms.jpg',
-                cat: 'SERIES',
-                imdbRating: '8.5'
-            },
-            {
-                id: 'cnc:SERIdWI0VTo6aHR0cHM6Ly9uZXcxMi5oZGh1YjR1LmNsL3ZpdHRoYWwtdGVlZGktc2Vhc29uLTEtZ3VqYXJhdGktd2VicmlwLWFsbC1lcGlzb2Rlcy8=',
-                name: 'Vitthal Teedi: Chapter 1 (Season 1) Gujarati WEB-DL 1080p 720p & 480p HD [ALL Episodes] | OHO Series',
-                type: 'series',
-                poster: 'https://upload.wikimedia.org/wikipedia/en/6/69/Vitthal_Teedi.jpeg',
-                cat: 'SERIES',
-                imdbRating: '8.3'
-            }
-        ];
-
-        CORE_SERIES_SEEDS.forEach(s => {
-            seenSlugs.add(s.id);
-            items.push(s);
-        });
-
-        // 2. Concurrently scrape pages 1, 2, 3 from /category/web-series/
+        // Concurrently scrape pages 1, 2, 3 from /category/web-series/
         const pagePromises = [1, 2, 3].map(page => {
             const pageUrl = page === 1 ? `${baseDomain}/category/web-series/` : `${baseDomain}/category/web-series/page/${page}/`;
             return fetchHtml(pageUrl, { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }, 8000).catch(() => null);
@@ -513,7 +483,7 @@ async function getNativeWebSeriesCatalog() {
     } catch (err) {
         console.error('Error fetching native web series catalog:', err.message);
     }
-    return cachedWebSeriesCatalog || [];
+    return items.length > 0 ? items : (cachedWebSeriesCatalog || CASTLE_CURATED_SERIES);
 }
 
 async function getNativeHDHub4uCatalog() {
@@ -1951,6 +1921,13 @@ const server = http.createServer(async (req, res) => {
             idRaw = idRaw.slice(0, -5);
         }
         const rawId = decodeURIComponent(idRaw);
+        let cleanRawId = rawId;
+        if (rawId.startsWith('cnc:Q2FzdGxlVFY') && rawId.includes(':')) {
+            const parts = rawId.split(':');
+            if (parts.length > 3 && !isNaN(parts[parts.length - 1])) {
+                cleanRawId = parts.slice(0, -2).join(':');
+            }
+        }
 
         if (!type || !rawId) {
             res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -2030,7 +2007,7 @@ const server = http.createServer(async (req, res) => {
             }
             for (const cand of candidateTypes) {
                 try {
-                    const streamPath = `/stream/${encodeURIComponent(cand)}/${encodeURIComponent(rawId)}.json`;
+                    const streamPath = `/stream/${encodeURIComponent(cand)}/${encodeURIComponent(cleanRawId || rawId)}.json`;
                     const result = await fetchJsonWithFailover(streamPath);
                     if (result && Array.isArray(result.streams) && result.streams.length > 0) {
                         data = result;
@@ -2298,6 +2275,13 @@ const server = http.createServer(async (req, res) => {
             idRaw = idRaw.slice(0, -5);
         }
         const rawId = decodeURIComponent(idRaw);
+        let cleanRawId = rawId;
+        if (rawId.startsWith('cnc:Q2FzdGxlVFY') && rawId.includes(':')) {
+            const parts = rawId.split(':');
+            if (parts.length > 3 && !isNaN(parts[parts.length - 1])) {
+                cleanRawId = parts.slice(0, -2).join(':');
+            }
+        }
 
         // For IMDb titles (tt...), let Cinemeta handle metadata
         if (rawId.startsWith('tt')) {
@@ -2346,6 +2330,13 @@ const server = http.createServer(async (req, res) => {
             idRaw = idRaw.slice(0, -5);
         }
         const rawId = decodeURIComponent(idRaw);
+        let cleanRawId = rawId;
+        if (rawId.startsWith('cnc:Q2FzdGxlVFY') && rawId.includes(':')) {
+            const parts = rawId.split(':');
+            if (parts.length > 3 && !isNaN(parts[parts.length - 1])) {
+                cleanRawId = parts.slice(0, -2).join(':');
+            }
+        }
 
         try {
             let targetType = type;

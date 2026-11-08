@@ -2128,9 +2128,10 @@
                 <div class="source-select-wrap">
                     <span style="font-size: 12px; font-weight: 700; color: var(--text-sub);">Source Engine:</span>
                     <select id="series-source-select" class="source-select focusable" tabindex="0" onchange="changeSeriesSource(this.value)">
-                        <option value="native_web_series" selected>🔥 Top Trending Web Series (Netflix • Prime • Hotstar)</option>
-                        <option value="ALL">🌐 All Verified Series Engines (HDHub4u & Rogmovies)</option>
-                        <option value="cnc_HDHub4U_series">💎 HDHub4u Series & Seasons (4K / 1080p)</option>
+                        <option value="native_web_series" selected>🔥 Top Trending Web Series (Instant Web Play • No VLC)</option>
+                        <option value="ALL">🌐 All Verified Series Engines (Castle & HDHub4u)</option>
+                        <option value="cnc_CastleTV_series">🏰 Castle TV Web Series (Instant Web Play • No VLC)</option>
+                        <option value="cnc_HDHub4U_series">💎 HDHub4u Series & Seasons (4K / 1080p Multi-Audio)</option>
                         <option value="cnc_Rogmovies_series">🍿 RogMovies Web Series (VLC / MX)</option>
                         <option value="native_anikoto_series">⚔️ AniKoto Multi-Audio Anime Hub</option>
                         <option value="cnc_Toonix_other">🌟 Toonix (1,630+ Anime & Toons)</option>
@@ -3493,6 +3494,16 @@
                             .then(d => Array.isArray(d?.metas) ? d.metas : [])
                             .catch(() => [])
                     ];
+                } else if (sourceId === 'cnc_CastleTV_series') {
+                    fetchPromises = [
+                        fetch(`${API_BASE}/catalog/series/native_web_series.json`)
+                            .then(r => r.json())
+                            .then(d => {
+                                const list = Array.isArray(d?.metas) ? d.metas : [];
+                                return list.filter(m => m.id && m.id.startsWith('cnc:Q2FzdGxlVFY'));
+                            })
+                            .catch(() => [])
+                    ];
                 } else if (sourceId === 'ALL') {
                     fetchPromises = [
                         fetch(`${API_BASE}/catalog/series/native_web_series.json`)
@@ -3609,7 +3620,7 @@
                 card.innerHTML = `
                     <div class="poster-image-box">
                         <div class="card-badges">
-                            <span class="badge-quality">SEASONS</span>
+                            ${item.id && item.id.startsWith('cnc:Q2FzdGxlVFY') ? '<span class="badge-quality" style="background:var(--gold); color:#000;">⚡ NO VLC NEEDED</span>' : '<span class="badge-quality">SEASONS</span>'}
                             <span class="badge-audio">Multi-Audio</span>
                         </div>
                         <img src="${item.poster || BRAND_LOGO}" alt="${cleanTitle(item.name)}" loading="lazy">
