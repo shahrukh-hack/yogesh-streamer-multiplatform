@@ -6,7 +6,7 @@ const path = require('path');
 const crypto = require('crypto');
 const zlib = require('zlib');
 
-const PORT = process.env.PORT || 7000;
+const PORT = process.env.PORT || 10000;
 const UPSTREAM_RESOLVERS = (process.env.UPSTREAM_RESOLVERS || process.env.UPSTREAM_RESOLVER || 'https://cncverse.dpdns.org')
     .split(',')
     .map(s => s.trim().replace(/\/+$/, ''))
@@ -1424,10 +1424,14 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
-    // Health check
-    if (pathname === '/health') {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ status: 'ok', service: 'yogesh-streamer-bridge', resolvers: UPSTREAM_RESOLVERS.length }));
+    // Health check (Render / cloud container probe endpoints)
+    if (pathname === '/health' || pathname === '/healthz' || pathname === '/ping' || pathname === '/api/health') {
+        res.writeHead(200, { 
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Access-Control-Allow-Origin': '*'
+        });
+        res.end(JSON.stringify({ status: 'ok', service: 'yogesh-streamer-bridge', resolvers: UPSTREAM_RESOLVERS.length, uptime: Math.round(process.uptime()) }));
         return;
     }
 
@@ -2104,7 +2108,7 @@ const server = http.createServer(async (req, res) => {
     res.end(JSON.stringify({ error: 'Not found' }));
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
     console.log(`====================================================`);
     console.log(`🌟 Yogesh Streamer Multi-Device Bridge Online!`);
     console.log(`📡 Listening on http://localhost:${PORT}`);
