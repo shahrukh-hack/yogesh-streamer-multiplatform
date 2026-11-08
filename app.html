@@ -2915,7 +2915,11 @@
 
                 <div style="display: flex; flex-direction: column; gap: 10px;">
                     <button type="button" class="btn-primary focusable" id="ext-btn-vlc" style="justify-content: center; gap: 10px; padding: 14px; font-size: 14px; font-weight: 700; background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); color: #fff;">
-                        <i class="fas fa-play"></i> Launch in VLC Media Player
+                        <i class="fas fa-play"></i> Launch in VLC Media Player (Auto-Play)
+                    </button>
+
+                    <button type="button" class="btn-secondary focusable" id="ext-btn-m3u" style="justify-content: center; gap: 10px; padding: 14px; font-size: 14px; font-weight: 700; border-color: #38BDF8; color: #38BDF8; background: rgba(56, 189, 248, 0.1);">
+                        <i class="fas fa-bolt"></i> ⚡ 1-Click VLC Auto-Play (.m3u for PC / Mac)
                     </button>
 
                     <button type="button" class="btn-secondary focusable" id="ext-btn-mx" style="justify-content: center; gap: 10px; padding: 14px; font-size: 14px; font-weight: 700; border-color: rgba(255,255,255,0.2);">
@@ -6768,6 +6772,20 @@
         let activeExternalUrl = '';
         let activeExternalTitle = '';
 
+        function downloadVlcM3uPlaylist(streamUrl, streamTitle) {
+            const cleanName = (streamTitle || 'stream').replace(/[^a-zA-Z0-9 -]/g, '').trim() || 'stream';
+            const m3uContent = `#EXTM3U\n#EXTINF:-1,${streamTitle}\n${streamUrl}\n`;
+            const blob = new Blob([m3uContent], { type: 'audio/x-mpegurl' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `${cleanName}.m3u`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+            showToast("VLC Auto-Play Playlist Downloaded — Opening Now!", "fa-bolt");
+        }
+
         function openInExternalPlayer(rawUrl, rawTitle = 'Stream') {
             let url = rawUrl;
             let title = rawTitle;
@@ -6786,6 +6804,9 @@
             const isAndroid = /android/i.test(ua);
             const isIOS = /iphone|ipad|ipod/i.test(ua);
 
+            // Direct Auto-Play Android Intent for VLC (Bypasses playlist screen, plays immediately in full player)
+            const vlcDirectAndroidIntent = `intent:${url}#Intent;action=android.intent.action.VIEW;component=org.videolan.vlc/.gui.video.VideoPlayerActivity;type=video/*;S.title=${encodeURIComponent(title)};end`;
+
             // 2. Setup External Player Modal
             const modal = document.getElementById('external-player-modal');
             const titleEl = document.getElementById('ext-player-title');
@@ -6795,15 +6816,20 @@
             if (btnVlc) {
                 btnVlc.onclick = () => {
                     if (isAndroid) {
-                        window.location.href = `intent:${url}#Intent;package=org.videolan.vlc;type=video/*;title=${encodeURIComponent(title)};end`;
+                        window.location.href = vlcDirectAndroidIntent;
                     } else if (isIOS) {
                         window.location.href = `vlc://${url}`;
                     } else {
                         window.location.href = `vlc://${url}`;
-                        navigator.clipboard.writeText(url).then(() => {
-                            showToast("Link copied! In VLC, press Ctrl+N and paste.", "fa-circle-check");
-                        });
+                        downloadVlcM3uPlaylist(url, title);
                     }
+                };
+            }
+
+            const btnM3u = document.getElementById('ext-btn-m3u');
+            if (btnM3u) {
+                btnM3u.onclick = () => {
+                    downloadVlcM3uPlaylist(url, title);
                 };
             }
 
@@ -6831,8 +6857,7 @@
 
             // 3. Trigger device auto-wake if mobile
             if (isAndroid) {
-                const intentUrl = `intent:${url}#Intent;package=org.videolan.vlc;type=video/*;title=${encodeURIComponent(title)};end`;
-                window.location.href = intentUrl;
+                window.location.href = vlcDirectAndroidIntent;
             } else if (isIOS) {
                 window.location.href = `vlc://${url}`;
             }
