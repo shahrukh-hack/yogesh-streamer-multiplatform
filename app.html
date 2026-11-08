@@ -1838,6 +1838,19 @@
             border-color: var(--live-red);
         }
 
+        /* High-Definition Accessible Subtitles Styling */
+        video::cue {
+            background-color: rgba(0, 0, 0, 0.82);
+            color: #FFD56B;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            line-height: 1.4;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95);
+        }
+
     </style>
 </head>
 <body>
@@ -2525,6 +2538,7 @@
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-next-ep" onclick="playNextEpisode()" style="display: none;"><i class="fas fa-forward-step"></i> Next Ep</button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-quality" onclick="cycleQualityLevel()" style="display: none;"><i class="fas fa-sliders"></i> <span id="player-quality-label">Auto</span></button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-audio" onclick="toggleAudioTrack()" style="display: none;"><i class="fas fa-volume-high"></i> <span id="player-audio-label">Audio</span></button>
+                <button class="btn-player-action focusable" tabindex="0" id="btn-player-subs" onclick="toggleSubtitlesTrack()" style="display: none;" title="Subtitles (CC)"><i class="fas fa-closed-captioning"></i> <span id="player-subs-label">CC</span></button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-pip" onclick="togglePictureInPicture()" title="Picture-in-Picture"><i class="fas fa-clone"></i> PiP</button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-speed" onclick="cyclePlaybackSpeed()" title="Playback Speed"><i class="fas fa-gauge-high"></i> <span id="player-speed-label">1x</span></button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-sleep" onclick="openSleepTimerModal()" title="Sleep Timer"><i class="fas fa-moon"></i> <span id="player-sleep-label">Sleep</span></button>
@@ -4696,6 +4710,9 @@
                         video.appendChild(track);
                     }
                 });
+                setTimeout(updateSubtitlesButton, 350);
+            } else {
+                updateSubtitlesButton();
             }
             const activeClearkey = (activeStream && activeStream.clearkey) ? activeStream.clearkey : null;
 
@@ -4876,11 +4893,74 @@
             }
         }
 
+        function updateSubtitlesButton() {
+            const sBtn = document.getElementById('btn-player-subs');
+            const sLabel = document.getElementById('player-subs-label');
+            const video = document.querySelector('#player-screen-wrap video');
+            if (!sBtn || !video) return;
+
+            if (video.textTracks && video.textTracks.length > 0) {
+                sBtn.style.display = 'inline-flex';
+                let showingTrack = null;
+                for (let i = 0; i < video.textTracks.length; i++) {
+                    if (video.textTracks[i].mode === 'showing') {
+                        showingTrack = video.textTracks[i];
+                        break;
+                    }
+                }
+                if (showingTrack) {
+                    const lang = (showingTrack.label || showingTrack.language || 'CC').slice(0, 6);
+                    if (sLabel) sLabel.innerText = lang;
+                    sBtn.style.color = 'var(--gold)';
+                    sBtn.style.borderColor = 'var(--border-gold)';
+                    sBtn.style.background = 'rgba(229, 169, 59, 0.2)';
+                } else {
+                    if (sLabel) sLabel.innerText = 'Off';
+                    sBtn.style.color = '#FFFFFF';
+                    sBtn.style.borderColor = 'rgba(255, 255, 255, 0.25)';
+                    sBtn.style.background = 'rgba(255, 255, 255, 0.15)';
+                }
+            } else {
+                sBtn.style.display = 'none';
+            }
+        }
+
+        function toggleSubtitlesTrack() {
+            const video = document.querySelector('#player-screen-wrap video');
+            if (!video || !video.textTracks || video.textTracks.length === 0) {
+                showToast('No subtitles available for this stream', 'fa-closed-captioning');
+                return;
+            }
+
+            const tracks = Array.from(video.textTracks);
+            let activeIdx = tracks.findIndex(t => t.mode === 'showing');
+
+            let nextIdx = activeIdx + 1;
+            if (nextIdx >= tracks.length) {
+                nextIdx = -1; // Cycle to Off
+            }
+
+            tracks.forEach((t, i) => {
+                t.mode = (i === nextIdx) ? 'showing' : 'disabled';
+            });
+
+            updateSubtitlesButton();
+
+            if (nextIdx === -1) {
+                showToast('Subtitles: OFF', 'fa-closed-captioning');
+            } else {
+                const lang = tracks[nextIdx].label || tracks[nextIdx].language || `Track ${nextIdx + 1}`;
+                showToast(`Subtitles: ${lang}`, 'fa-closed-captioning');
+            }
+        }
+
         function resetPlayerTrackControls() {
             const qBtn = document.getElementById('btn-player-quality');
             const aBtn = document.getElementById('btn-player-audio');
+            const sBtn = document.getElementById('btn-player-subs');
             if (qBtn) qBtn.style.display = 'none';
             if (aBtn) aBtn.style.display = 'none';
+            if (sBtn) sBtn.style.display = 'none';
         }
 
         function cycleQualityLevel() {
@@ -5561,6 +5641,9 @@
             } else if (e.key === 'a' || e.key === 'A') {
                 e.preventDefault();
                 toggleAudioTrack();
+            } else if (e.key === 'c' || e.key === 'C') {
+                e.preventDefault();
+                toggleSubtitlesTrack();
             } else if (e.key === 'p' || e.key === 'P') {
                 e.preventDefault();
                 togglePictureInPicture();
