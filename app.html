@@ -2124,17 +2124,16 @@
     <div id="tab-series" class="tab-view">
         <div class="page-header-bar">
             <div class="page-title-row">
-                <h2 class="page-headline"><i class="fas fa-tv"></i> Web Series & Anime Hub</h2>
+                <h2 class="page-headline"><i class="fas fa-tv"></i> Web Series & OTT Hub</h2>
                 <div class="source-select-wrap">
                     <span style="font-size: 12px; font-weight: 700; color: var(--text-sub);">Source Engine:</span>
                     <select id="series-source-select" class="source-select focusable" tabindex="0" onchange="changeSeriesSource(this.value)">
-                        <option value="cnc_CastleTV_other" selected>🏰 Castle TV Series & Shows (Instant Web Play)</option>
-                        <option value="ALL">🌐 All Verified Series Engines (2,500+)</option>
-                        <option value="cnc_HDHub4U_other">💎 HDHub4u Series & Seasons (4K MKV / VLC)</option>
-                        <option value="cnc_Rogmovies_other">🍿 RogMovies Web Series (VLC / MX)</option>
+                        <option value="native_web_series" selected>🔥 Top Trending Web Series (Netflix • Prime • Hotstar)</option>
+                        <option value="ALL">🌐 All Verified Series Engines (HDHub4u & Rogmovies)</option>
+                        <option value="cnc_HDHub4U_series">💎 HDHub4u Series & Seasons (4K / 1080p)</option>
+                        <option value="cnc_Rogmovies_series">🍿 RogMovies Web Series (VLC / MX)</option>
+                        <option value="native_anikoto_series">⚔️ AniKoto Multi-Audio Anime Hub</option>
                         <option value="cnc_Toonix_other">🌟 Toonix (1,630+ Anime & Toons)</option>
-                        <option value="cnc_ReANIME_other">🌟 Re:ANIME HD</option>
-                        <option value="cnc_MovieBoxIN_other">⚠️ MovieBox IN (Limited OTT - Upstream Maintenance)</option>
                     </select>
                 </div>
             </div>
@@ -2843,7 +2842,7 @@
             } else if (tabId === 'tab-movies' && (!allLoadedMovies || allLoadedMovies.length === 0)) {
                 loadMoviesPage('ALL');
             } else if (tabId === 'tab-series' && (!allLoadedSeries || allLoadedSeries.length === 0)) {
-                loadSeriesPage('ALL');
+                loadSeriesPage('native_web_series');
             } else if (tabId === 'tab-sports' && (!allLoadedSports || allLoadedSports.length === 0)) {
                 loadSportsPage();
             } else if (tabId === 'tab-livetv' && (!allLoadedChannels || allLoadedChannels.length === 0)) {
@@ -3479,34 +3478,85 @@
         // ==========================================
         let allLoadedSeries = [];
 
-        async function loadSeriesPage(sourceId = 'cnc_CastleTV_other') {
+        async function loadSeriesPage(sourceId = 'native_web_series') {
             const grid = document.getElementById('series-grid');
-            grid.innerHTML = '<div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>';
+            if (grid) grid.innerHTML = '<div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>';
 
             try {
-                let targets = sourceId === 'ALL'
-                    ? [
-                        'cnc_CastleTV_other',
-                        'cnc_HDHub4U_other',
-                        'cnc_Rogmovies_other',
-                        'cnc_Toonix_other',
-                        'cnc_ReANIME_other',
-                        'cnc_AniPM_other'
-                      ]
-                    : [sourceId];
-
                 allLoadedSeries = [];
-                const fetchPromises = targets.map(catId => 
-                    fetch(`${API_BASE}/catalog/other/${catId}.json`)
-                        .then(r => r.json())
-                        .then(d => Array.isArray(d?.metas) ? d.metas : [])
-                        .catch(() => 
-                            fetch(`${API_BASE}/catalog/movie/${catId}.json`)
-                                .then(r => r.json())
-                                .then(d => Array.isArray(d?.metas) ? d.metas : [])
-                                .catch(() => [])
-                        )
-                );
+                let fetchPromises = [];
+
+                if (sourceId === 'native_web_series') {
+                    fetchPromises = [
+                        fetch(`${API_BASE}/catalog/series/native_web_series.json`)
+                            .then(r => r.json())
+                            .then(d => Array.isArray(d?.metas) ? d.metas : [])
+                            .catch(() => [])
+                    ];
+                } else if (sourceId === 'ALL') {
+                    fetchPromises = [
+                        fetch(`${API_BASE}/catalog/series/native_web_series.json`)
+                            .then(r => r.json())
+                            .then(d => Array.isArray(d?.metas) ? d.metas : [])
+                            .catch(() => []),
+                        fetch(`${API_BASE}/catalog/other/cnc_HDHub4U_other/search=series.json`)
+                            .then(r => r.json())
+                            .then(d => Array.isArray(d?.metas) ? d.metas : [])
+                            .catch(() => []),
+                        fetch(`${API_BASE}/catalog/other/cnc_Rogmovies_other/search=series.json`)
+                            .then(r => r.json())
+                            .then(d => Array.isArray(d?.metas) ? d.metas : [])
+                            .catch(() => []),
+                        fetch(`${API_BASE}/catalog/other/cnc_HDHub4U_other/search=season.json`)
+                            .then(r => r.json())
+                            .then(d => Array.isArray(d?.metas) ? d.metas : [])
+                            .catch(() => []),
+                        fetch(`${API_BASE}/catalog/other/cnc_Rogmovies_other/search=season.json`)
+                            .then(r => r.json())
+                            .then(d => Array.isArray(d?.metas) ? d.metas : [])
+                            .catch(() => []),
+                        fetch(`${API_BASE}/catalog/series/native_anikoto_series.json`)
+                            .then(r => r.json())
+                            .then(d => Array.isArray(d?.metas) ? d.metas : [])
+                            .catch(() => [])
+                    ];
+                } else if (sourceId === 'cnc_HDHub4U_series') {
+                    fetchPromises = [
+                        fetch(`${API_BASE}/catalog/other/cnc_HDHub4U_other/search=series.json`)
+                            .then(r => r.json())
+                            .then(d => Array.isArray(d?.metas) ? d.metas : [])
+                            .catch(() => []),
+                        fetch(`${API_BASE}/catalog/other/cnc_HDHub4U_other/search=season.json`)
+                            .then(r => r.json())
+                            .then(d => Array.isArray(d?.metas) ? d.metas : [])
+                            .catch(() => [])
+                    ];
+                } else if (sourceId === 'cnc_Rogmovies_series') {
+                    fetchPromises = [
+                        fetch(`${API_BASE}/catalog/other/cnc_Rogmovies_other/search=series.json`)
+                            .then(r => r.json())
+                            .then(d => Array.isArray(d?.metas) ? d.metas : [])
+                            .catch(() => []),
+                        fetch(`${API_BASE}/catalog/other/cnc_Rogmovies_other/search=season.json`)
+                            .then(r => r.json())
+                            .then(d => Array.isArray(d?.metas) ? d.metas : [])
+                            .catch(() => [])
+                    ];
+                } else if (sourceId === 'native_anikoto_series') {
+                    fetchPromises = [
+                        fetch(`${API_BASE}/catalog/series/native_anikoto_series.json`)
+                            .then(r => r.json())
+                            .then(d => Array.isArray(d?.metas) ? d.metas : [])
+                            .catch(() => [])
+                    ];
+                } else {
+                    fetchPromises = [
+                        fetch(`${API_BASE}/catalog/other/${sourceId}.json`)
+                            .then(r => r.json())
+                            .then(d => Array.isArray(d?.metas) ? d.metas : [])
+                            .catch(() => [])
+                    ];
+                }
 
                 const results = await Promise.allSettled(fetchPromises);
                 results.forEach(res => {
@@ -3522,10 +3572,11 @@
                     return true;
                 });
 
-                document.getElementById('series-count-badge').innerText = `${allLoadedSeries.length} Shows Found`;
+                const badge = document.getElementById('series-count-badge');
+                if (badge) badge.innerText = `${allLoadedSeries.length} Web Series Found`;
                 renderSeriesGrid(allLoadedSeries);
             } catch (err) {
-                grid.innerHTML = '<div style="color:var(--text-muted); padding:30px; text-align:center;">Failed to load series.</div>';
+                if (grid) grid.innerHTML = '<div style="color:var(--text-muted); padding:30px; text-align:center;">Failed to load series.</div>';
             }
         }
 
