@@ -818,26 +818,37 @@ async function getNativeAniKotoStreams(rawSlug) {
                     'Referer': embedUrl
                 });
 
-                if (!srcData || !srcData.enc) continue;
+                let decrypted = null;
+                if (srcData && srcData.enc) {
+                    decrypted = decryptMegaPlay(srcData.enc);
+                }
 
-                const decrypted = decryptMegaPlay(srcData.enc);
-                if (!decrypted || !decrypted.file) continue;
+                if (decrypted && decrypted.file) {
+                    const subTracks = (srcData.tracks || []).map(t => ({
+                        id: t.file,
+                        url: t.file,
+                        lang: t.label || 'English'
+                    }));
 
-                const subTracks = (srcData.tracks || []).map(t => ({
-                    id: t.file,
-                    url: t.file,
-                    lang: t.label || 'English'
-                }));
-
-                streams.push({
-                    name: `⚔️ AniKoto ${s.mode} • ${s.server}`,
-                    title: `Episode ${foundEpNum} • Direct HLS Master (1080p Multi-Track)`,
-                    url: decrypted.file,
-                    behaviorHints: {
-                        notWebReady: false
-                    },
-                    subtitles: subTracks
-                });
+                    streams.push({
+                        name: `⚔️ AniKoto ${s.mode} • ${s.server}`,
+                        title: `Episode ${foundEpNum} • Direct HLS Master (1080p Multi-Track)`,
+                        url: decrypted.file,
+                        behaviorHints: {
+                            notWebReady: false
+                        },
+                        subtitles: subTracks
+                    });
+                } else if (embedUrl) {
+                    streams.push({
+                        name: `⚔️ AniKoto ${s.mode} • ${s.server}`,
+                        title: `Episode ${foundEpNum} • Cloud Stream (${s.server} Mirror)`,
+                        url: embedUrl,
+                        behaviorHints: {
+                            notWebReady: false
+                        }
+                    });
+                }
             } catch (sErr) {
                 console.warn(`[AniKoto] Server error ${s.mode} ${s.server}:`, sErr.message);
             }

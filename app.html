@@ -4234,6 +4234,14 @@
 
             document.getElementById('player-title-text').innerText = cleanTitle(title);
             const container = document.getElementById('player-screen-wrap');
+
+            // Handle Web Player Iframe Embeds
+            if ((url.includes('/stream/') || url.includes('/embed/') || url.includes('megaplay')) && !url.includes('.m3u8') && !url.includes('.mpd') && !url.includes('.mp4') && !url.includes('proxy/stream')) {
+                container.innerHTML = `<iframe src="${url}" style="width:100%; height:100%; border:none;" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>`;
+                document.getElementById('cinema-player-modal').classList.add('open');
+                return;
+            }
+
             container.innerHTML = '<video controls autoplay playsinline webkit-playsinline x-webkit-airplay="allow" disablePictureInPicture="false"></video>';
             const video = container.querySelector('video');
 
