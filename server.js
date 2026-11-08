@@ -783,6 +783,537 @@ function decryptMegaPlay(enc) {
     }
 }
 
+const NATIVE_CARTOONS_AND_ANIME_CATALOG = [
+    {
+        "id": "native:cartoon:doraemon",
+        "name": "Doraemon",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/321/803650.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/321/803650.jpg",
+        "imdbRating": "8.8",
+        "description": "A robot cat Doraemon is sent back in time to help make Nobita Nobi, a boy without much talent, a better person.",
+        "genres": [
+            "Cartoon",
+            "Kids",
+            "Comedy",
+            "Hindi Dubbed"
+        ]
+    },
+    {
+        "id": "native:cartoon:shinchan",
+        "name": "Crayon Shin-chan",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/116/291841.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/116/291841.jpg",
+        "imdbRating": "5.7",
+        "description": "Young Shinnosuke, or Shin-chan for short, is a very creative young boy that lives with his eccentric parents, Misae and Hiroshi, as well as his Prima Donna younger sister, Himawari",
+        "genres": [
+            "Cartoon",
+            "Kids",
+            "Comedy",
+            "Hindi Dubbed"
+        ]
+    },
+    {
+        "id": "native:cartoon:ben-10",
+        "name": "Ben 10",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/80/201155.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/80/201155.jpg",
+        "imdbRating": "6.9",
+        "description": "Cartoon Network's fresh take on Ben 10 will center upon a new animated series re-introducing the energetic, fun-loving, 10-year-old Ben Tennyson. At the core of the new Ben is a he",
+        "genres": [
+            "Cartoon",
+            "Kids",
+            "Action",
+            "Hindi Dubbed"
+        ]
+    },
+    {
+        "id": "native:cartoon:pokemon",
+        "name": "Pok\u00e9mon",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/630/1576025.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/630/1576025.jpg",
+        "imdbRating": "7.4",
+        "description": "Pocket Monsters, or Pok\u00e9mon for short. These are<br />the mysterious and wondrous creatures of this planet. They can be seen everywhere in the world\u2014in the sky, in the sea, in the ",
+        "genres": [
+            "Cartoon",
+            "Kids",
+            "Adventure",
+            "Hindi Dubbed"
+        ]
+    },
+    {
+        "id": "native:cartoon:oggy-and-the-cockroaches",
+        "name": "Oggy et les Cafards",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/417/1043665.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/417/1043665.jpg",
+        "imdbRating": "7.6",
+        "description": "The show centers on Oggy, a content and lazy, albeit very tender fat blue cat, who would usually spend his days watching TV and cooking - if it wasn't for the three pesky roaches i",
+        "genres": [
+            "Cartoon",
+            "Kids",
+            "Comedy",
+            "Hindi Dubbed"
+        ]
+    },
+    {
+        "id": "native:cartoon:dragon-ball-z",
+        "name": "Dragon Ball Z",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/11/29190.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/11/29190.jpg",
+        "imdbRating": "8",
+        "description": "Part 2 of the Dragonball madness, this story starts when Goku is an adult and introduces him to his Saiyan origin. The main theme of Dragonball Z is fighting although it still reta",
+        "genres": [
+            "Anime",
+            "Action",
+            "Shonen",
+            "Hindi Dubbed"
+        ]
+    },
+    {
+        "id": "native:cartoon:naruto",
+        "name": "Naruto",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/3/9744.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/3/9744.jpg",
+        "imdbRating": "7.8",
+        "description": "Naruto closely follows the life of a boy who is feared and detested by the villagers of the hidden leaf village of Konoha. The distrust of the boy has little to do with the boy him",
+        "genres": [
+            "Anime",
+            "Action",
+            "Ninja",
+            "Hindi Dubbed"
+        ]
+    },
+    {
+        "id": "native:cartoon:tom-and-jerry",
+        "name": "Tom and Jerry",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/483/1209807.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/483/1209807.jpg",
+        "imdbRating": "8.8",
+        "description": "An all-new Tom and Jerry series produced in Asia: Journey into the heart of Singapore with Tom and Jerry as they weave through the labyrinth of towering estates and skyscrapers and",
+        "genres": [
+            "Cartoon",
+            "Kids",
+            "Comedy",
+            "Classic"
+        ]
+    },
+    {
+        "id": "native:cartoon:ninja-hattori",
+        "name": "Ninja Hattori-Kun",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/83/207765.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/83/207765.jpg",
+        "imdbRating": "8.8",
+        "description": "10-year old Ken'ichi Mitsuba is an average kid who goes to elementary school and struggles with his studies. Meanwhile a little ninja named Kanzo Hattori, Shishi-maru (a ninja dog)",
+        "genres": [
+            "Cartoon",
+            "Kids",
+            "Comedy",
+            "Hindi Dubbed"
+        ]
+    },
+    {
+        "id": "native:cartoon:beyblade",
+        "name": "Beyblade",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/253/634524.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/253/634524.jpg",
+        "imdbRating": "6.4",
+        "description": "Thirteen-year-old Tyson Granger (Takao Kinomiya), along with his fellow teammates, Kai Hiwatari, Max Tate (Max Mizuhura), and Ray Kon (Rei Kon), strive to become the greatest Beybl",
+        "genres": [
+            "Anime",
+            "Kids",
+            "Action",
+            "Hindi Dubbed"
+        ]
+    },
+    {
+        "id": "native:cartoon:spiderman-animated",
+        "name": "Spider-Man",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/8/21945.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/8/21945.jpg",
+        "imdbRating": "8.1",
+        "description": "Spider-Man (1994) tells the story of a 19-year-old Peter Parker in his first year at Empire State University, and his alter-ego Spider-Man. The show features Spider-Man's classic v",
+        "genres": [
+            "Cartoon",
+            "Action",
+            "Superhero",
+            "Marvel"
+        ]
+    },
+    {
+        "id": "native:cartoon:batman-animated",
+        "name": "Batman: The Animated Series",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/80/202273.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/80/202273.jpg",
+        "imdbRating": "8.5",
+        "description": "Experience the thrills of vigilante justice as millionaire playboy Bruce Wayne and alter-ego Batman protect the streets of Gotham City from a host of villains including archnemesis",
+        "genres": [
+            "Cartoon",
+            "Action",
+            "Superhero",
+            "DC"
+        ]
+    },
+    {
+        "id": "native:cartoon:avatar-the-last-airbender",
+        "name": "Avatar: The Last Airbender",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/633/1582667.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/633/1582667.jpg",
+        "imdbRating": "7.4",
+        "description": "A young boy known as the Avatar must master the four elemental powers to save a world at war \u2014 and fight a ruthless enemy bent on stopping him.",
+        "genres": [
+            "Cartoon",
+            "Anime",
+            "Action",
+            "Adventure"
+        ]
+    },
+    {
+        "id": "native:cartoon:phineas-and-ferb",
+        "name": "Phineas and Ferb",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/595/1489325.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/595/1489325.jpg",
+        "imdbRating": "7.3",
+        "description": "Phineas and Ferb are Phineas Flynn and his stepbrother, Ferb Fletcher who are determined to make every day of their summer vacation fun. They try building a full-scale roller coast",
+        "genres": [
+            "Cartoon",
+            "Kids",
+            "Comedy",
+            "Disney"
+        ]
+    },
+    {
+        "id": "native:cartoon:courage-the-cowardly-dog",
+        "name": "Courage the Cowardly Dog",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/609/1523655.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/609/1523655.jpg",
+        "imdbRating": "7.8",
+        "description": "The things he does for love! Welcome to the middle of Nowhere, Kansas. Population: one kind old lady, one crabby old man, one timid dog and all sorts of creepy creatures, scary mon",
+        "genres": [
+            "Cartoon",
+            "Kids",
+            "Horror",
+            "Comedy"
+        ]
+    },
+    {
+        "id": "native:cartoon:scooby-doo",
+        "name": "Scooby-Doo! Mystery Incorporated",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/14/36568.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/14/36568.jpg",
+        "imdbRating": "8",
+        "description": "A sleepy little village, Crystal Cove boasts a long history of ghost sightings, poltergeists, demon possessions, phantoms and other paranormal occurrences. The renowned sleuthing t",
+        "genres": [
+            "Cartoon",
+            "Kids",
+            "Mystery",
+            "Comedy"
+        ]
+    },
+    {
+        "id": "native:cartoon:motu-patlu",
+        "name": "Motu Patlu",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/147/369024.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/147/369024.jpg",
+        "imdbRating": "8.8",
+        "description": "Motu Patlu is an Indian animated children's television series about two friends, a rotund man named Motu and a skinny one named Patlu, living in the fictional city Furfuri Nagar. I",
+        "genres": [
+            "Cartoon",
+            "Kids",
+            "Comedy",
+            "Hindi Dubbed"
+        ]
+    },
+    {
+        "id": "native:cartoon:dexters-laboratory",
+        "name": "Dexter's Laboratory",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/11/27891.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/11/27891.jpg",
+        "imdbRating": "7.3",
+        "description": "Deep in the depths of his secret laboratory, boy genius Dexter computes, experiments, invents and builds incredible creations like mom robots, interdimensional portals, talking ani",
+        "genres": [
+            "Cartoon",
+            "Kids",
+            "Comedy",
+            "Classic"
+        ]
+    },
+    {
+        "id": "native:cartoon:powerpuff-girls",
+        "name": "The Powerpuff Girls",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/11/27896.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/11/27896.jpg",
+        "imdbRating": "6.9",
+        "description": "The Powerpuff Girls is an award-winning animated action series about three super-powered little girls Bubbles, Blossom and Buttercup with one very big mission: saving the world bef",
+        "genres": [
+            "Cartoon",
+            "Kids",
+            "Action",
+            "Superhero"
+        ]
+    },
+    {
+        "id": "native:cartoon:transformers",
+        "name": "Transformers",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/62/156745.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/62/156745.jpg",
+        "imdbRating": "7.7",
+        "description": "Transformers is an animated television series depicting a war between giant robots who could transform into vehicles, animals, and other objects.",
+        "genres": [
+            "Cartoon",
+            "Action",
+            "Sci-Fi"
+        ]
+    },
+    {
+        "id": "native:cartoon:teen-titans",
+        "name": "Teen Titans",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/6/15290.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/6/15290.jpg",
+        "imdbRating": "7.3",
+        "description": "Five teen superheroes led by Robin the Boy Wonder team up to protect Earth from a new generation of villains. His partners are Starfire, an alien who can fly; Cyborg, a half-human,",
+        "genres": [
+            "Cartoon",
+            "Action",
+            "Superhero",
+            "DC"
+        ]
+    },
+    {
+        "id": "native:cartoon:demon-slayer",
+        "name": "Demon Slayer",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/456/1140750.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/456/1140750.jpg",
+        "imdbRating": "7.9",
+        "description": "Since ancient times, rumors have abounded of man-eating demons lurking in the woods. Because of this, the local townsfolk never venture outside at night. Legend has it that a demon",
+        "genres": [
+            "Anime",
+            "Action",
+            "Dark Fantasy",
+            "Sub & Dub"
+        ]
+    },
+    {
+        "id": "native:cartoon:jujutsu-kaisen",
+        "name": "Jujutsu Kaisen",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/608/1521905.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/608/1521905.jpg",
+        "imdbRating": "7.6",
+        "description": "Although Yuji Itadori looks like your average teenager, his immense physical strength is something to behold! Every sports club wants him to join, but Itadori would rather hang out",
+        "genres": [
+            "Anime",
+            "Action",
+            "Supernatural",
+            "Sub & Dub"
+        ]
+    },
+    {
+        "id": "native:cartoon:solo-leveling",
+        "name": "Solo Leveling",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/497/1244908.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/497/1244908.jpg",
+        "imdbRating": "8",
+        "description": "Ten years ago, \"the Gate\" appeared and connected the real world with the realm of magic and monsters. To combat these vile beasts, ordinary people received superhuman powers and be",
+        "genres": [
+            "Anime",
+            "Action",
+            "Fantasy",
+            "Sub & Dub"
+        ]
+    },
+    {
+        "id": "native:cartoon:one-piece",
+        "name": "One Piece",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/617/1543011.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/617/1543011.jpg",
+        "imdbRating": "7.7",
+        "description": "With his straw hat and ragtag crew, young pirate Monkey D. Luffy goes on an epic voyage for treasure in this live-action adaptation of the popular manga.",
+        "genres": [
+            "Anime",
+            "Action",
+            "Adventure",
+            "Sub & Dub"
+        ]
+    },
+    {
+        "id": "native:cartoon:death-note",
+        "name": "Death Note",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/499/1249019.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/499/1249019.jpg",
+        "imdbRating": "8.8",
+        "description": "Death Note is an anime series based around a manga of the same name whereby a human finds a death god's notebook. Any person's name written in this notebook will die. The main char",
+        "genres": [
+            "Anime",
+            "Mystery",
+            "Psychological",
+            "Sub & Dub"
+        ]
+    },
+    {
+        "id": "native:cartoon:attack-on-titan",
+        "name": "Attack on Titan",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/632/1582290.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/632/1582290.jpg",
+        "imdbRating": "8.9",
+        "description": "Known in Japan as Shingeki no Kyojin, many years ago, the last remnants of humanity were forced to retreat behind the towering walls of a fortified city to escape the massive, man-",
+        "genres": [
+            "Anime",
+            "Action",
+            "Dark Fantasy",
+            "Sub & Dub"
+        ]
+    },
+    {
+        "id": "native:cartoon:chainsaw-man",
+        "name": "Chainsaw Man",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/422/1056726.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/422/1056726.jpg",
+        "imdbRating": "7.8",
+        "description": "Denji has a simple dream\u2014to live a happy and peaceful life, spending time with a girl he likes. This is a far cry from reality, however, as Denji is forced by the yakuza into killi",
+        "genres": [
+            "Anime",
+            "Action",
+            "Gore",
+            "Sub & Dub"
+        ]
+    },
+    {
+        "id": "native:cartoon:bleach",
+        "name": "Bleach",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/459/1148800.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/459/1148800.jpg",
+        "imdbRating": "7.9",
+        "description": "Ichigo Kurosaki is a teenager gifted with the ability to see spirits. His life is drastically changed by the sudden appearance of a Soul Reaper\u2014one who governs the flow of souls be",
+        "genres": [
+            "Anime",
+            "Action",
+            "Supernatural",
+            "Sub & Dub"
+        ]
+    },
+    {
+        "id": "native:cartoon:dragon-ball-super",
+        "name": "Dragon Ball Super",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/498/1247253.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/498/1247253.jpg",
+        "imdbRating": "7.8",
+        "description": "Dragon Ball Super, a brand new television anime inspired by Akira Toriyama's Dragon Ball manga, will premiere on Fuji TV and other channels in July on Sundays at 9:00 a.m. This wil",
+        "genres": [
+            "Anime",
+            "Action",
+            "Shonen",
+            "Sub & Dub"
+        ]
+    },
+    {
+        "id": "native:cartoon:hunter-x-hunter",
+        "name": "Hunter x Hunter",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/223/559165.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/223/559165.jpg",
+        "imdbRating": "8.6",
+        "description": "Remake of the 1999 TV series of Hunter x Hunter based on the manga by Togashi Yoshihiro. A Hunter is one who travels the world doing all sorts of dangerous tasks. From capturing cr",
+        "genres": [
+            "Anime",
+            "Action",
+            "Adventure",
+            "Sub & Dub"
+        ]
+    },
+    {
+        "id": "native:cartoon:spy-x-family",
+        "name": "Spy\u00d7Family",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/590/1477119.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/590/1477119.jpg",
+        "imdbRating": "7.4",
+        "description": "Master spy Twilight is the best at what he does when it comes to going undercover on dangerous missions in the name of a better world. But when he receives the ultimate impossible ",
+        "genres": [
+            "Anime",
+            "Comedy",
+            "Action",
+            "Sub & Dub"
+        ]
+    },
+    {
+        "id": "native:cartoon:tokyo-ghoul",
+        "name": "Tokyo Ghoul",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/604/1510953.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/604/1510953.jpg",
+        "imdbRating": "7.4",
+        "description": "The story follows Ken Kaneki, a college student who meets a woman named Rize Kamishiro at Anteiku, a coffee shop. They share an interest in literature and plan a date. While walkin",
+        "genres": [
+            "Anime",
+            "Action",
+            "Dark Fantasy",
+            "Sub & Dub"
+        ]
+    },
+    {
+        "id": "native:cartoon:fullmetal-alchemist-brotherhood",
+        "name": "Fullmetal Alchemist: Brotherhood",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/485/1214095.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/485/1214095.jpg",
+        "imdbRating": "7.8",
+        "description": "Fullmetal Alchemist: Brotherhood is set in a fictional world where alchemy \u2013 the transmutation of raw materials into objects \u2013 is science, and the way of life. The series follows t",
+        "genres": [
+            "Anime",
+            "Action",
+            "Adventure",
+            "Sub & Dub"
+        ]
+    },
+    {
+        "id": "native:cartoon:my-hero-academia",
+        "name": "My Hero Academia",
+        "type": "series",
+        "poster": "https://static.tvmaze.com/uploads/images/original_untouched/599/1499141.jpg",
+        "background": "https://static.tvmaze.com/uploads/images/original_untouched/599/1499141.jpg",
+        "imdbRating": "7.5",
+        "description": "People are not born equal, a realization that 4-year-old Midoriya Izuku faced when bullied by his classmates who had unique special powers. Izuku was one of the rare cases where he",
+        "genres": [
+            "Anime",
+            "Action",
+            "Superhero",
+            "Sub & Dub"
+        ]
+    }
+];
+
+async function getNativeCartoonsCatalog() {
+    return NATIVE_CARTOONS_AND_ANIME_CATALOG;
+}
+
 let cachedAniKotoCatalog = null;
 let lastAniKotoCatalogFetch = 0;
 
@@ -795,24 +1326,52 @@ async function getNativeAniKotoCatalog() {
     try {
         const domains = await getLiveDomains();
         const baseDomain = domains.anikoto || 'https://anikototv.to';
-        const homeHtml = await fetchHtml(`${baseDomain}/home`);
 
+        const pagesToFetch = [
+            `${baseDomain}/home`,
+            `${baseDomain}/filter?sort=trending&page=1`,
+            `${baseDomain}/filter?sort=trending&page=2`
+        ];
+
+        const htmlResults = await Promise.allSettled(pagesToFetch.map(url => fetchHtml(url).catch(() => '')));
         const items = [];
         const seenSlugs = new Set();
 
-        const cardMatches = homeHtml.match(/<div class="item">[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/gi) || [];
-        for (const card of cardMatches) {
-            const aMatch = /href="https?:\/\/[^\/]+\/watch\/([^"/?]+)(?:\/[^"]*)?"/i.exec(card);
-            let imgMatch = /src="([^"]+)"\s*alt="([^"]+)"/i.exec(card);
-            if (!imgMatch) {
-                imgMatch = /alt="([^"]+)"\s*src="([^"]+)"/i.exec(card);
+        htmlResults.forEach(res => {
+            const html = res.status === 'fulfilled' ? res.value : '';
+            if (!html) return;
+
+            // Pattern 1: Home page cards
+            const cardMatches = html.match(/<div class="item">[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/gi) || [];
+            for (const card of cardMatches) {
+                const aMatch = /href="https?:\/\/[^\/]+\/watch\/([^"/?]+)(?:\/[^"]*)?"/i.exec(card);
+                let imgMatch = /src="([^"]+)"\s*alt="([^"]+)"/i.exec(card) || /alt="([^"]+)"\s*src="([^"]+)"/i.exec(card);
+                if (aMatch && imgMatch) {
+                    const slug = aMatch[1].trim();
+                    let title = (imgMatch[2] || imgMatch[1]).replace(/&#039;/g, "'").replace(/&amp;/g, '&').trim();
+                    let poster = imgMatch[1].startsWith('http') ? imgMatch[1] : imgMatch[2];
+                    if (slug && !seenSlugs.has(slug)) {
+                        seenSlugs.add(slug);
+                        items.push({
+                            id: `native:anikoto:${slug}`,
+                            name: title,
+                            type: 'series',
+                            poster: poster,
+                            background: poster,
+                            description: `${title} • Multi-Audio Anime with Japanese SUB & English DUB direct HLS master streams.`,
+                            genres: ['Anime', 'Animation', 'Action', 'Sub & Dub']
+                        });
+                    }
+                }
             }
 
-            if (aMatch && imgMatch) {
-                const slug = aMatch[1].trim();
-                let title = (imgMatch[2] || imgMatch[1]).replace(/&#039;/g, "'").replace(/&amp;/g, '&').trim();
-                let poster = imgMatch[1].startsWith('http') ? imgMatch[1] : imgMatch[2];
-
+            // Pattern 2: Filter page cards
+            const filterRegex = /<a\s+[^>]*href="https?:\/\/[^\/]+\/watch\/([^"/?]+)(?:\/ep-[0-9]+)?"[^>]*>\s*<img\s+[^>]*src="([^"]+)"[^>]*alt="([^"]+)"/gi;
+            let m;
+            while ((m = filterRegex.exec(html)) !== null) {
+                const slug = m[1].trim();
+                let poster = m[2];
+                let title = m[3].replace(/&#039;/g, "'").replace(/&amp;/g, '&').trim();
                 if (slug && !seenSlugs.has(slug)) {
                     seenSlugs.add(slug);
                     items.push({
@@ -821,12 +1380,12 @@ async function getNativeAniKotoCatalog() {
                         type: 'series',
                         poster: poster,
                         background: poster,
-                        description: `${title} • Multi-Audio Anime with Japanese SUB & English DUB direct HLS master streams.`,
-                        genres: ['Anime', 'Animation', 'Action']
+                        description: `${title} • High-definition Anime Master with Multi-Audio SUB & DUB streams.`,
+                        genres: ['Anime', 'Animation', 'Trending', 'Sub & Dub']
                     });
                 }
             }
-        }
+        });
 
         if (items.length > 0) {
             cachedAniKotoCatalog = items;
@@ -1042,6 +1601,48 @@ async function getNativeAniKotoStreams(rawSlug) {
 
 const getNativeAnimeWorldStreams = getNativeAniKotoStreams;
 
+async function getNativeCartoonStreams(rawSlug) {
+    const slug = (rawSlug || '').replace('native:cartoon:', '').toLowerCase();
+    const keywordMap = {
+        'doraemon': 'doraemon',
+        'pokemon': 'pokemon',
+        'shinchan': 'shinchan',
+        'naruto': 'naruto',
+        'dragon-ball-z': 'dragon ball z',
+        'dragon-ball-super': 'dragon ball super',
+        'ben-10': 'ben 10',
+        'avatar-the-last-airbender': 'avatar the last airbender',
+        'one-piece': 'one piece',
+        'demon-slayer': 'demon slayer',
+        'jujutsu-kaisen': 'jujutsu kaisen',
+        'solo-leveling': 'solo leveling',
+        'attack-on-titan': 'attack on titan',
+        'chainsaw-man': 'chainsaw man',
+        'death-note': 'death note',
+        'bleach': 'bleach',
+        'hunter-x-hunter': 'hunter x hunter',
+        'spy-x-family': 'spy x family',
+        'tokyo-ghoul': 'tokyo ghoul',
+        'fullmetal-alchemist-brotherhood': 'fullmetal alchemist',
+        'my-hero-academia': 'my hero academia'
+    };
+
+    const keyword = keywordMap[slug] || slug.replace(/-/g, ' ');
+
+    try {
+        const domains = await getLiveDomains();
+        const baseDomain = domains.anikoto || 'https://anikototv.to';
+        const searchHtml = await fetchHtml(`${baseDomain}/filter?keyword=${encodeURIComponent(keyword)}`);
+        const match = /href="https?:\/\/[^\/]+\/watch\/([^"/?]+)/i.exec(searchHtml);
+        if (match) {
+            const matchedSlug = match[1];
+            return await getNativeAniKotoStreams(matchedSlug);
+        }
+    } catch(e) {}
+
+    return await getNativeAniKotoStreams(slug);
+}
+
 async function getRebrandedManifest() {
     const now = Date.now();
     if (cachedManifest && (now - lastManifestFetch) < MANIFEST_CACHE_TTL) {
@@ -1176,7 +1777,17 @@ const nativeAnimeCatalog = {
                     { name: 'skip', isRequired: false }
                 ]
             };
-            const nativeWebSeriesCatalog = {
+                        const nativeCartoonsCatalog = {
+                type: 'series',
+                id: 'native_cartoons_series',
+                name: '👶 Kids & Hindi Cartoons (Doraemon, Shinchan, Ben 10)',
+                extra: [
+                    { name: 'search', isRequired: false },
+                    { name: 'skip', isRequired: false }
+                ]
+            };
+
+const nativeWebSeriesCatalog = {
                 type: 'series',
                 id: 'native_web_series',
                 name: '🔥 Top Trending Web Series (Netflix, Prime, Hotstar)',
@@ -1185,7 +1796,7 @@ const nativeAnimeCatalog = {
                     { name: 'skip', isRequired: false }
                 ]
             };
-            const finalCatalogs = [nativeSportsCatalog, nativeWebSeriesCatalog, nativeAnimeCatalog, nativeGujaratiCatalog, nativeHDHubCatalog, nativeVegaCatalog, ...filteredCatalogs];
+            const finalCatalogs = [nativeSportsCatalog, nativeWebSeriesCatalog, nativeAnimeCatalog, nativeCartoonsCatalog, nativeGujaratiCatalog, nativeHDHubCatalog, nativeVegaCatalog, ...filteredCatalogs];
             cachedManifest = {
                 id: 'org.yogeshstreamer.addon',
                 version: '1.2.1',
@@ -2040,6 +2651,14 @@ const server = http.createServer(async (req, res) => {
             return;
         }
 
+        if (rawId.startsWith('native:cartoon:')) {
+            const slug = rawId.replace('native:cartoon:', '');
+            const result = await getNativeCartoonStreams(slug);
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify(result));
+            return;
+        }
+
         if (rawId.startsWith('native:anime:') || rawId.startsWith('native:anikoto:')) {
             const slug = rawId.replace('native:anime:', '').replace('native:anikoto:', '');
             const result = await getNativeAniKotoStreams(slug);
@@ -2269,6 +2888,14 @@ const server = http.createServer(async (req, res) => {
             res.end(JSON.stringify({ metas }));
             return;
         }
+        if (pathname.includes('native_cartoons_series')) {
+            const rawMetas = await getNativeCartoonsCatalog();
+            const metas = filterCatalogByQuery(rawMetas, pathname);
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ metas }));
+            return;
+        }
+
         if (pathname.includes('native_animeworld_series') || pathname.includes('native_anikoto_series')) {
             const rawMetas = await getNativeAniKotoCatalog();
             const metas = filterCatalogByQuery(rawMetas, pathname);
@@ -2339,6 +2966,17 @@ const server = http.createServer(async (req, res) => {
             res.end(JSON.stringify({ meta: item || null }));
             return;
         }
+        if (pathname.includes('native:cartoon:')) {
+            const slug = pathname.split('native:cartoon:')[1].replace('.json', '');
+            const catalog = await getNativeCartoonsCatalog();
+            const item = catalog.find(m => m.id === `native:cartoon:${slug}`);
+            if (item) {
+                res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+                res.end(JSON.stringify({ meta: item }));
+                return;
+            }
+        }
+
         if (pathname.includes('native:anime:') || pathname.includes('native:anikoto:')) {
             const slug = pathname.includes('native:anime:')
                 ? pathname.split('native:anime:')[1].replace('.json', '')
