@@ -1843,18 +1843,21 @@ const server = http.createServer(async (req, res) => {
                 }
 
                 const lowerUrl = (directMpd || streamUrl).toLowerCase();
-                const isMkv = lowerUrl.includes('.mkv') || lowerUrl.includes('pub-') || lowerUrl.includes('r2.dev');
-                const isHls = lowerUrl.includes('.m3u8') || lowerUrl.includes('klnwm.com') || lowerUrl.includes('hlscob.com') || lowerUrl.includes('kwsvon.com') || lowerUrl.includes('mlcoxn.com') || lowerUrl.includes('cdnvideo11.shop');
+                const isMkv = lowerUrl.includes('.mkv') || lowerUrl.includes('pub-') || lowerUrl.includes('r2.dev') || lowerUrl.includes('googleusercontent') || lowerUrl.includes('drive.google') || lowerUrl.includes('hubdrive');
+                const isCastle = name.toLowerCase().includes('castle') || (title || '').toLowerCase().includes('castle') || lowerUrl.includes('hscow.com') || lowerUrl.includes('hlowb.com');
+                const isAnikoto = streamUrl.includes('/api/anime') || name.toLowerCase().includes('anikoto');
+                const isHls = lowerUrl.includes('.m3u8') || lowerUrl.includes('klnwm.com') || lowerUrl.includes('hlscob.com');
                 const isDash = lowerUrl.includes('.mpd');
 
-                if (isMkv) {
-                    name = `🚀 [MKV / VLC] ${name}`;
+                if (isCastle || isAnikoto) {
+                    name = `⚡ [In-App Player] ${name}`;
+                } else if (isMkv) {
+                    name = `🚀 [4K / VLC] ${name}`;
                 } else if (isHls || isDash) {
-                    name = `⚡ [Web Play] ${name}`;
+                    name = `🎬 [Cloud HLS] ${name}`;
                 } else {
                     name = `🎬 ${name}`;
                 }
-
                 const isSecure = !host.includes('localhost') && !host.includes('127.0.0.1');
                 const proto = isSecure ? 'https' : 'http';
 

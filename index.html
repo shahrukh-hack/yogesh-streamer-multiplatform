@@ -1405,28 +1405,41 @@
 
         .badge-format-web {
             background: rgba(16, 185, 129, 0.2);
-            color: #10B981;
-            border: 1px solid rgba(16, 185, 129, 0.4);
-            padding: 2px 7px;
-            border-radius: 4px;
+            color: #34D399;
+            border: 1px solid rgba(16, 185, 129, 0.45);
+            padding: 3px 8px;
+            border-radius: 6px;
             font-size: 10px;
             font-weight: 800;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
         }
 
         .badge-format-mkv {
-            background: rgba(245, 158, 11, 0.2);
-            color: #F59E0B;
-            border: 1px solid rgba(245, 158, 11, 0.4);
-            padding: 2px 7px;
-            border-radius: 4px;
+            background: rgba(168, 85, 247, 0.2);
+            color: #C084FC;
+            border: 1px solid rgba(168, 85, 247, 0.45);
+            padding: 3px 8px;
+            border-radius: 6px;
             font-size: 10px;
             font-weight: 800;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
+        }
+
+        .badge-format-cloud {
+            background: rgba(245, 158, 11, 0.2);
+            color: #FBBF24;
+            border: 1px solid rgba(245, 158, 11, 0.45);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .badge-stream-lang {
@@ -4044,17 +4057,52 @@
                     return;
                 }
 
-                // Sort streams: Web Playable (HLS / CastleTV) at the top, MKV below
+                // 🌟 Smart Multi-Tier Stream Classifier & Prioritization
+                function getStreamMeta(s) {
+                    const u = (s.url || '').toLowerCase();
+                    const n = (s.name || '').toLowerCase();
+                    const t = (s.title || '').toLowerCase();
+
+                    const isCastle = n.includes('castle') || t.includes('castle') || u.includes('hscow.com') || u.includes('hlowb.com');
+                    const isAniKoto = u.includes('/api/anime/stream') || n.includes('anikoto');
+                    const isVerifiedChannel = u.includes('pages.dev') || u.includes('smartplaytv') || u.includes('intoday.in') || u.includes('vidgyor') || u.includes('wurl.tv');
+
+                    if (isCastle || isAniKoto || isVerifiedChannel) {
+                        return {
+                            tier: 1,
+                            isWeb: true,
+                            badgeHtml: '<span class="badge-format-web"><i class="fas fa-circle-check"></i> In-App Player (Instant Browser Play)</span>',
+                            playBtnTitle: 'Play in In-App Cinema Player'
+                        };
+                    }
+
+                    const isMkv = u.includes('.mkv') || u.includes('pub-') || u.includes('r2.dev') || u.includes('googleusercontent') || u.includes('drive.google') || u.includes('hubdrive') || u.includes('hubcloud') || n.includes('mkv') || t.includes('mkv') || n.includes('hdhub4u') || n.includes('vegamovies');
+                    if (isMkv) {
+                        return {
+                            tier: 3,
+                            isWeb: false,
+                            badgeHtml: '<span class="badge-format-mkv"><i class="fas fa-bolt"></i> 4K Ultra HD • VLC / MX Recommended</span>',
+                            playBtnTitle: 'Try Play (VLC Recommended for 4K Atmos)'
+                        };
+                    }
+
+                    return {
+                        tier: 2,
+                        isWeb: u.includes('.m3u8') || u.includes('/proxy/stream'),
+                        badgeHtml: '<span class="badge-format-cloud"><i class="fas fa-cloud"></i> Cloud Stream (VLC / Browser)</span>',
+                        playBtnTitle: 'Play Cloud Stream'
+                    };
+                }
+
+                // Smart Sorting: Guaranteed In-App Web Play (Castle TV) ALWAYS at the very top (#1, #2, #3)!
                 streams.sort((a, b) => {
-                    const aWeb = isWebPlayable(a.url, a.name);
-                    const bWeb = isWebPlayable(b.url, b.name);
-                    if (aWeb && !bWeb) return -1;
-                    if (!aWeb && bWeb) return 1;
-                    return 0;
+                    const metaA = getStreamMeta(a);
+                    const metaB = getStreamMeta(b);
+                    return metaA.tier - metaB.tier;
                 });
 
                 if (autoPlay && streams.length > 0) {
-                    const webStream = streams.find(s => isWebPlayable(s.url, s.name)) || streams[0];
+                    const webStream = streams.find(s => getStreamMeta(s).isWeb) || streams[0];
                     closeStreamPicker(true);
                     launchCinemaPlayer(webStream.url, `${title} - Ep ${episodeNum}`, streams, streams.indexOf(webStream));
                     return;
@@ -4062,14 +4110,14 @@
 
                 container.innerHTML = epSelectorHtml;
 
-                const allMkv = streams.every(s => !isWebPlayable(s.url, s.name));
-                if (allMkv) {
+                const hasWebPlay = streams.some(s => getStreamMeta(s).tier === 1);
+                if (!hasWebPlay) {
                     const banner = document.createElement('div');
                     banner.className = 'mkv-banner-notice';
                     banner.innerHTML = `
-                        <i class="fas fa-triangle-exclamation" style="color: #F59E0B; font-size: 20px; flex-shrink: 0;"></i>
+                        <i class="fas fa-circle-info" style="color: #C084FC; font-size: 20px; flex-shrink: 0;"></i>
                         <div style="font-size: 12px; color: #FFFFFF; line-height: 1.45;">
-                            <b style="color: #F59E0B;">External Player Required:</b> These streams are 4K MKV files (not supported in web browsers). Tap <b>VLC / MX</b> to play in your media player app.
+                            <b style="color: #C084FC;">4K Ultra HD Streams:</b> These streams feature uncompressed 4K HDR & Multi-Audio. For the best experience, tap <b>VLC / MX</b> or play directly in browser.
                         </div>
                     `;
                     container.appendChild(banner);
@@ -4080,7 +4128,8 @@
                     card.className = 'stream-entry-card focusable';
                     card.tabIndex = 0;
 
-                    const isWeb = isWebPlayable(s.url, s.name);
+                    const meta = getStreamMeta(s);
+                    const isWeb = meta.isWeb;
                     const langBadge = detectAudioLanguageBadge(s.title || s.name || '');
                     const cleanServerTitle = escapeHtml(s.name || ('Server ' + (idx + 1)));
                     const cleanServerSub = escapeHtml(s.title ? s.title.replace(/[\r\n].*/, '') : '1080p Ultra HD Direct Stream');
@@ -4090,7 +4139,7 @@
                             <div class="stream-server-title">
                                 <i class="fas fa-bolt" style="color:var(--gold);"></i>
                                 <span>${cleanServerTitle}</span>
-                                ${isWeb ? '<span class="badge-format-web"><i class="fas fa-circle-check"></i> Web Play (Browser Ready)</span>' : '<span class="badge-format-mkv"><i class="fas fa-triangle-exclamation"></i> 4K MKV (VLC / MX Required)</span>'}
+                                ${meta.badgeHtml}
                                 ${langBadge ? `<span class="badge-stream-lang">${langBadge}</span>` : ''}
                             </div>
                             <div class="stream-server-sub">${cleanServerSub}</div>
@@ -4102,7 +4151,7 @@
                             <button type="button" class="btn-stream-ext focusable" tabindex="0" title="Open in VLC or MX Player">
                                 <i class="fas fa-arrow-up-right-from-square"></i> VLC / MX
                             </button>
-                            <button type="button" class="btn-stream-play focusable" tabindex="0" title="Play in Cinema Player">
+                            <button type="button" class="btn-stream-play focusable" tabindex="0" title="${meta.playBtnTitle}">
                                 <i class="fas fa-play"></i> Play
                             </button>
                         </div>
@@ -4700,9 +4749,9 @@
             if (!url) return false;
             const u = url.toLowerCase();
             const n = (name || '').toLowerCase();
-            if (n.includes('[web play]') || n.includes('castletv') || n.includes('moviebox')) return true;
-            if (u.includes('.m3u8') || u.includes('/proxy/stream') || u.includes('.mp4') || u.includes('.mpd')) return true;
-            if (u.includes('.mkv') || u.includes('googleusercontent') || u.includes('drive.google') || n.includes('[mkv') || n.includes('vlc')) return false;
+            if (n.includes('castle') || u.includes('hscow.com') || u.includes('hlowb.com') || u.includes('/api/anime/stream') || n.includes('anikoto')) return true;
+            if (u.includes('.mkv') || u.includes('googleusercontent') || u.includes('drive.google') || u.includes('pub-') || u.includes('r2.dev')) return false;
+            if (u.includes('.m3u8') || u.includes('/proxy/stream') || u.includes('.mp4')) return true;
             return false;
         }
 
