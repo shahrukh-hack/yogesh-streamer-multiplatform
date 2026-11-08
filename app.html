@@ -1815,6 +1815,29 @@
             filter: brightness(1.15);
         }
 
+        .btn-card-remove {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            cursor: pointer;
+            z-index: 10;
+            transition: var(--transition-smooth);
+        }
+        .btn-card-remove:hover {
+            background: var(--live-red);
+            border-color: var(--live-red);
+        }
+
     </style>
 </head>
 <body>
@@ -1968,6 +1991,18 @@
                 <span class="rail-see-all focusable" tabindex="0" onclick="clearContinueWatching()">Clear All</span>
             </div>
             <div class="rail-track" id="continue-watching-track"></div>
+        </div>
+
+        <!-- My Watchlist Rail (Dynamic) -->
+        <div id="watchlist-section" class="rail-section" style="display: none;">
+            <div class="rail-header">
+                <div class="rail-title-group">
+                    <i class="fas fa-bookmark" style="color: var(--gold);"></i>
+                    <h3 class="rail-title">My Watchlist</h3>
+                </div>
+                <span class="rail-see-all focusable" tabindex="0" onclick="clearWatchlist()">Clear All</span>
+            </div>
+            <div class="rail-track" id="watchlist-track"></div>
         </div>
 
         <!-- Netflix-Style Top 10 Rail -->
@@ -2413,7 +2448,10 @@
                     <h3 class="sheet-title" id="sheet-title-text">Select Streaming Server</h3>
                     <div style="font-size: 11px; color: var(--gold); font-weight: 700; margin-top: 2px;">⚡ 4K & 1080p Ultra HD Direct Links</div>
                 </div>
-                <button class="focusable" tabindex="0" onclick="closeStreamPicker()" style="background: transparent; border: none; color: var(--text-sub); font-size: 18px; cursor: pointer;"><i class="fas fa-times"></i></button>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button id="btn-picker-watchlist" class="focusable" tabindex="0" onclick="toggleCurrentWatchlist()" title="Add to Watchlist" style="background: rgba(229, 169, 59, 0.15); border: 1px solid var(--border-gold); color: var(--gold); padding: 5px 12px; border-radius: 999px; font-size: 11px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;"><i class="fas fa-bookmark"></i> <span>Watchlist</span></button>
+                    <button class="focusable" tabindex="0" onclick="closeStreamPicker()" style="background: transparent; border: none; color: var(--text-sub); font-size: 18px; cursor: pointer;"><i class="fas fa-times"></i></button>
+                </div>
             </div>
             <div class="sheet-body" id="stream-options-container">
                 <div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>
@@ -2488,6 +2526,7 @@
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-quality" onclick="cycleQualityLevel()" style="display: none;"><i class="fas fa-sliders"></i> <span id="player-quality-label">Auto</span></button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-audio" onclick="toggleAudioTrack()" style="display: none;"><i class="fas fa-volume-high"></i> <span id="player-audio-label">Audio</span></button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-pip" onclick="togglePictureInPicture()" title="Picture-in-Picture"><i class="fas fa-clone"></i> PiP</button>
+                <button class="btn-player-action focusable" tabindex="0" id="btn-player-speed" onclick="cyclePlaybackSpeed()" title="Playback Speed"><i class="fas fa-gauge-high"></i> <span id="player-speed-label">1x</span></button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-server" onclick="tryNextStreamServer()"><i class="fas fa-server"></i> Switch Server</button>
                 <button class="btn-player-action focusable" tabindex="0" onclick="togglePlayerFullscreen()"><i class="fas fa-expand"></i></button>
             </div>
@@ -2875,6 +2914,7 @@
         // ==========================================
         async function bootstrapStreamingEngine() {
             renderContinueWatching();
+            renderWatchlistRail();
             initGujaratiLibrary();
 
             // Background non-blocking harvester for additional Gujarati cloud titles
@@ -4209,7 +4249,7 @@
         // ==========================================
         let currentSeriesContext = null;
 
-        async function openStreamPicker(type, id, title, episodeNum = 1, autoPlay = false) {
+        async function openStreamPicker(type, id, title, episodeNum = 1, autoPlay = false, poster = null) {
             if (type === 'series') {
                 const parts = id.split(':');
                 const baseId = parts.length >= 3 ? `${parts[0]}:${parts[1]}:${parts[2]}` : id;
@@ -4217,6 +4257,12 @@
             } else {
                 currentSeriesContext = null;
             }
+            window.currentPickerItem = { type, id, title, poster: poster || BRAND_LOGO };
+            if (!poster) {
+                const found = [...(dynamicGujaratiMovies || []), ...(allLoadedMovies || []), ...(allLoadedSeries || []), ...(allLoadedAnime || [])].find(m => m.id === id);
+                if (found && found.poster) window.currentPickerItem.poster = found.poster;
+            }
+            updatePickerWatchlistBtn();
             document.getElementById('sheet-title-text').innerText = cleanTitle(title);
             const container = document.getElementById('stream-options-container');
 
@@ -4694,6 +4740,7 @@
                 currentShakaPlayer = null;
             }
             resetPlayerTrackControls();
+            resetPlaybackSpeed();
             document.getElementById('player-screen-wrap').innerHTML = '';
 
             // Release orientation lock
@@ -4849,6 +4896,127 @@
             } else {
                 showToast('PiP not supported on this device', 'fa-circle-exclamation');
             }
+        }
+
+        // ==========================================
+        // ⏩ PLAYBACK SPEED CONTROLS
+        // ==========================================
+        const PLAYBACK_SPEEDS = [1, 1.25, 1.5, 2, 0.75];
+        let currentSpeedIdx = 0;
+
+        function cyclePlaybackSpeed() {
+            const video = document.querySelector('#player-screen-wrap video');
+            if (!video) return;
+            currentSpeedIdx = (currentSpeedIdx + 1) % PLAYBACK_SPEEDS.length;
+            const newSpeed = PLAYBACK_SPEEDS[currentSpeedIdx];
+            video.playbackRate = newSpeed;
+            const label = document.getElementById('player-speed-label');
+            if (label) label.innerText = `${newSpeed}x`;
+            showToast(`Playback Speed: ${newSpeed}x`, 'fa-gauge-high');
+        }
+
+        function resetPlaybackSpeed() {
+            currentSpeedIdx = 0;
+            const label = document.getElementById('player-speed-label');
+            if (label) label.innerText = '1x';
+            const video = document.querySelector('#player-screen-wrap video');
+            if (video) video.playbackRate = 1;
+        }
+
+        // ==========================================
+        // 🔖 MY WATCHLIST & FAVORITES SYSTEM
+        // ==========================================
+        const WATCHLIST_STORAGE_KEY = 'y_streamer_watchlist';
+
+        function isItemInWatchlist(id) {
+            try {
+                const list = JSON.parse(localStorage.getItem(WATCHLIST_STORAGE_KEY) || '[]');
+                return list.some(item => item.id === id);
+            } catch(e) { return false; }
+        }
+
+        function toggleCurrentWatchlist() {
+            if (!window.currentPickerItem) return;
+            try {
+                let list = JSON.parse(localStorage.getItem(WATCHLIST_STORAGE_KEY) || '[]');
+                const exists = list.some(i => i.id === window.currentPickerItem.id);
+                if (exists) {
+                    list = list.filter(i => i.id !== window.currentPickerItem.id);
+                    showToast('Removed from My Watchlist', 'fa-bookmark');
+                } else {
+                    list.unshift(window.currentPickerItem);
+                    showToast('Added to My Watchlist!', 'fa-bookmark');
+                }
+                localStorage.setItem(WATCHLIST_STORAGE_KEY, JSON.stringify(list));
+                updatePickerWatchlistBtn();
+                renderWatchlistRail();
+            } catch(e) {}
+        }
+
+        function updatePickerWatchlistBtn() {
+            const btn = document.getElementById('btn-picker-watchlist');
+            if (!btn || !window.currentPickerItem) return;
+            const inList = isItemInWatchlist(window.currentPickerItem.id);
+            if (inList) {
+                btn.innerHTML = '<i class="fas fa-check"></i> <span>In Watchlist</span>';
+                btn.style.background = 'rgba(229, 169, 59, 0.35)';
+                btn.style.borderColor = 'var(--gold)';
+            } else {
+                btn.innerHTML = '<i class="fas fa-bookmark"></i> <span>Watchlist</span>';
+                btn.style.background = 'rgba(229, 169, 59, 0.15)';
+                btn.style.borderColor = 'var(--border-gold)';
+            }
+        }
+
+        function renderWatchlistRail() {
+            try {
+                const list = JSON.parse(localStorage.getItem(WATCHLIST_STORAGE_KEY) || '[]');
+                const sec = document.getElementById('watchlist-section');
+                const track = document.getElementById('watchlist-track');
+                if (!sec || !track) return;
+                if (list.length === 0) {
+                    sec.style.display = 'none';
+                    return;
+                }
+                sec.style.display = 'block';
+                track.innerHTML = '';
+                list.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'poster-card focusable';
+                    card.tabIndex = 0;
+                    card.innerHTML = `
+                        <div class="poster-image-box">
+                            <img src="${item.poster || BRAND_LOGO}" alt="${cleanTitle(item.title || item.name)}" loading="lazy">
+                            <div class="card-overlay-play"><i class="fas fa-play"></i></div>
+                            <div class="card-play-pill"><i class="fas fa-play"></i> Watch Now</div>
+                            <button class="btn-card-remove focusable" title="Remove from Watchlist" onclick="event.stopPropagation(); removeFromWatchlist('${item.id}')"><i class="fas fa-times"></i></button>
+                        </div>
+                        <div class="card-title">${cleanTitle(item.title || item.name)}</div>
+                        <div class="card-meta"><span>${item.type === 'series' ? 'Web Series' : 'Movie'}</span><span style="color:var(--gold);">★ Saved</span></div>
+                    `;
+                    card.onclick = () => openStreamPicker(item.type || 'movie', item.id, item.title || item.name, 1, false, item.poster);
+                    track.appendChild(card);
+                });
+            } catch(e) {}
+        }
+
+        function removeFromWatchlist(id) {
+            try {
+                let list = JSON.parse(localStorage.getItem(WATCHLIST_STORAGE_KEY) || '[]');
+                list = list.filter(i => i.id !== id);
+                localStorage.setItem(WATCHLIST_STORAGE_KEY, JSON.stringify(list));
+                renderWatchlistRail();
+                if (window.currentPickerItem && window.currentPickerItem.id === id) {
+                    updatePickerWatchlistBtn();
+                }
+                showToast('Removed from Watchlist', 'fa-bookmark');
+            } catch(e) {}
+        }
+
+        function clearWatchlist() {
+            localStorage.removeItem(WATCHLIST_STORAGE_KEY);
+            renderWatchlistRail();
+            showToast('Watchlist cleared', 'fa-trash');
         }
 
         // ==========================================
@@ -5202,6 +5370,9 @@
             } else if (e.key === 'p' || e.key === 'P') {
                 e.preventDefault();
                 togglePictureInPicture();
+            } else if (e.key === 's' || e.key === 'S') {
+                e.preventDefault();
+                cyclePlaybackSpeed();
             }
         }
 
