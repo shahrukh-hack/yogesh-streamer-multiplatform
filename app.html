@@ -2315,13 +2315,12 @@
                 <div class="source-select-wrap">
                     <span style="font-size: 12px; font-weight: 700; color: var(--text-sub);">Source Engine:</span>
                     <select id="sports-source-select" class="source-select focusable" tabindex="0" onchange="changeSportsSource(this.value)">
-                        <option value="ALL">🌐 All Live Sports Feeds (450+)</option>
-                        <option value="native_live_sports_tv">⚡ Direct 0ms HD Sports (40 Feeds)</option>
-                        <option value="cnc_SportzXLiveEvents_tv">⚡ SportzX Live & Cricket (77 Feeds)</option>
-                        <option value="cnc_PlayFyLiveEvents_tv">🌟 PlayFy Live Events (67 Feeds)</option>
-                        <option value="cnc_LivXowLiveEvents_tv">🌟 LivXow Live Events (108 Feeds)</option>
-                        <option value="cnc_PlayZTVLiveEvents_tv">🌟 PlayZTV Live Events (133 Feeds)</option>
-                        <option value="cnc_SKTechLiveEvents_tv">🌟 SKTech Live Events (79 Feeds)</option>
+                        <option value="ALL">🌐 All Live Sports & Cricket (Instant Web Play • 250+ Feeds)</option>
+                        <option value="cnc_SportzXLiveEvents_tv">⚡ SportzX Live & Cricket (83 Feeds • Instant Web Play)</option>
+                        <option value="cnc_PlayFyLiveEvents_tv">🌟 PlayFy Live Events (103 Feeds • SonyLIV & Willow)</option>
+                        <option value="cnc_PlayZTVLiveEvents_tv">🌟 PlayZTV Live Events (116 Feeds • Ten Sports & PTV)</option>
+                        <option value="cnc_LivXowLiveEvents_tv">🌟 LivXow Live Events (Multi-Feed HD)</option>
+                        <option value="cnc_SKTechLiveEvents_tv">🌟 SKTech Live Events (Regional Cricket & Football)</option>
                     </select>
                 </div>
             </div>
@@ -3922,11 +3921,10 @@
             try {
                 let targets = sourceId === 'ALL'
                     ? [
-                        'native_live_sports_tv',
                         'cnc_SportzXLiveEvents_tv',
                         'cnc_PlayFyLiveEvents_tv',
-                        'cnc_LivXowLiveEvents_tv',
                         'cnc_PlayZTVLiveEvents_tv',
+                        'cnc_LivXowLiveEvents_tv',
                         'cnc_SKTechLiveEvents_tv'
                       ]
                     : [sourceId];
@@ -3953,6 +3951,15 @@
                     return true;
                 });
 
+                // Prioritize actively broadcasting live matches (🔴) at the very top of the grid!
+                allLoadedSports.sort((a, b) => {
+                    const aLive = (a.name || '').includes('🔴') || (a.description || '').toLowerCase().includes('live');
+                    const bLive = (b.name || '').includes('🔴') || (b.description || '').toLowerCase().includes('live');
+                    if (aLive && !bLive) return -1;
+                    if (!aLive && bLive) return 1;
+                    return 0;
+                });
+
                 renderSportsGrid(allLoadedSports);
             } catch (err) {
                 grid.innerHTML = '<div style="color:var(--text-muted); padding:30px; text-align:center;">Failed to load sports.</div>';
@@ -3971,15 +3978,20 @@
                 const card = document.createElement('div');
                 card.className = 'sports-card focusable';
                 card.tabIndex = 0;
+                const isLiveNow = (item.name || '').includes('🔴');
+                const badgeTag = isLiveNow 
+                    ? '<div class="sports-live-tag"><span class="badge-live-pulse" style="background: #EF4444; color: #FFFFFF; font-weight: 800; box-shadow: 0 0 10px rgba(239, 68, 68, 0.7);"><i class="fas fa-circle-dot"></i> LIVE NOW</span></div>'
+                    : '<div class="sports-live-tag"><span class="badge-live-pulse" style="background: rgba(255,255,255,0.18); color: #E2E8F0;"><i class="fas fa-clock"></i> UPCOMING</span></div>';
+
                 card.innerHTML = `
                     <div class="sports-thumb-box">
-                        <div class="sports-live-tag"><span class="badge-live-pulse"><i class="fas fa-bolt"></i> LIVE</span></div>
-                        <img src="${item.poster || BRAND_LOGO}" alt="${cleanTitle(item.name)}" loading="lazy">
+                        ${badgeTag}
+                        <img src="${item.poster || BRAND_LOGO}" alt="${cleanTitle(item.name)}" loading="lazy" onerror="this.onerror=null; this.src='${BRAND_LOGO}';">
                         <div class="card-overlay-play"><i class="fas fa-play"></i></div>
                         <div class="card-play-pill"><i class="fas fa-play"></i> Watch Now</div>
                     </div>
                     <div class="card-title">${cleanTitle(item.name)}</div>
-                    <div class="card-meta"><span>Direct Satellite</span><span style="color:var(--gold);">60FPS HD</span></div>
+                    <div class="card-meta"><span>⚡ Instant Web Play</span><span style="color:var(--gold);">1080p 60FPS</span></div>
                 `;
                 card.onclick = () => openStreamPicker('tv', item.id, item.name);
                 grid.appendChild(card);
@@ -4471,8 +4483,9 @@
                     const isCastle = n.includes('castle') || t.includes('castle') || u.includes('hscow.com') || u.includes('hlowb.com');
                     const isAniKoto = u.includes('/api/anime/stream') || n.includes('anikoto');
                     const isVerifiedChannel = u.includes('pages.dev') || u.includes('smartplaytv') || u.includes('intoday.in') || u.includes('vidgyor') || u.includes('wurl.tv');
+                    const isSports = u.includes('/d/master.m3u8') || u.includes('cncverse.dpdns.org') || u.includes('sport') || u.includes('cricket') || u.includes('tapmad') || u.includes('cloudfront.net/live') || u.includes('msnetworks.net') || n.includes('sportzx') || n.includes('playfy') || n.includes('playztv') || n.includes('livxow') || t.includes('fancode') || t.includes('willow') || t.includes('sonyliv') || t.includes('a sports') || t.includes('ten sports') || t.includes('ptv') || t.includes('tapmad') || t.includes('tamasha');
 
-                    if (isCastle || isAniKoto || isVerifiedChannel) {
+                    if (isCastle || isAniKoto || isVerifiedChannel || isSports || u.includes('.m3u8') || u.includes('/proxy/stream')) {
                         return {
                             tier: 1,
                             isWeb: true,
@@ -4780,9 +4793,10 @@
             }
             const activeClearkey = (activeStream && activeStream.clearkey) ? activeStream.clearkey : null;
 
-            // 🚀 Google Shaka Player Engine with ClearKey DRM Handshake (Live Cricket & Live TV)
+            // 🚀 Google Shaka Player Engine with ClearKey DRM Handshake (Only for raw MPD manifests without HLS)
             const mpdMatch = url.match(/[?&]d=([^&]+)/);
-            const isDashClearkey = (Boolean(activeClearkey) || url.includes('.mpd') || Boolean(mpdMatch)) && 
+            const isHlsMaster = url.includes('.m3u8') || url.includes('/d/master.m3u8');
+            const isDashClearkey = !isHlsMaster && (url.includes('.mpd') || (Boolean(activeClearkey) && Boolean(mpdMatch))) && 
                                    (typeof shaka !== 'undefined' && shaka.Player && shaka.Player.isBrowserSupported());
 
             if (isDashClearkey) {

@@ -2716,7 +2716,7 @@ const server = http.createServer(async (req, res) => {
             // Filter out known dead CDN hosts (return 404 upstream) and broken MPD proxy
             streams = streams.filter(s => {
                 const u = (s.url || '').toLowerCase();
-                if (u.includes('nm-cdn23.top') || u.includes('freecdn4.top') || u.includes('140.238.244.130/proxy/mpd')) {
+                if (u.includes('nm-cdn23.top') || u.includes('freecdn4.top') || u.includes('140.238.244.130/proxy/mpd') || u.includes('129.225.106.195/proxy/mpd')) {
                     return false;
                 }
                 return true;
@@ -2750,10 +2750,11 @@ const server = http.createServer(async (req, res) => {
                 const isMkv = lowerUrl.includes('.mkv') || lowerUrl.includes('pub-') || lowerUrl.includes('r2.dev') || lowerUrl.includes('googleusercontent') || lowerUrl.includes('drive.google') || lowerUrl.includes('hubdrive');
                 const isCastle = name.toLowerCase().includes('castle') || (title || '').toLowerCase().includes('castle') || lowerUrl.includes('hscow.com') || lowerUrl.includes('hlowb.com');
                 const isAnikoto = streamUrl.includes('/api/anime') || name.toLowerCase().includes('anikoto');
+                const isSportsOrLive = lowerUrl.includes('/d/master.m3u8') || lowerUrl.includes('sport') || lowerUrl.includes('cricket') || lowerUrl.includes('live') || name.toLowerCase().includes('live') || (title || '').toLowerCase().includes('live') || (title || '').toLowerCase().includes('stream') || lowerUrl.includes('cloudfront.net/live') || lowerUrl.includes('msnetworks.net');
                 const isHls = lowerUrl.includes('.m3u8') || lowerUrl.includes('klnwm.com') || lowerUrl.includes('hlscob.com');
                 const isDash = lowerUrl.includes('.mpd');
 
-                if (isCastle || isAnikoto) {
+                if (isCastle || isAnikoto || isSportsOrLive) {
                     name = `⚡ [In-App Player] ${name}`;
                 } else if (isMkv) {
                     name = `🚀 [4K / VLC] ${name}`;
@@ -2770,13 +2771,15 @@ const server = http.createServer(async (req, res) => {
                 const streamUa = reqHeaders['User-Agent'] || reqHeaders['user-agent'] || '';
 
                 let finalPlayUrl = streamUrl;
-                if (streamUrl.includes('/d/master.m3u8') || (streamUrl.includes('clearkey=') && streamUrl.includes('.m3u8'))) {
-                    // Decrypted HTTPS HLS stream for Live Sports/Cricket & Live TV (plays everywhere on VLC, iPhone, Android, and Smart TVs)
-                    finalPlayUrl = streamUrl.replace('http://140.238.244.130', 'https://cncverse.dpdns.org');
+                // Rewrite any IP-based or HTTP CNCVerse streams to verified HTTPS domain
+                if (streamUrl.includes('129.225.106.195') || streamUrl.includes('140.238.244.130')) {
+                    finalPlayUrl = streamUrl
+                        .replace(/http:\/\/129\.225\.106\.195/g, 'https://cncverse.dpdns.org')
+                        .replace(/https:\/\/129\.225\.106\.195/g, 'https://cncverse.dpdns.org')
+                        .replace(/http:\/\/140\.238\.244\.130/g, 'https://cncverse.dpdns.org')
+                        .replace(/https:\/\/140\.238\.244\.130/g, 'https://cncverse.dpdns.org');
                 } else if (streamUrl.startsWith('http://cncverse.dpdns.org')) {
                     finalPlayUrl = streamUrl.replace('http://cncverse.dpdns.org', 'https://cncverse.dpdns.org');
-                } else if (streamUrl.startsWith('http://140.238.244.130')) {
-                    finalPlayUrl = streamUrl.replace('http://140.238.244.130', 'https://cncverse.dpdns.org');
                 } else if (directMpd && directMpd.startsWith('https://') && !clearkey) {
                     finalPlayUrl = directMpd;
                 } else if (streamUrl.startsWith('http://') || streamReferer) {
@@ -2789,8 +2792,12 @@ const server = http.createServer(async (req, res) => {
                 // Sanitize Subtitle URLs to prevent Mixed Content blocking over HTTPS
                 const sanitizedSubtitles = Array.isArray(stream.subtitles) ? stream.subtitles.map(sub => {
                     let subUrl = (sub && sub.url) ? sub.url.trim() : '';
-                    if (subUrl.startsWith('http://140.238.244.130')) {
-                        subUrl = subUrl.replace('http://140.238.244.130', 'https://cncverse.dpdns.org');
+                    if (subUrl.includes('129.225.106.195') || subUrl.includes('140.238.244.130')) {
+                        subUrl = subUrl
+                            .replace(/http:\/\/129\.225\.106\.195/g, 'https://cncverse.dpdns.org')
+                            .replace(/https:\/\/129\.225\.106\.195/g, 'https://cncverse.dpdns.org')
+                            .replace(/http:\/\/140\.238\.244\.130/g, 'https://cncverse.dpdns.org')
+                            .replace(/https:\/\/140\.238\.244\.130/g, 'https://cncverse.dpdns.org');
                     } else if (subUrl.startsWith('http://')) {
                         subUrl = `${proto}://${host}/proxy/stream/playlist.m3u8?url=${encodeURIComponent(subUrl)}`;
                     }
