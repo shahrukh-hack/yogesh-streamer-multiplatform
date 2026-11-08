@@ -2836,19 +2836,25 @@
                 } catch(e) {}
             }
 
-            // 🚀 Lightning On-Demand Lazy Load (Only loads when user taps that specific tab)
-            if (tabId === 'tab-anime' && (!allLoadedAnime || allLoadedAnime.length === 0)) {
-                loadAnimePage();
-            } else if (tabId === 'tab-movies' && (!allLoadedMovies || allLoadedMovies.length === 0)) {
-                loadMoviesPage('cnc_CastleTV_other');
-            } else if (tabId === 'tab-series' && (!allLoadedSeries || allLoadedSeries.length === 0)) {
-                loadSeriesPage('native_web_series');
-            } else if (tabId === 'tab-sports' && (!allLoadedSports || allLoadedSports.length === 0)) {
-                loadSportsPage();
-            } else if (tabId === 'tab-livetv' && (!allLoadedChannels || allLoadedChannels.length === 0)) {
-                loadLiveTVPage();
-            } else if (tabId === 'tab-gujarati' && (!allLoadedGujarati || allLoadedGujarati.length === 0)) {
-                loadGujaratiPage();
+            // 🚀 Lightning On-Demand Lazy Load (Renders tab content when tab is active if not rendered yet)
+            if (tabId === 'tab-anime') {
+                const g = document.getElementById('anime-grid');
+                if (!g || g.querySelectorAll('.poster-card').length === 0) loadAnimePage();
+            } else if (tabId === 'tab-movies') {
+                const g = document.getElementById('movies-grid');
+                if (!g || g.querySelectorAll('.poster-card').length === 0) loadMoviesPage('cnc_CastleTV_other');
+            } else if (tabId === 'tab-series') {
+                const g = document.getElementById('series-grid');
+                if (!g || g.querySelectorAll('.poster-card').length === 0) loadSeriesPage('native_web_series');
+            } else if (tabId === 'tab-sports') {
+                const g = document.getElementById('sports-grid');
+                if (!g || g.querySelectorAll('.sports-card').length === 0) loadSportsPage();
+            } else if (tabId === 'tab-livetv') {
+                const g = document.getElementById('channels-grid');
+                if (!g || g.querySelectorAll('.channel-card').length === 0) loadLiveTVPage();
+            } else if (tabId === 'tab-gujarati') {
+                const g = document.getElementById('gujarati-grid');
+                if (!g || g.querySelectorAll('.poster-card').length === 0) loadGujaratiPage();
             }
         }
 
