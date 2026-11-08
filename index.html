@@ -2128,10 +2128,9 @@
                 <div class="source-select-wrap">
                     <span style="font-size: 12px; font-weight: 700; color: var(--text-sub);">Source Engine:</span>
                     <select id="series-source-select" class="source-select focusable" tabindex="0" onchange="changeSeriesSource(this.value)">
-                        <option value="native_web_series" selected>🔥 Top Trending Web Series (Instant Web Play • No VLC)</option>
-                        <option value="ALL">🌐 All Verified Series Engines (Castle & HDHub4u)</option>
-                        <option value="cnc_CastleTV_series">🏰 Castle TV Web Series (Instant Web Play • No VLC)</option>
-                        <option value="cnc_HDHub4U_series">💎 HDHub4u Series & Seasons (4K / 1080p Multi-Audio)</option>
+                        <option value="native_web_series" selected>🏰 Castle Web Series (Instant In-Browser HLS • No VLC Required)</option>
+                        <option value="ALL">🌐 All Verified Series Engines (Castle HLS + HDHub4u 4K • 500+ Series)</option>
+                        <option value="cnc_HDHub4U_series">💎 HDHub4u 4K / 1080p Ultra HD (MKV Multi-Audio)</option>
                         <option value="cnc_Rogmovies_series">🍿 RogMovies Web Series (VLC / MX)</option>
                         <option value="native_anikoto_series">⚔️ AniKoto Multi-Audio Anime Hub</option>
                         <option value="cnc_Toonix_other">🌟 Toonix (1,630+ Anime & Toons)</option>
@@ -3617,18 +3616,19 @@
                 const card = document.createElement('div');
                 card.className = 'poster-card focusable';
                 card.tabIndex = 0;
+                const isCastle = (item.id || '').startsWith('cnc:Q2FzdGxlVFY') || (item.sourceEngine || '').includes('Castle') || item.isWebPlayable;
                 card.innerHTML = `
                     <div class="poster-image-box">
                         <div class="card-badges">
-                            ${item.id && item.id.startsWith('cnc:Q2FzdGxlVFY') ? '<span class="badge-quality" style="background:var(--gold); color:#000;">⚡ NO VLC NEEDED</span>' : '<span class="badge-quality">SEASONS</span>'}
-                            <span class="badge-audio">Multi-Audio</span>
+                            ${isCastle ? '<span class="badge-quality" style="background:var(--gold); color:#000; font-weight:800;"><i class="fas fa-bolt"></i> WEB PLAY</span>' : '<span class="badge-quality">4K MKV</span>'}
+                            <span class="badge-audio">${isCastle ? 'Direct HLS' : 'Multi-Audio'}</span>
                         </div>
                         <img src="${item.poster || BRAND_LOGO}" alt="${cleanTitle(item.name)}" loading="lazy">
                         <div class="card-overlay-play"><i class="fas fa-play"></i></div>
-                        <div class="card-play-pill"><i class="fas fa-play"></i> Watch Now</div>
+                        <div class="card-play-pill"><i class="fas fa-play"></i> ${isCastle ? 'Instant Play' : 'Watch Now'}</div>
                     </div>
                     <div class="card-title">${cleanTitle(item.name)}</div>
-                    <div class="card-meta"><span>Series</span><span>★ ${item.imdbRating || '8.9'}</span></div>
+                    <div class="card-meta"><span>${isCastle ? '⚡ In-Browser HLS' : 'Regional / OTT'}</span><span>★ ${item.imdbRating || '8.9'}</span></div>
                 `;
                 card.onclick = () => openStreamPicker('series', item.id, item.name);
                 grid.appendChild(card);
