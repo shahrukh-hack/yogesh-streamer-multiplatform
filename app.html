@@ -5631,12 +5631,29 @@
                 }
             }
 
-            // Playback with HLS or Native
+            // Playback with Resilient HLS or Native
             if (Hls.isSupported() && (url.includes('.m3u8') || !url.includes('.mp4'))) {
-                currentHlsEngine = new Hls({ enableWorker: true, lowLatencyMode: true });
+                currentHlsEngine = new Hls({
+                    enableWorker: true,
+                    lowLatencyMode: true,
+                    backBufferLength: 30,
+                    maxBufferLength: 30,
+                    maxMaxBufferLength: 60,
+                    maxBufferSize: 60 * 1000 * 1000,
+                    startFragPrefetch: true,
+                    nudgeOffset: 0.1,
+                    nudgeMaxRetry: 5,
+                    manifestLoadingTimeOut: 12000,
+                    levelLoadingTimeOut: 12000,
+                    fragLoadingTimeOut: 20000
+                });
+                let hlsNetworkRetries = 0;
+                let hlsMediaRetries = 0;
                 currentHlsEngine.loadSource(url);
                 currentHlsEngine.attachMedia(video);
                 currentHlsEngine.on(Hls.Events.MANIFEST_PARSED, () => {
+                    hlsNetworkRetries = 0;
+                    hlsMediaRetries = 0;
                     applyResume();
                     video.play().catch(() => {});
                     setupPlayerTrackControls();
@@ -5648,7 +5665,34 @@
                     updateQualityButtonLabel(data.level);
                 });
                 currentHlsEngine.on(Hls.Events.ERROR, (event, data) => {
-                    if (data.fatal) tryNextStreamServer();
+                    if (data.fatal) {
+                        switch (data.type) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                if (hlsNetworkRetries < 2) {
+                                    hlsNetworkRetries++;
+                                    console.warn(`HLS Network drop, retrying segment load (attempt ${hlsNetworkRetries})...`);
+                                    currentHlsEngine.startLoad();
+                                } else {
+                                    console.error('Fatal HLS Network Error after retries, switching server mirror...');
+                                    tryNextStreamServer();
+                                }
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                if (hlsMediaRetries < 2) {
+                                    hlsMediaRetries++;
+                                    console.warn(`HLS Media decode issue, auto-recovering media (attempt ${hlsMediaRetries})...`);
+                                    currentHlsEngine.recoverMediaError();
+                                } else {
+                                    console.error('Fatal HLS Media Error after recovery, switching server mirror...');
+                                    tryNextStreamServer();
+                                }
+                                break;
+                            default:
+                                console.error('Unrecoverable HLS fatal error, switching server mirror...');
+                                tryNextStreamServer();
+                                break;
+                        }
+                    }
                 });
             } else {
                 video.src = url;
