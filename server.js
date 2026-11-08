@@ -953,14 +953,43 @@ async function getNativeAniKotoStreams(rawSlug) {
                     'Referer': watchUrl
                 });
                 const embedUrl = sIframe?.result?.url || '';
-                const streamIdMatch = /\/stream\/[^\/]+\/([^/?]+)/.exec(embedUrl);
-                if (!streamIdMatch) continue;
-                const streamId = streamIdMatch[1];
+                if (!embedUrl) continue;
 
-                const srcData = await fetchJson(`https://megaplay.buzz/stream/getSources?id=${streamId}`, {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Referer': embedUrl
-                });
+                let fileId = null;
+                const sParam = embedUrl.includes('?s=') ? embedUrl.split('?s=')[1].split('&')[0] : 'tcdn';
+
+                try {
+                    const embedHtml = await fetchHtml(embedUrl, {
+                        'Referer': `${baseDomain}/`,
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+                    });
+                    const fileIdMatch = /File\s+([0-9]+)/i.exec(embedHtml);
+                    if (fileIdMatch) {
+                        fileId = fileIdMatch[1];
+                    }
+                } catch(ehErr) {}
+
+                if (!fileId) {
+                    const streamIdMatch = /\/(?:stream|embed)\/[^\/]+\/([^/?]+)/i.exec(embedUrl);
+                    if (streamIdMatch) fileId = streamIdMatch[1];
+                }
+
+                let srcData = null;
+                if (fileId) {
+                    try {
+                        srcData = await fetchJson(`https://megaplay.buzz/stream/getSources?id=${fileId}&platform=OTHER&s=${sParam}`, {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Referer': embedUrl
+                        });
+                    } catch(srcErr) {
+                        try {
+                            srcData = await fetchJson(`https://megaplay.buzz/stream/getSources?id=${fileId}`, {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Referer': embedUrl
+                            });
+                        } catch(e2) {}
+                    }
+                }
 
                 let decrypted = null;
                 if (srcData && srcData.enc) {
@@ -979,7 +1008,13 @@ async function getNativeAniKotoStreams(rawSlug) {
                         title: `Episode ${foundEpNum} • Direct HLS Master (1080p Multi-Track)`,
                         url: decrypted.file,
                         behaviorHints: {
-                            notWebReady: false
+                            notWebReady: false,
+                            proxyHeaders: {
+                                request: {
+                                    'Referer': 'https://megaplay.buzz/',
+                                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+                                }
+                            }
                         },
                         subtitles: subTracks
                     });

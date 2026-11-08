@@ -2079,13 +2079,11 @@
                 <div class="source-select-wrap">
                     <span style="font-size: 12px; font-weight: 700; color: var(--text-sub);">Source Engine:</span>
                     <select id="movies-source-select" class="source-select focusable" tabindex="0" onchange="changeMoviesSource(this.value)">
-                        <option value="ALL" selected>⚡ All Verified Engines (Native HDHub4u + VegaMovies + Castle Cinema • 1,500+ Titles)</option>
-                        <option value="native_hdhub4u_movies">💎 Native HDHub4u 4K (Reverse-Engineered Direct Scraper)</option>
-                        <option value="native_vegamovies_movies">🍿 Native VegaMovies 4K HDR (Reverse-Engineered Direct Scraper)</option>
-                        <option value="cnc_CastleTV_other">🏰 Castle Cinema (Instant Web Play • 611 Titles)</option>
-                        <option value="cnc_VegaMovies_other">🚀 VegaMovies Extended (Requires VLC / MX)</option>
+                        <option value="cnc_CastleTV_other" selected>🏰 Castle Cinema (Instant In-Browser HLS • No VLC Required • 611 Titles)</option>
+                        <option value="ALL">🌐 All Cinema Engines (Castle HLS + HDHub4u + VegaMovies • 1,500+ Titles)</option>
+                        <option value="native_hdhub4u_movies">💎 Native HDHub4u 4K (Ultra HD MKV • Multi-Audio)</option>
+                        <option value="native_vegamovies_movies">🍿 Native VegaMovies 4K HDR (Blu-Ray MKV)</option>
                         <option value="cnc_Rogmovies_other">🚀 RogMovies Cinema (Requires VLC / MX)</option>
-                        <option value="cnc_HDHub4U_other">🚀 HDHub4u Extended (Requires VLC / MX)</option>
                         <option value="cnc_4KHDHUB_other">🚀 4K HDHUB Ultra (Requires VLC / MX)</option>
                         <option value="cnc_Movies4u_other">🚀 Movies4U Extended (Requires VLC / MX)</option>
                     </select>
@@ -2839,7 +2837,7 @@
             if (tabId === 'tab-anime' && (!allLoadedAnime || allLoadedAnime.length === 0)) {
                 loadAnimePage();
             } else if (tabId === 'tab-movies' && (!allLoadedMovies || allLoadedMovies.length === 0)) {
-                loadMoviesPage('ALL');
+                loadMoviesPage('cnc_CastleTV_other');
             } else if (tabId === 'tab-series' && (!allLoadedSeries || allLoadedSeries.length === 0)) {
                 loadSeriesPage('native_web_series');
             } else if (tabId === 'tab-sports' && (!allLoadedSports || allLoadedSports.length === 0)) {
@@ -3167,8 +3165,8 @@
                 card.innerHTML = `
                     <div class="poster-image-box">
                         <div class="card-badges">
-                            <span class="badge-quality">1080p HLS</span>
-                            <span class="badge-audio">SUB & DUB</span>
+                            <span class="badge-quality" style="background:var(--gold); color:#000; font-weight:800;"><i class="fas fa-bolt"></i> WEB PLAY</span>
+                            <span class="badge-audio" style="background:rgba(16,185,129,0.25); color:#10b981; border:1px solid #10b981;">1080p HLS</span>
                         </div>
                         <img src="${item.poster || BRAND_LOGO}" onerror="this.src='${BRAND_LOGO}'" alt="${cleanTitle(item.name)}" loading="lazy">
                         <div class="card-overlay-play"><i class="fas fa-play"></i></div>
@@ -3320,19 +3318,22 @@
         // ==========================================
         let allLoadedMovies = [];
 
-        async function loadMoviesPage(sourceId = 'ALL') {
+        async function loadMoviesPage(sourceId = 'cnc_CastleTV_other') {
+            const sel = document.getElementById('movies-source-select');
+            if (sel && sel.value !== sourceId) sel.value = sourceId;
+
             const grid = document.getElementById('movies-grid');
             grid.innerHTML = '<div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>';
 
             try {
                 let targets = sourceId === 'ALL'
                     ? [
+                        { type: 'movie', id: 'cnc_CastleTV_other' },
                         { type: 'movie', id: 'native_hdhub4u_movies' },
                         { type: 'movie', id: 'native_vegamovies_movies' },
-                        { type: 'movie', id: 'cnc_CastleTV_other' },
+                        { type: 'other', id: 'cnc_Rogmovies_other' },
                         { type: 'other', id: 'cnc_VegaMovies_other' },
-                        { type: 'other', id: 'cnc_HDHub4U_other' },
-                        { type: 'other', id: 'cnc_Rogmovies_other' }
+                        { type: 'other', id: 'cnc_HDHub4U_other' }
                       ]
                     : [{ type: (sourceId.includes('other') ? 'other' : 'movie'), id: sourceId }];
 
@@ -3402,11 +3403,17 @@
                 const card = document.createElement('div');
                 card.className = 'poster-card focusable';
                 card.tabIndex = 0;
+                const isCastle = (item.id || '').startsWith('cnc:Q2FzdGxlVFY') || (item.id || '').includes('CastleTV') || (item.sourceEngine || '').includes('CastleTV') || item.isWebPlayable;
                 card.innerHTML = `
                     <div class="poster-image-box">
                         <div class="card-badges">
-                            <span class="badge-quality">4K UHD</span>
-                            <span class="badge-audio">Multi-Audio</span>
+                            ${isCastle ? `
+                                <span class="badge-quality" style="background:var(--gold); color:#000; font-weight:800;"><i class="fas fa-bolt"></i> WEB PLAY</span>
+                                <span class="badge-audio" style="background:rgba(16,185,129,0.25); color:#10b981; border:1px solid #10b981;">Direct HLS</span>
+                            ` : `
+                                <span class="badge-quality">4K UHD</span>
+                                <span class="badge-audio">Multi-Audio</span>
+                            `}
                         </div>
                         <img src="${item.poster || BRAND_LOGO}" alt="${cleanTitle(item.name)}" loading="lazy">
                         <div class="card-overlay-play"><i class="fas fa-play"></i></div>

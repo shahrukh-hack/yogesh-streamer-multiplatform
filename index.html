@@ -2079,13 +2079,11 @@
                 <div class="source-select-wrap">
                     <span style="font-size: 12px; font-weight: 700; color: var(--text-sub);">Source Engine:</span>
                     <select id="movies-source-select" class="source-select focusable" tabindex="0" onchange="changeMoviesSource(this.value)">
-                        <option value="ALL" selected>⚡ All Verified Engines (Native HDHub4u + VegaMovies + Castle Cinema • 1,500+ Titles)</option>
-                        <option value="native_hdhub4u_movies">💎 Native HDHub4u 4K (Reverse-Engineered Direct Scraper)</option>
-                        <option value="native_vegamovies_movies">🍿 Native VegaMovies 4K HDR (Reverse-Engineered Direct Scraper)</option>
-                        <option value="cnc_CastleTV_other">🏰 Castle Cinema (Instant Web Play • 611 Titles)</option>
-                        <option value="cnc_VegaMovies_other">🚀 VegaMovies Extended (Requires VLC / MX)</option>
+                        <option value="cnc_CastleTV_other" selected>🏰 Castle Cinema (Instant In-Browser HLS • No VLC Required • 611 Titles)</option>
+                        <option value="ALL">🌐 All Cinema Engines (Castle HLS + HDHub4u + VegaMovies • 1,500+ Titles)</option>
+                        <option value="native_hdhub4u_movies">💎 Native HDHub4u 4K (Ultra HD MKV • Multi-Audio)</option>
+                        <option value="native_vegamovies_movies">🍿 Native VegaMovies 4K HDR (Blu-Ray MKV)</option>
                         <option value="cnc_Rogmovies_other">🚀 RogMovies Cinema (Requires VLC / MX)</option>
-                        <option value="cnc_HDHub4U_other">🚀 HDHub4u Extended (Requires VLC / MX)</option>
                         <option value="cnc_4KHDHUB_other">🚀 4K HDHUB Ultra (Requires VLC / MX)</option>
                         <option value="cnc_Movies4u_other">🚀 Movies4U Extended (Requires VLC / MX)</option>
                     </select>
@@ -2250,8 +2248,7 @@
                         <option value="VERIFIED">⚡ Verified 24/7 National Feeds</option>
                         <option value="cnc_JIOTVPlusIND3_tv">📺 JIOTV+ Network (1,177 Channels)</option>
                         <option value="cnc_JIOTVIND_tv">📺 JIO TV National (1,104 Channels)</option>
-                        <option value="cnc_JioHotstar2_tv">📺 JioHotstar (146 Channels)</option>
-                        <option value="cnc_SUNNXT_SKTechProvider_tv">📺 SUN NXT Regional (33 Channels)</option>
+                                                <option value="cnc_SUNNXT_SKTechProvider_tv">📺 SUN NXT Regional (33 Channels)</option>
                     </select>
                 </div>
             </div>
@@ -2658,31 +2655,31 @@
         // 🌟 Verified 24/7 Channels Seed
         const VERIFIED_LIVE_CHANNELS = [
             // 🦁 Regional Gujarati Channels (100% Tested Live)
-            { name: "ABP Asmita HD (Gujarati News)", cat: "GUJARATI", url: "https://d2l4ar6y3mrs4k.cloudfront.net/live-streaming/asmita-livetv/master.m3u8", logo: BRAND_LOGO, quality: "1080p Full HD" },
-            { name: "TV9 Gujarati HD", cat: "GUJARATI", url: "https://dyjmyiv3bp2ez.cloudfront.net/pub-iotv9guj3ki8lu/liveabr/playlist.m3u8", logo: BRAND_LOGO, quality: "720p HD" },
-            { name: "News18 Gujarati HD", cat: "GUJARATI", url: "https://n18syndication.akamaized.net/bpk-tv/News18_Gujarati_NW18_MOB/output01/master.m3u8", logo: BRAND_LOGO, quality: "1080p Full HD" },
-            { name: "VTV News Gujarati", cat: "GUJARATI", url: "https://d1msejlow1t3l4.cloudfront.net/fta/vtvgujarati/playlist.m3u8", logo: BRAND_LOGO, quality: "576p HD" },
-            { name: "Zee 24 Kalak (Gujarati)", cat: "GUJARATI", url: "https://vg-zeefta.akamaized.net/ptnr-yupptv/title-zee24kalak/v1/manifest/611d79b11b77e2f571934fd80ca1413453772ac7/497f7199-758d-495d-9d2f-a5489231c428/14b7c8ec-16da-47f2-8d7e-5bbaec67b3e2/3.m3u8", logo: BRAND_LOGO, quality: "720p HD" },
-            { name: "GS TV (Gujarat)", cat: "GUJARATI", url: "https://cdnplay.peanutsquare.com/560828843292539228453915.m3u8", logo: BRAND_LOGO, quality: "576p Direct" },
-            { name: "Aastha Gujarati (Bhakti)", cat: "GUJARATI", url: "https://aasthaott.akamaized.net/110923/smil:aasthagujrati.smil/playlist.m3u8", logo: BRAND_LOGO, quality: "480p SD" },
+            { name: "ABP Asmita HD (Gujarati News)", cat: "GUJARATI", url: "https://d2l4ar6y3mrs4k.cloudfront.net/live-streaming/asmita-livetv/master.m3u8", logo: "https://jiotv.catchup.cdn.jio.com/dare_images/images/ABP_Asmita.png", quality: "1080p Full HD" },
+            { name: "TV9 Gujarati HD", cat: "GUJARATI", url: "https://dyjmyiv3bp2ez.cloudfront.net/pub-iotv9guj3ki8lu/liveabr/playlist.m3u8", logo: "https://jiotv.catchup.cdn.jio.com/dare_images/images/Tv_9_Gujarat.png", quality: "720p HD" },
+            { name: "News18 Gujarati HD", cat: "GUJARATI", url: "https://n18syndication.akamaized.net/bpk-tv/News18_Gujarati_NW18_MOB/output01/master.m3u8", logo: "https://jiotv.catchup.cdn.jio.com/dare_images/images/News18Gujarati.png", quality: "1080p Full HD" },
+            { name: "VTV News Gujarati", cat: "GUJARATI", url: "https://d1msejlow1t3l4.cloudfront.net/fta/vtvgujarati/playlist.m3u8", logo: "https://jiotv.catchup.cdn.jio.com/dare_images/images/VTV_Gujarati.png", quality: "576p HD" },
+            { name: "Zee 24 Kalak (Gujarati)", cat: "GUJARATI", url: "https://vg-zeefta.akamaized.net/ptnr-yupptv/title-zee24kalak/v1/manifest/611d79b11b77e2f571934fd80ca1413453772ac7/497f7199-758d-495d-9d2f-a5489231c428/14b7c8ec-16da-47f2-8d7e-5bbaec67b3e2/3.m3u8", logo: "https://jiotv.catchup.cdn.jio.com/dare_images/images/Zee_24_Kalak.png", quality: "720p HD" },
+            { name: "GS TV (Gujarat)", cat: "GUJARATI", url: "https://cdnplay.peanutsquare.com/560828843292539228453915.m3u8", logo: "https://jiotv.catchup.cdn.jio.com/dare_images/images/GS_TV.png", quality: "576p Direct" },
+            { name: "Aastha Gujarati (Bhakti)", cat: "GUJARATI", url: "https://aasthaott.akamaized.net/110923/smil:aasthagujrati.smil/playlist.m3u8", logo: "https://jiotv.catchup.cdn.jio.com/dare_images/images/Aastha.png", quality: "480p SD" },
 
             // 🏏 Live Sports & Cricket (Direct 0ms Feeds)
-            { name: "DD Sports 1 HD (Live Cricket & Sports)", cat: "SPORTS", url: "https://mumbai-edge.smartplaytv.in/DDSportsHD/index.m3u8", logo: BRAND_LOGO, quality: "1080p 60fps" },
+            { name: "DD Sports 1 HD (Live Cricket & Sports)", cat: "SPORTS", url: "https://mumbai-edge.smartplaytv.in/DDSportsHD/index.m3u8", logo: "https://jiotv.catchup.cdn.jio.com/dare_images/images/DD_Sports.png", quality: "1080p 60fps" },
             { name: "Willow Cricket HD (Live Matches)", cat: "SPORTS", url: "https://baila-lentoo.pages.dev/all-sp/809386.m3u8", logo: "https://s21.q4cdn.com/819998841/files/doc_news/2024/May/Willow-logo-transparent-cb.png", quality: "1080p 60fps" },
-            { name: "A Sports HD (Live Cricket)", cat: "SPORTS", url: "https://playztv-apps.pages.dev/a-sports/index.m3u8", logo: BRAND_LOGO, quality: "1080p HD" },
-            { name: "PTV Sports HD (Live Cricket)", cat: "SPORTS", url: "https://playztv-apps.pages.dev/ptv-sports/index.m3u8", logo: BRAND_LOGO, quality: "720p HD" },
+            { name: "A Sports HD (Live Cricket)", cat: "SPORTS", url: "https://playztv-apps.pages.dev/a-sports/index.m3u8", logo: "https://img.media.jio.com/tvpimages/96/65/302113_1749664252703_l_medium.jpg", quality: "1080p HD" },
+            { name: "PTV Sports HD (Live Cricket)", cat: "SPORTS", url: "https://playztv-apps.pages.dev/ptv-sports/index.m3u8", logo: "https://jiotv.catchup.cdn.jio.com/dare_images/images/Jio_Sports.png", quality: "720p HD" },
 
             // 📰 National Hindi News HD
-            { name: "Aaj Tak HD", cat: "NEWS", url: "https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8", logo: BRAND_LOGO, quality: "1080p Full HD" },
-            { name: "News18 India HD", cat: "NEWS", url: "https://n18syndication.akamaized.net/bpk-tv/News18_India_NW18_MOB/output01/master.m3u8", logo: BRAND_LOGO, quality: "1080p Full HD" },
+            { name: "Aaj Tak HD", cat: "NEWS", url: "https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8", logo: "https://jiotv.catchup.cdn.jio.com/dare_images/images/Aaj_Tak.png", quality: "1080p Full HD" },
+            { name: "News18 India HD", cat: "NEWS", url: "https://n18syndication.akamaized.net/bpk-tv/News18_India_NW18_MOB/output01/master.m3u8", logo: "https://jiotv.catchup.cdn.jio.com/dare_images/images/News18_India_NW18.png", quality: "1080p Full HD" },
 
             // 🎵 Music & Youth
-            { name: "9X Jalwa HD (Hindi Retro Hits)", cat: "MUSIC", url: "https://wiselp.wiseplayout.com/9X_Jalwa/master.m3u8", logo: BRAND_LOGO, quality: "1080p HD" },
-            { name: "9X Jhakaas HD", cat: "MUSIC", url: "https://wiselp.wiseplayout.com/9X_Jhakaas/master.m3u8", logo: BRAND_LOGO, quality: "1080p HD" },
-            { name: "7S Music HD", cat: "MUSIC", url: "https://cdn.pishow.tv/ott/live/1257/master.m3u8", logo: BRAND_LOGO, quality: "576p Direct" },
+            { name: "9X Jalwa HD (Hindi Retro Hits)", cat: "MUSIC", url: "https://wiselp.wiseplayout.com/9X_Jalwa/master.m3u8", logo: "https://jiotv.catchup.cdn.jio.com/dare_images/images/9XJalwa.png", quality: "1080p HD" },
+            { name: "9X Jhakaas HD", cat: "MUSIC", url: "https://wiselp.wiseplayout.com/9X_Jhakaas/master.m3u8", logo: "https://jiotv.catchup.cdn.jio.com/dare_images/images/9X_Jhakaas.png", quality: "1080p HD" },
+            { name: "7S Music HD", cat: "MUSIC", url: "https://cdn.pishow.tv/ott/live/1257/master.m3u8", logo: "https://jiotv.catchup.cdn.jio.com/dare_images/images/9XJalwa.png", quality: "576p Direct" },
 
             // 🕉️ Devotional & Spiritual
-            { name: "Aastha TV HD (Bhakti & Satsang)", cat: "DEVOTIONAL", url: "https://mumbai-edge.smartplaytv.in/Aastha/index.m3u8", logo: BRAND_LOGO, quality: "720p HD" }
+            { name: "Aastha TV HD (Bhakti & Satsang)", cat: "DEVOTIONAL", url: "https://mumbai-edge.smartplaytv.in/Aastha/index.m3u8", logo: "https://jiotv.catchup.cdn.jio.com/dare_images/images/Aastha.png", quality: "720p HD" }
         ];
 
         // 🌟 Initializer
@@ -2840,7 +2837,7 @@
             if (tabId === 'tab-anime' && (!allLoadedAnime || allLoadedAnime.length === 0)) {
                 loadAnimePage();
             } else if (tabId === 'tab-movies' && (!allLoadedMovies || allLoadedMovies.length === 0)) {
-                loadMoviesPage('ALL');
+                loadMoviesPage('cnc_CastleTV_other');
             } else if (tabId === 'tab-series' && (!allLoadedSeries || allLoadedSeries.length === 0)) {
                 loadSeriesPage('native_web_series');
             } else if (tabId === 'tab-sports' && (!allLoadedSports || allLoadedSports.length === 0)) {
@@ -3168,8 +3165,8 @@
                 card.innerHTML = `
                     <div class="poster-image-box">
                         <div class="card-badges">
-                            <span class="badge-quality">1080p HLS</span>
-                            <span class="badge-audio">SUB & DUB</span>
+                            <span class="badge-quality" style="background:var(--gold); color:#000; font-weight:800;"><i class="fas fa-bolt"></i> WEB PLAY</span>
+                            <span class="badge-audio" style="background:rgba(16,185,129,0.25); color:#10b981; border:1px solid #10b981;">1080p HLS</span>
                         </div>
                         <img src="${item.poster || BRAND_LOGO}" onerror="this.src='${BRAND_LOGO}'" alt="${cleanTitle(item.name)}" loading="lazy">
                         <div class="card-overlay-play"><i class="fas fa-play"></i></div>
@@ -3321,19 +3318,22 @@
         // ==========================================
         let allLoadedMovies = [];
 
-        async function loadMoviesPage(sourceId = 'ALL') {
+        async function loadMoviesPage(sourceId = 'cnc_CastleTV_other') {
+            const sel = document.getElementById('movies-source-select');
+            if (sel && sel.value !== sourceId) sel.value = sourceId;
+
             const grid = document.getElementById('movies-grid');
             grid.innerHTML = '<div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>';
 
             try {
                 let targets = sourceId === 'ALL'
                     ? [
+                        { type: 'movie', id: 'cnc_CastleTV_other' },
                         { type: 'movie', id: 'native_hdhub4u_movies' },
                         { type: 'movie', id: 'native_vegamovies_movies' },
-                        { type: 'movie', id: 'cnc_CastleTV_other' },
+                        { type: 'other', id: 'cnc_Rogmovies_other' },
                         { type: 'other', id: 'cnc_VegaMovies_other' },
-                        { type: 'other', id: 'cnc_HDHub4U_other' },
-                        { type: 'other', id: 'cnc_Rogmovies_other' }
+                        { type: 'other', id: 'cnc_HDHub4U_other' }
                       ]
                     : [{ type: (sourceId.includes('other') ? 'other' : 'movie'), id: sourceId }];
 
@@ -3403,11 +3403,17 @@
                 const card = document.createElement('div');
                 card.className = 'poster-card focusable';
                 card.tabIndex = 0;
+                const isCastle = (item.id || '').startsWith('cnc:Q2FzdGxlVFY') || (item.id || '').includes('CastleTV') || (item.sourceEngine || '').includes('CastleTV') || item.isWebPlayable;
                 card.innerHTML = `
                     <div class="poster-image-box">
                         <div class="card-badges">
-                            <span class="badge-quality">4K UHD</span>
-                            <span class="badge-audio">Multi-Audio</span>
+                            ${isCastle ? `
+                                <span class="badge-quality" style="background:var(--gold); color:#000; font-weight:800;"><i class="fas fa-bolt"></i> WEB PLAY</span>
+                                <span class="badge-audio" style="background:rgba(16,185,129,0.25); color:#10b981; border:1px solid #10b981;">Direct HLS</span>
+                            ` : `
+                                <span class="badge-quality">4K UHD</span>
+                                <span class="badge-audio">Multi-Audio</span>
+                            `}
                         </div>
                         <img src="${item.poster || BRAND_LOGO}" alt="${cleanTitle(item.name)}" loading="lazy">
                         <div class="card-overlay-play"><i class="fas fa-play"></i></div>
@@ -3848,7 +3854,7 @@
                 card.tabIndex = 0;
                 card.innerHTML = `
                     <div class="channel-logo-wrap">
-                        <img src="${c.logo || c.poster || BRAND_LOGO}" alt="${c.name}" loading="lazy">
+                        <img src="${c.logo || c.poster || BRAND_LOGO}" alt="${c.name}" loading="lazy" onerror="this.src=BRAND_LOGO">
                     </div>
                     <div class="channel-info-wrap">
                         <div class="channel-name">${cleanTitle(c.name)}</div>
@@ -3885,7 +3891,7 @@
                     if (cat === 'ENTERTAINMENT') return txt.includes('STAR') || txt.includes('ZEE') || txt.includes('SONY') || txt.includes('COLORS');
                     if (cat === 'NEWS') return txt.includes('NEWS') || txt.includes('AAJ TAK') || txt.includes('INDIA TV');
                     if (cat === 'MUSIC') return txt.includes('MUSIC') || txt.includes('9X') || txt.includes('MTV');
-                    if (cat === 'GUJARATI') return txt.includes('GUJARATI') || txt.includes('SANDESH') || txt.includes('COLORS GUJARATI');
+                    if (cat === 'GUJARATI') return txt.includes('GUJARATI') || txt.includes('SANDESH') || txt.includes('COLORS GUJARATI') || txt.includes('ASMITA') || txt.includes('VTV') || txt.includes('TV9') || txt.includes('KALAK') || txt.includes('GS TV');
                     if (cat === 'DEVOTIONAL') return txt.includes('AASTHA') || txt.includes('SANSKAR') || txt.includes('DEVOTIONAL');
                     return true;
                 });
