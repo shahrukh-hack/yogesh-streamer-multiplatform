@@ -3227,6 +3227,8 @@
                     <div class="shortcut-row"><kbd>A</kbd> <span>Audio Language</span></div>
                     <div class="shortcut-row"><kbd>C</kbd> <span>Subtitles (CC)</span></div>
                     <div class="shortcut-row"><kbd>O</kbd> <span>Audio-Only Radio</span></div>
+                    <div class="shortcut-row"><kbd>V</kbd> <span>Switch Server / Mirror</span></div>
+                    <div class="shortcut-row"><kbd>E</kbd> <span>Browse Episodes</span></div>
                     <div class="shortcut-row"><kbd>/</kbd> <span>Universal Search</span></div>
                     <div class="shortcut-row"><kbd>Esc</kbd> <span>Close Player</span></div>
                 </div>
@@ -5253,7 +5255,7 @@
             }
         }
 
-        function launchCinemaPlayer(url, title, streamList = [], streamIndex = 0) {
+        function launchCinemaPlayer(url, title, streamList = [], streamIndex = 0, explicitStartTime = null) {
             // URL decode if passed encoded
             try { url = decodeURIComponent(url); } catch(e) {}
             try { title = decodeURIComponent(title); } catch(e) {}
@@ -5364,15 +5366,17 @@
                 }
             } catch(e) {}
 
-            // Check for saved resume position
-            let resumeTime = 0;
-            try {
-                const list = JSON.parse(localStorage.getItem(CW_STORAGE_KEY) || '[]');
-                const saved = list.find(i => i.title === title || i.url === url);
-                if (saved && saved.time > 15 && (!saved.duration || saved.time < saved.duration - 30)) {
-                    resumeTime = saved.time;
-                }
-            } catch(e) {}
+            // Check for saved resume position (or explicit seamless server switch time)
+            let resumeTime = explicitStartTime && explicitStartTime > 0 ? explicitStartTime : 0;
+            if (resumeTime === 0) {
+                try {
+                    const list = JSON.parse(localStorage.getItem(CW_STORAGE_KEY) || '[]');
+                    const saved = list.find(i => i.title === title || i.url === url);
+                    if (saved && saved.time > 15 && (!saved.duration || saved.time < saved.duration - 30)) {
+                        resumeTime = saved.time;
+                    }
+                } catch(e) {}
+            }
 
             // Save Watch Progress & Up Next Trigger
             video.addEventListener('timeupdate', () => {
@@ -5616,12 +5620,17 @@
         }
 
         function tryNextStreamServer() {
+            const currentVid = document.querySelector('#player-screen-wrap video');
+            const curTime = currentVid ? currentVid.currentTime : 0;
             if (activeStreamList.length > 1) {
                 activeStreamIndex = (activeStreamIndex + 1) % activeStreamList.length;
                 const next = activeStreamList[activeStreamIndex];
                 if (next && next.url) {
-                    launchCinemaPlayer(next.url, activeStreamTitle, activeStreamList, activeStreamIndex);
+                    showToast(`Switching to Mirror ${activeStreamIndex + 1}...`, 'fa-server');
+                    launchCinemaPlayer(next.url, activeStreamTitle, activeStreamList, activeStreamIndex, curTime);
                 }
+            } else {
+                showToast('No alternative mirror servers available for this stream', 'fa-server');
             }
         }
 
@@ -6619,6 +6628,12 @@
             } else if (e.key === 'z' || e.key === 'Z') {
                 e.preventDefault();
                 openSleepTimerModal();
+            } else if (e.key === 'v' || e.key === 'V') {
+                e.preventDefault();
+                tryNextStreamServer();
+            } else if (e.key === 'e' || e.key === 'E') {
+                e.preventDefault();
+                openPlayerEpisodesModal();
             }
         }
 
