@@ -199,6 +199,73 @@ function fetchHtml(targetUrl, extraHeaders = {}, timeoutMs = 8000) {
 // ========================================================
 // ⚡ NATIVE IN-PROCESS SCRAPERS (REVERSE ENGINEERED FROM CS3)
 // ========================================================
+
+const NATIVE_LIVE_CHANNELS = [
+    { id: 'native:tv:abp_asmita', name: 'ABP Asmita HD (Gujarati)', cat: 'GUJARATI', url: 'https://d2l4ar6y3mrs4k.cloudfront.net/live-streaming/asmita-livetv/master.m3u8', logo: BRAND_LOGO, quality: '1080p HD' },
+    { id: 'native:tv:tv9_gujarati', name: 'TV9 Gujarati HD', cat: 'GUJARATI', url: 'https://dyjmyiv3bp2ez.cloudfront.net/pub-iotv9guj3ki8lu/liveabr/playlist.m3u8', logo: BRAND_LOGO, quality: '720p HD' },
+    { id: 'native:tv:news18_gujarati', name: 'News18 Gujarati HD', cat: 'GUJARATI', url: 'https://n18syndication.akamaized.net/bpk-tv/News18_Gujarati_NW18_MOB/output01/master.m3u8', logo: BRAND_LOGO, quality: '1080p HD' },
+    { id: 'native:tv:vtv_gujarati', name: 'VTV News Gujarati', cat: 'GUJARATI', url: 'https://d1msejlow1t3l4.cloudfront.net/fta/vtvgujarati/playlist.m3u8', logo: BRAND_LOGO, quality: '576p HD' },
+    { id: 'native:tv:zee24_kalak', name: 'Zee 24 Kalak (Gujarati)', cat: 'GUJARATI', url: 'https://vg-zeefta.akamaized.net/ptnr-yupptv/title-zee24kalak/v1/manifest/611d79b11b77e2f571934fd80ca1413453772ac7/497f7199-758d-495d-9d2f-a5489231c428/14b7c8ec-16da-47f2-8d7e-5bbaec67b3e2/3.m3u8', logo: BRAND_LOGO, quality: '720p HD' },
+    { id: 'native:tv:gs_tv', name: 'GS TV (Gujarat)', cat: 'GUJARATI', url: 'https://cdnplay.peanutsquare.com/560828843292539228453915.m3u8', logo: BRAND_LOGO, quality: '576p' },
+    { id: 'native:tv:aastha_gujarati', name: 'Aastha Gujarati', cat: 'GUJARATI', url: 'https://aasthaott.akamaized.net/110923/smil:aasthagujrati.smil/playlist.m3u8', logo: BRAND_LOGO, quality: '480p' },
+
+    { id: 'native:tv:dd_sports', name: 'DD Sports 1 HD (Live Cricket)', cat: 'SPORTS', url: 'https://mumbai-edge.smartplaytv.in/DDSportsHD/index.m3u8', logo: BRAND_LOGO, quality: '1080p 60fps' },
+    { id: 'native:tv:willow_cricket', name: 'Willow Cricket HD (Live Matches)', cat: 'SPORTS', url: 'https://baila-lentoo.pages.dev/all-sp/809386.m3u8', logo: 'https://s21.q4cdn.com/819998841/files/doc_news/2024/May/Willow-logo-transparent-cb.png', quality: '1080p 60fps' },
+    { id: 'native:tv:a_sports', name: 'A Sports HD (Live Sports)', cat: 'SPORTS', url: 'https://playztv-apps.pages.dev/a-sports/index.m3u8', logo: BRAND_LOGO, quality: '1080p HD' },
+    { id: 'native:tv:ptv_sports', name: 'PTV Sports HD (Live Cricket)', cat: 'SPORTS', url: 'https://playztv-apps.pages.dev/ptv-sports/index.m3u8', logo: BRAND_LOGO, quality: '720p HD' },
+
+    { id: 'native:tv:aaj_tak', name: 'Aaj Tak HD', cat: 'NEWS', url: 'https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8', logo: BRAND_LOGO, quality: '1080p HD' },
+    { id: 'native:tv:news18_india', name: 'News18 India HD', cat: 'NEWS', url: 'https://n18syndication.akamaized.net/bpk-tv/News18_India_NW18_MOB/output01/master.m3u8', logo: BRAND_LOGO, quality: '1080p HD' },
+
+    { id: 'native:tv:9x_jalwa', name: '9X Jalwa HD (Hindi Hits)', cat: 'MUSIC', url: 'https://wiselp.wiseplayout.com/9X_Jalwa/master.m3u8', logo: BRAND_LOGO, quality: '1080p HD' },
+    { id: 'native:tv:9x_jhakaas', name: '9X Jhakaas HD', cat: 'MUSIC', url: 'https://wiselp.wiseplayout.com/9X_Jhakaas/master.m3u8', logo: BRAND_LOGO, quality: '1080p HD' },
+    { id: 'native:tv:7s_music', name: '7S Music HD', cat: 'MUSIC', url: 'https://cdn.pishow.tv/ott/live/1257/master.m3u8', logo: BRAND_LOGO, quality: '576p' },
+
+    { id: 'native:tv:aastha_hd', name: 'Aastha TV HD (Bhakti & Satsang)', cat: 'DEVOTIONAL', url: 'https://mumbai-edge.smartplaytv.in/Aastha/index.m3u8', logo: BRAND_LOGO, quality: '720p HD' }
+];
+
+async function getNativeLiveTVCatalog() {
+    const list = NATIVE_LIVE_CHANNELS.map(c => ({
+        id: c.id,
+        name: c.name,
+        type: 'tv',
+        poster: c.logo || BRAND_LOGO,
+        cat: c.cat,
+        url: c.url,
+        quality: c.quality
+    }));
+    try {
+        const sports = await getNativeSportsCatalog();
+        if (Array.isArray(sports)) {
+            sports.forEach(s => {
+                list.push({
+                    id: s.id,
+                    name: s.name,
+                    type: 'tv',
+                    poster: s.poster || BRAND_LOGO,
+                    cat: 'SPORTS',
+                    quality: 'Live Match'
+                });
+            });
+        }
+    } catch(e) {}
+    return list;
+}
+
+function getNativeLiveTVStream(channelId) {
+    const channel = NATIVE_LIVE_CHANNELS.find(c => c.id === channelId);
+    if (!channel || !channel.url) return { streams: [] };
+    return {
+        streams: [{
+            name: `⚡ [In-App Player] ${channel.name}`,
+            title: `${channel.name} • Direct Verified Live Feed (${channel.quality || '1080p'})`,
+            url: channel.url,
+            behaviorHints: { notWebReady: false },
+            isWebPlayable: true
+        }]
+    };
+}
+
 const FANCODE_API_URL = 'https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.json';
 const DOMAINS_API_URL = 'https://raw.githubusercontent.com/phisher98/TVVVV/refs/heads/main/domains.json';
 const FIREBASE_DOMAINS_URL = 'https://cloudstreampluginhelper-default-rtdb.firebaseio.com/.json';
@@ -1766,6 +1833,13 @@ const server = http.createServer(async (req, res) => {
             return;
         }
 
+                if (rawId.startsWith('native:tv:')) {
+            const result = getNativeLiveTVStream(rawId);
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify(result));
+            return;
+        }
+
         // ⚡ Native Reverse-Engineered Stream Resolver Check
         if (rawId.startsWith('native:fc:')) {
             const matchId = rawId.replace('native:fc:', '');
@@ -1970,6 +2044,12 @@ const server = http.createServer(async (req, res) => {
 
     // Catalog route: /catalog/:type/:id.json or with extra args
     if (pathname.startsWith('/catalog/')) {
+                if (pathname.includes('native_live_tv')) {
+            const metas = await getNativeLiveTVCatalog();
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ metas }));
+            return;
+        }
         if (pathname.includes('native_live_sports_tv')) {
             const metas = await getNativeSportsCatalog();
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
@@ -2019,6 +2099,12 @@ const server = http.createServer(async (req, res) => {
             res.end(JSON.stringify({ metas }));
         } catch (err) {
             console.error(`Error fetching catalog ${pathname}:`, err.message);
+            if (pathname.startsWith('/catalog/tv/')) {
+                const metas = await getNativeLiveTVCatalog();
+                res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+                res.end(JSON.stringify({ metas }));
+                return;
+            }
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ metas: [] }));
         }
