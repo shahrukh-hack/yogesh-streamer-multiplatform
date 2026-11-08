@@ -1247,6 +1247,48 @@
             transform: scale(1.08);
         }
 
+        /* ⏩ NETFLIX-STYLE SKIP INTRO BUTTON */
+        .btn-skip-intro {
+            position: absolute;
+            bottom: 35px;
+            right: 30px;
+            background: rgba(13, 19, 34, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1.5px solid var(--border-gold);
+            color: #FFFFFF;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 95;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 0 15px rgba(235, 182, 76, 0.2);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: slideInSkipIntro 0.3s ease-out;
+        }
+        @keyframes slideInSkipIntro {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .btn-skip-intro:hover {
+            background: var(--gold);
+            color: #000000;
+            transform: scale(1.04);
+            box-shadow: 0 10px 30px rgba(235, 182, 76, 0.4);
+        }
+        .btn-skip-intro i {
+            color: var(--gold);
+            transition: color 0.2s;
+        }
+        .btn-skip-intro:hover i {
+            color: #000000;
+        }
+
         /* 📱 MX PLAYER / VLC STYLE TOUCH GESTURE HUD */
         .gesture-indicator-hud {
             position: absolute;
@@ -3038,6 +3080,9 @@
                 <div class="gesture-hud-track"><div id="gesture-hud-fill" class="gesture-hud-fill"></div></div>
             </div>
 
+            <!-- ⏩ Netflix-Style Skip Intro Button -->
+            <button id="btn-skip-intro" class="btn-skip-intro focusable" onclick="skipIntro()" style="display: none;"><i class="fas fa-forward-step"></i> Skip Intro</button>
+
             <!-- 🍿 Up Next Auto-Binge Overlay -->
             <div id="up-next-overlay" class="up-next-card" style="display: none;" onclick="event.stopPropagation()">
                 <div class="up-next-header">
@@ -3297,6 +3342,7 @@
                     <div class="shortcut-row"><kbd>O</kbd> <span>Audio-Only Radio</span></div>
                     <div class="shortcut-row"><kbd>V</kbd> <span>Switch Server / Mirror</span></div>
                     <div class="shortcut-row"><kbd>E</kbd> <span>Browse Episodes</span></div>
+                    <div class="shortcut-row"><kbd>I</kbd> <span>Skip Intro (+85s)</span></div>
                     <div class="shortcut-row"><kbd>/</kbd> <span>Universal Search</span></div>
                     <div class="shortcut-row"><kbd>Esc</kbd> <span>Close Player</span></div>
                 </div>
@@ -5526,9 +5572,18 @@
                 } catch(e) {}
             }
 
-            // Save Watch Progress & Up Next Trigger
+            // Save Watch Progress, Up Next & Skip Intro Trigger
             video.addEventListener('timeupdate', () => {
                 checkUpNextTrigger(video);
+                // Manage Skip Intro visibility for Series/Anime
+                const skipBtn = document.getElementById('btn-skip-intro');
+                if (skipBtn) {
+                    if (currentSeriesContext && currentSeriesContext.type === 'series' && video.currentTime >= 8 && video.currentTime <= 95) {
+                        if (skipBtn.style.display === 'none') skipBtn.style.display = 'inline-flex';
+                    } else {
+                        if (skipBtn.style.display !== 'none') skipBtn.style.display = 'none';
+                    }
+                }
                 if (video.currentTime > 10 && Math.floor(video.currentTime) % 5 === 0) {
                     saveWatchProgress({
                         title: activeStreamTitle,
@@ -6128,12 +6183,35 @@
             }
         }
 
+        function skipIntro() {
+            const video = document.querySelector('#player-screen-wrap video');
+            if (!video) return;
+            video.currentTime = Math.min((video.duration || 999999), video.currentTime + 85);
+            const skipBtn = document.getElementById('btn-skip-intro');
+            if (skipBtn) skipBtn.style.display = 'none';
+            showToast('Skipped opening intro (+85s)', 'fa-forward-step');
+        }
+
         function triggerSleepTimer() {
             const video = document.querySelector('#player-screen-wrap video');
-            if (video) video.pause();
             showToast('🌙 Sleep timer ended. Good night!', 'fa-moon');
-            closeCinemaPlayer();
-            cancelSleepTimer(false);
+            if (video && !video.paused) {
+                // Gentle soothing volume fade-out over 3 seconds
+                let vol = video.volume;
+                const fade = setInterval(() => {
+                    vol = Math.max(0, vol - 0.25);
+                    video.volume = vol;
+                    if (vol <= 0) {
+                        clearInterval(fade);
+                        video.pause();
+                        closeCinemaPlayer();
+                        cancelSleepTimer(false);
+                    }
+                }, 600);
+            } else {
+                closeCinemaPlayer();
+                cancelSleepTimer(false);
+            }
         }
 
         function updateSleepTimerBadge(text) {
@@ -6826,6 +6904,9 @@
             } else if (e.key === 'e' || e.key === 'E') {
                 e.preventDefault();
                 openPlayerEpisodesModal();
+            } else if (e.key === 'i' || e.key === 'I') {
+                e.preventDefault();
+                skipIntro();
             }
         }
 
