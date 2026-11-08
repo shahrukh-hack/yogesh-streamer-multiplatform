@@ -16,7 +16,7 @@ const PLUGINS_MANIFEST_URL = 'https://raw.githubusercontent.com/shahrukh-hack/yo
 const SCRAPERS_MANIFEST_URL = 'https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/scrapers.json';
 const BRAND_LOGO = 'https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/logo.jpg';
 const APP_PIN = process.env.APP_PIN || '778899';
-const ANDROID_APK_URL = 'https://github.com/shahrukh-hack/yogesh-streamer/releases/download/v5.4.5/YogeshStreamer-v5.4.5.apk';
+const ANDROID_APK_URL = 'https://github.com/shahrukh-hack/yogesh-streamer/releases/download/v5.5.0/YogeshStreamer-v5.5.0.apk';
 const ANDROID_RELEASES_URL = 'https://github.com/shahrukh-hack/yogesh-streamer-multiplatform/releases';
 const ANDROID_SHORT_URL = 'tinyurl.com/y-streamer-apk';
 
