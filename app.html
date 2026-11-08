@@ -3519,7 +3519,7 @@
                     <div class="card-title">${cleanTitle(item.name)}</div>
                     <div class="card-meta"><span>Series</span><span>★ ${item.imdbRating || '8.9'}</span></div>
                 `;
-                card.onclick = () => openStreamPicker(item.type || 'series', item.id, item.name);
+                card.onclick = () => openStreamPicker('series', item.id, item.name);
                 grid.appendChild(card);
             });
 
@@ -4011,10 +4011,15 @@
             document.getElementById('stream-picker-modal').classList.add('open');
 
             try {
+                let effectiveType = type || 'movie';
+                if (id && (id.includes('CastleTV') || id.includes('series') || type === 'series' || id.includes('Season'))) {
+                    effectiveType = 'series';
+                }
+
                 let streams = [];
-                // 1. Primary Query
+                // 1. Primary Query with intelligent series auto-detection
                 try {
-                    const res = await fetch(`${API_BASE}/stream/${type || 'movie'}/${encodeURIComponent(id)}.json`);
+                    const res = await fetch(`${API_BASE}/stream/${effectiveType}/${encodeURIComponent(id)}.json`);
                     const data = await res.json();
                     if (Array.isArray(data?.streams) && data.streams.length > 0) {
                         streams = data.streams;
@@ -4023,8 +4028,9 @@
 
                 // 2. Intelligent Auto-Fallback: Query other candidate types if 0 streams returned
                 if (streams.length === 0) {
-                    const fallbackTypes = ['other', 'movie', 'series'].filter(t => t !== (type || 'movie'));
+                    const fallbackTypes = (effectiveType === 'series') ? ['series', 'other', 'movie'] : ['movie', 'other', 'series'];
                     for (const fbType of fallbackTypes) {
+                        if (fbType === effectiveType) continue;
                         try {
                             const res = await fetch(`${API_BASE}/stream/${fbType}/${encodeURIComponent(id)}.json`);
                             const data = await res.json();
@@ -4035,7 +4041,6 @@
                         } catch(e) {}
                     }
                 }
-
                 if (streams.length === 0) {
                     const isMovieBox = (id || '').includes('MovieBox') || (id || '').includes('TW92aWVCb3h');
                     container.innerHTML = `

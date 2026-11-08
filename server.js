@@ -1786,13 +1786,15 @@ const server = http.createServer(async (req, res) => {
             if (rawId.startsWith('cnc:')) {
                 if (type === 'tv') {
                     candidateTypes = ['tv', 'other'];
+                } else if (type === 'series' || rawId.includes('CastleTV') || rawId.includes('series') || rawId.includes('Season') || rawId.includes('episode')) {
+                    // 🚀 Prioritize 'series' endpoint first: eliminates 15s-30s upstream timeout for Web Series & TV Shows
+                    candidateTypes = ['series', 'other', 'movie'];
                 } else {
-                    candidateTypes = ['other', 'movie', 'tv', 'series'];
+                    candidateTypes = ['movie', 'other', 'series'];
                 }
             } else {
-                candidateTypes = [type, 'movie', 'series', 'other'].filter((v, i, a) => a.indexOf(v) === i);
+                candidateTypes = [type, 'series', 'movie', 'other'].filter((v, i, a) => a.indexOf(v) === i);
             }
-
             for (const cand of candidateTypes) {
                 try {
                     const streamPath = `/stream/${encodeURIComponent(cand)}/${encodeURIComponent(rawId)}.json`;
