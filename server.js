@@ -1624,23 +1624,61 @@ const server = http.createServer(async (req, res) => {
         }
     }
 
-    // PWA Manifest
+    // PWA Manifest (Progressive Web App Specification)
     if (pathname === '/manifest.webmanifest') {
-        res.writeHead(200, { 'Content-Type': 'application/manifest+json' });
+        res.writeHead(200, { 
+            'Content-Type': 'application/manifest+json; charset=utf-8',
+            'Cache-Control': 'public, max-age=3600'
+        });
         res.end(JSON.stringify({
-            name: "Yogesh Streamer",
+            id: "/app",
+            name: "Yogesh Streamer — Luxury OTT Cinema",
             short_name: "YogeshStreamer",
-            description: "Luxury Multi-Device Streaming App for Movies, Web Series & Live Cricket",
+            description: "Luxury Multi-Device Streaming Platform for 4K Movies, Web Series, Live Cricket & 2,400+ Live Channels",
             start_url: "/app",
+            scope: "/",
             display: "standalone",
+            orientation: "any",
             background_color: "#070A12",
             theme_color: "#070A12",
             icons: [
                 {
                     src: BRAND_LOGO,
+                    sizes: "192x192",
+                    type: "image/jpeg",
+                    purpose: "any"
+                },
+                {
+                    src: BRAND_LOGO,
                     sizes: "512x512",
                     type: "image/jpeg",
                     purpose: "any maskable"
+                }
+            ],
+            shortcuts: [
+                {
+                    name: "Live TV Channels",
+                    short_name: "Live TV",
+                    url: "/app#livetv",
+                    description: "57+ Verified 24/7 Live Indian TV Channels"
+                },
+                {
+                    name: "Web Series",
+                    short_name: "Series",
+                    url: "/app#series",
+                    description: "Binge Commercial Web Series in High Definition"
+                },
+                {
+                    name: "Gujarati Vault",
+                    short_name: "Gujarati",
+                    url: "/app#gujarati",
+                    description: "108+ Gujarati Blockbusters & Web Series"
+                },
+                {
+                    name: "Live Cricket",
+                    short_name: "Sports",
+                    url: "/app#sports",
+                    description: "Live Sports & Cricket Feeds"
                 }
             ]
         }, null, 2));

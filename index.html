@@ -9,6 +9,10 @@
     <link rel="icon" type="image/jpeg" href="https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg">
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer/master/assets/logos/cinematic_gold_logo_1787579512053.jpg">
     <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Yogesh Streamer">
+    <meta name="application-name" content="Yogesh Streamer">
     
     <!-- FontAwesome 6 Pro Icons & HLS.js Player -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -1874,7 +1878,8 @@
         </div>
 
         <div class="header-actions">
-            <a href="/apk" target="_blank" class="btn-header-action focusable" tabindex="0" title="Download Android TV / Phone APK v5.4.5" style="color: #34d399; text-decoration: none; display: flex; align-items: center; justify-content: center;"><i class="fab fa-android"></i></a>
+            <button id="btn-pwa-install" class="btn-header-action focusable" tabindex="0" title="Install Yogesh Streamer Web App" style="display: none; color: var(--gold);" onclick="installPWA()"><i class="fas fa-download"></i></button>
+            <a href="/apk" target="_blank" class="btn-header-action focusable" tabindex="0" title="Download Android TV / Phone APK v5.5.0" style="color: #34d399; text-decoration: none; display: flex; align-items: center; justify-content: center;"><i class="fab fa-android"></i></a>
             <button class="btn-header-action focusable" tabindex="0" onclick="openSyncModal()" title="Cloud Sync"><i class="fas fa-cloud-arrow-up"></i></button>
             <button class="btn-header-action focusable" tabindex="0" onclick="lockApp()" title="PIN Lock"><i class="fas fa-lock"></i></button>
             <button class="btn-header-action focusable" tabindex="0" onclick="openSettingsModal()" title="Settings & Cloud Resolvers"><i class="fas fa-gear"></i></button>
@@ -2170,26 +2175,31 @@
     <div id="tab-anime" class="tab-view">
         <div class="page-header-bar">
             <div class="page-title-row">
-                <h2 class="page-headline"><i class="fas fa-dragon" style="color: #ec4899;"></i> AniKoto Multi-Audio Anime Hub</h2>
+                <h2 class="page-headline"><i class="fas fa-dragon" style="color: #ec4899;"></i> Anime & Kids Cartoons Arena</h2>
                 <div class="source-select-wrap">
-                    <span style="font-size: 12px; font-weight: 700; color: var(--text-sub);">Engine:</span>
-                    <span class="badge-row-tag badge-stream-web">⚡ Native In-House Scraper • SUB & DUB 1080p</span>
+                    <span style="font-size: 12px; font-weight: 700; color: var(--text-sub);">Source Engine:</span>
+                    <select id="anime-source-select" class="source-select focusable" tabindex="0" onchange="changeAnimeSource(this.value)">
+                        <option value="ALL" selected>🌐 All Anime & Cartoons (AniKoto + Kids Cartoons • 120+ Titles)</option>
+                        <option value="native_cartoons_series">👶 Kids & Hindi Cartoons (Doraemon, Shinchan, Ben 10)</option>
+                        <option value="native_anikoto_series">⚔️ AniKoto HD Anime (Instant 1080p HLS • Sub & Dub)</option>
+                        <option value="cnc_Kisskh_other">🌟 Kisskh Anime & Drama (Instant Web Play • 100+ Titles)</option>
+                    </select>
                 </div>
             </div>
-            <!-- Anime Category Chips -->
+            <!-- Anime & Cartoon Category Chips -->
             <div class="chips-bar" id="anime-chips">
-                <button class="chip-pill active focusable" tabindex="0" onclick="filterAnimeCategory('ALL', this)">All Trending</button>
-                <button class="chip-pill focusable" tabindex="0" onclick="filterAnimeCategory('ACTION', this)">Action</button>
-                <button class="chip-pill focusable" tabindex="0" onclick="filterAnimeCategory('FANTASY', this)">Fantasy</button>
-                <button class="chip-pill focusable" tabindex="0" onclick="filterAnimeCategory('ADVENTURE', this)">Adventure</button>
+                <button class="chip-pill active focusable" tabindex="0" onclick="filterAnimeCategory('ALL', this)">All Anime & Cartoons</button>
+                <button class="chip-pill focusable" tabindex="0" onclick="filterAnimeCategory('CARTOON', this)">👶 Kids & Cartoons</button>
+                <button class="chip-pill focusable" tabindex="0" onclick="filterAnimeCategory('HINDI', this)">🇮🇳 Hindi Dubbed</button>
+                <button class="chip-pill focusable" tabindex="0" onclick="filterAnimeCategory('ACTION', this)">Action & Shonen</button>
                 <button class="chip-pill focusable" tabindex="0" onclick="filterAnimeCategory('DUB', this)">English DUB</button>
             </div>
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 6px;">
                 <div class="search-inline-bar">
                     <i class="fas fa-search" style="color: var(--text-muted);"></i>
-                    <input type="text" id="anime-search-input" placeholder="Filter anime series or movies..." oninput="filterAnimeBySearch(this.value)">
+                    <input type="text" id="anime-search-input" placeholder="Filter anime series or cartoons by title in real-time..." oninput="filterAnimeBySearch(this.value)">
                 </div>
-                <div id="anime-count-badge" style="font-size: 12px; font-weight: 700; color: var(--gold); white-space: nowrap;">Loading anime...</div>
+                <div id="anime-count-badge" style="font-size: 12px; font-weight: 700; color: var(--gold); white-space: nowrap;">Loading anime & cartoons...</div>
             </div>
         </div>
         <!-- Anime Grid: 100% Consistent with Home & Movies Portrait Cards -->
@@ -2475,7 +2485,8 @@
             <div class="player-actions-right">
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-prev-ep" onclick="playPreviousEpisode()" style="display: none;"><i class="fas fa-backward-step"></i> Prev Ep</button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-next-ep" onclick="playNextEpisode()" style="display: none;"><i class="fas fa-forward-step"></i> Next Ep</button>
-                <button class="btn-player-action focusable" tabindex="0" id="btn-player-audio" onclick="toggleAudioTrack()"><i class="fas fa-volume-high"></i> Audio</button>
+                <button class="btn-player-action focusable" tabindex="0" id="btn-player-quality" onclick="cycleQualityLevel()" style="display: none;"><i class="fas fa-sliders"></i> <span id="player-quality-label">Auto</span></button>
+                <button class="btn-player-action focusable" tabindex="0" id="btn-player-audio" onclick="toggleAudioTrack()" style="display: none;"><i class="fas fa-volume-high"></i> <span id="player-audio-label">Audio</span></button>
                 <button class="btn-player-action focusable" tabindex="0" id="btn-player-server" onclick="tryNextStreamServer()"><i class="fas fa-server"></i> Switch Server</button>
                 <button class="btn-player-action focusable" tabindex="0" onclick="togglePlayerFullscreen()"><i class="fas fa-expand"></i></button>
             </div>
@@ -2571,7 +2582,7 @@
                 <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px; text-align: center;">
                     <div style="font-size: 13px; font-weight: 700; color: #FFFFFF; margin-bottom: 6px;"><i class="fab fa-android" style="color: #34d399;"></i> Yogesh Streamer Android APK</div>
                     <div style="font-size: 11px; color: var(--text-sub); margin-bottom: 12px;">For dedicated Android TV, TV Boxes & Phones (Native .cs3 Engine)</div>
-                    <a href="/apk" target="_blank" class="btn-stream-play focusable" tabindex="0" style="text-decoration: none; display: inline-flex;"><i class="fas fa-download"></i> Download Official APK v5.4.5</a>
+                    <a href="/apk" target="_blank" class="btn-stream-play focusable" tabindex="0" style="text-decoration: none; display: inline-flex;"><i class="fas fa-download"></i> Download Official APK v5.5.0</a>
                 </div>
             </div>
         </div>
@@ -2751,21 +2762,21 @@
         // 🗺️ MULTI-PAGE HASH ROUTING & BACK BUTTON
         // ==========================================
         function initHashRouting() {
-            window.addEventListener('popstate', (e) => {
+            const handleHashRoute = () => {
                 // If modals are open, close them first
-                if (document.getElementById('cinema-player-modal').classList.contains('open')) {
+                if (document.getElementById('cinema-player-modal')?.classList.contains('open')) {
                     closeCinemaPlayer(true);
                     return;
                 }
-                if (document.getElementById('stream-picker-modal').classList.contains('open')) {
+                if (document.getElementById('stream-picker-modal')?.classList.contains('open')) {
                     closeStreamPicker(true);
                     return;
                 }
-                if (document.getElementById('gujarati-vault-modal').classList.contains('open')) {
+                if (document.getElementById('gujarati-vault-modal')?.classList.contains('open')) {
                     closeGujaratiVaultModal(true);
                     return;
                 }
-                if (document.getElementById('settings-modal').classList.contains('open')) {
+                if (document.getElementById('settings-modal')?.classList.contains('open')) {
                     closeSettingsModal(true);
                     return;
                 }
@@ -2773,7 +2784,10 @@
                 // Handle hash changes
                 const hash = window.location.hash.replace('#', '') || 'home';
                 routeToTab(hash, false);
-            });
+            };
+
+            window.addEventListener('popstate', handleHashRoute);
+            window.addEventListener('hashchange', handleHashRoute);
 
             // Initial load hash route
             const initialHash = window.location.hash.replace('#', '') || 'home';
@@ -2833,19 +2847,25 @@
                 } catch(e) {}
             }
 
-            // 🚀 Lightning On-Demand Lazy Load (Only loads when user taps that specific tab)
-            if (tabId === 'tab-anime' && (!allLoadedAnime || allLoadedAnime.length === 0)) {
-                loadAnimePage();
-            } else if (tabId === 'tab-movies' && (!allLoadedMovies || allLoadedMovies.length === 0)) {
-                loadMoviesPage('cnc_CastleTV_other');
-            } else if (tabId === 'tab-series' && (!allLoadedSeries || allLoadedSeries.length === 0)) {
-                loadSeriesPage('native_web_series');
-            } else if (tabId === 'tab-sports' && (!allLoadedSports || allLoadedSports.length === 0)) {
-                loadSportsPage();
-            } else if (tabId === 'tab-livetv' && (!allLoadedChannels || allLoadedChannels.length === 0)) {
-                loadLiveTVPage();
-            } else if (tabId === 'tab-gujarati' && (!allLoadedGujarati || allLoadedGujarati.length === 0)) {
-                loadGujaratiPage();
+            // 🚀 Lightning On-Demand Lazy Load (Renders tab content when tab is active if not rendered yet)
+            if (tabId === 'tab-anime') {
+                const g = document.getElementById('anime-grid');
+                if (!g || g.querySelectorAll('.poster-card').length === 0) loadAnimePage();
+            } else if (tabId === 'tab-movies') {
+                const g = document.getElementById('movies-grid');
+                if (!g || g.querySelectorAll('.poster-card').length === 0) loadMoviesPage('cnc_CastleTV_other');
+            } else if (tabId === 'tab-series') {
+                const g = document.getElementById('series-grid');
+                if (!g || g.querySelectorAll('.poster-card').length === 0) loadSeriesPage('native_web_series');
+            } else if (tabId === 'tab-sports') {
+                const g = document.getElementById('sports-grid');
+                if (!g || g.querySelectorAll('.sports-card').length === 0) loadSportsPage();
+            } else if (tabId === 'tab-livetv') {
+                const g = document.getElementById('channels-grid');
+                if (!g || g.querySelectorAll('.channel-card').length === 0) loadLiveTVPage();
+            } else if (tabId === 'tab-gujarati') {
+                const g = document.getElementById('gujarati-grid');
+                if (!g || g.querySelectorAll('.poster-card').length === 0) loadGujaratiPage();
             }
         }
 
@@ -3113,27 +3133,56 @@
 
         let allLoadedAnime = [];
 
-        async function loadAnimePage() {
+        async function loadAnimePage(sourceId = 'ALL') {
+            const sel = document.getElementById('anime-source-select');
+            if (sel && sel.value !== sourceId) sel.value = sourceId;
+
             const grid = document.getElementById('anime-grid');
             if (!grid) return;
-            if (allLoadedAnime && allLoadedAnime.length > 0) {
-                const badge = document.getElementById('anime-count-badge');
-                if (badge) badge.innerText = `${allLoadedAnime.length} Shows Found`;
-                renderAnimeGrid(allLoadedAnime);
-                return;
-            }
             grid.innerHTML = '<div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>';
+
             try {
-                const res = await fetch(`${API_BASE}/catalog/series/native_anikoto_series.json`);
-                const data = await res.json();
-                allLoadedAnime = Array.isArray(data?.metas) ? data.metas : [];
-                window.cachedAniKotoMetas = allLoadedAnime;
+                let targets = sourceId === 'ALL'
+                    ? [
+                        { type: 'series', id: 'native_cartoons_series' },
+                        { type: 'series', id: 'native_anikoto_series' },
+                        { type: 'other', id: 'cnc_Kisskh_other' }
+                      ]
+                    : [{ type: (sourceId.includes('other') ? 'other' : 'series'), id: sourceId }];
+
+                allLoadedAnime = [];
+                const fetchPromises = targets.map(t =>
+                    fetch(`${API_BASE}/catalog/${t.type}/${t.id}.json`)
+                        .then(r => r.json())
+                        .then(d => Array.isArray(d?.metas) ? d.metas : [])
+                        .catch(() => [])
+                );
+
+                const results = await Promise.allSettled(fetchPromises);
+                results.forEach(res => {
+                    if (res.status === 'fulfilled' && Array.isArray(res.value)) {
+                        allLoadedAnime.push(...res.value);
+                    }
+                });
+
+                // Deduplicate
+                const seen = new Set();
+                allLoadedAnime = allLoadedAnime.filter(a => {
+                    if (!a || !a.id || seen.has(a.id)) return false;
+                    seen.add(a.id);
+                    return true;
+                });
+
                 const badge = document.getElementById('anime-count-badge');
-                if (badge) badge.innerText = `${allLoadedAnime.length} Shows Found`;
+                if (badge) badge.innerText = `${allLoadedAnime.length} Shows & Cartoons Found`;
                 renderAnimeGrid(allLoadedAnime);
             } catch(e) {
-                grid.innerHTML = '<div style="color:var(--text-muted); padding:30px; text-align:center;">Failed to load anime.</div>';
+                grid.innerHTML = '<div style="color:var(--text-muted); padding:30px; text-align:center;">Failed to load anime and cartoons.</div>';
             }
+        }
+
+        function changeAnimeSource(val) {
+            loadAnimePage(val);
         }
 
         let currentAnimeList = [];
@@ -3148,7 +3197,7 @@
                 currentAnimeRenderedCount = 0;
             }
             if (currentAnimeList.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-sub); padding: 40px;">No anime series match your filter.</div>';
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-sub); padding: 40px;">No anime series or cartoons match your filter.</div>';
                 return;
             }
 
@@ -3162,18 +3211,24 @@
                 const card = document.createElement('div');
                 card.className = 'poster-card focusable';
                 card.tabIndex = 0;
+                const isCartoon = (item.id || '').includes('cartoon') || (item.genres || []).some(g => ['Cartoon', 'Kids', 'Hindi Dubbed'].includes(g));
                 card.innerHTML = `
                     <div class="poster-image-box">
                         <div class="card-badges">
-                            <span class="badge-quality" style="background:var(--gold); color:#000; font-weight:800;"><i class="fas fa-bolt"></i> WEB PLAY</span>
-                            <span class="badge-audio" style="background:rgba(16,185,129,0.25); color:#10b981; border:1px solid #10b981;">1080p HLS</span>
+                            ${isCartoon ? `
+                                <span class="badge-quality" style="background:#3b82f6; color:#fff; font-weight:800;"><i class="fas fa-child"></i> KIDS</span>
+                                <span class="badge-audio" style="background:rgba(245,158,11,0.25); color:#f59e0b; border:1px solid #f59e0b;">Hindi Dub</span>
+                            ` : `
+                                <span class="badge-quality" style="background:var(--gold); color:#000; font-weight:800;"><i class="fas fa-bolt"></i> WEB PLAY</span>
+                                <span class="badge-audio" style="background:rgba(16,185,129,0.25); color:#10b981; border:1px solid #10b981;">1080p HLS</span>
+                            `}
                         </div>
                         <img src="${item.poster || BRAND_LOGO}" onerror="this.src='${BRAND_LOGO}'" alt="${cleanTitle(item.name)}" loading="lazy">
                         <div class="card-overlay-play"><i class="fas fa-play"></i></div>
                         <div class="card-play-pill"><i class="fas fa-play"></i> Watch Now</div>
                     </div>
                     <div class="card-title">${cleanTitle(item.name)}</div>
-                    <div class="card-meta"><span>Anime Series</span><span style="color:var(--gold);">★ ${item.imdbRating || '8.9'}</span></div>
+                    <div class="card-meta"><span>${isCartoon ? 'Kids & Cartoon' : 'Anime Series'}</span><span style="color:var(--gold);">★ ${item.imdbRating || '8.9'}</span></div>
                 `;
                 card.onclick = () => openStreamPicker('series', item.id, item.name);
                 grid.appendChild(card);
@@ -3186,7 +3241,7 @@
                 loadWrap.style.cssText = 'grid-column: 1 / -1; display: flex; justify-content: center; padding: 25px 0;';
                 loadWrap.innerHTML = `
                     <button id="anime-load-more-btn" type="button" class="chip-pill focusable active" style="padding: 12px 28px; font-size: 13px; font-weight: 700; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-angles-down"></i> Load More Anime (${remaining} remaining)
+                        <i class="fas fa-angles-down"></i> Load More Anime & Cartoons (${remaining} remaining)
                     </button>
                 `;
                 loadWrap.querySelector('button').onclick = () => renderAnimeGrid(currentAnimeList, false);
@@ -3204,9 +3259,12 @@
                 renderAnimeGrid(metas);
                 return;
             }
+            const g = genre.toLowerCase();
             const filtered = metas.filter(m => {
-                const text = `${m.name} ${m.description || ''}`.toLowerCase();
-                return text.includes(genre.toLowerCase());
+                const text = `${m.name} ${(m.genres || []).join(' ')} ${m.description || ''}`.toLowerCase();
+                if (g === 'cartoon') return text.includes('cartoon') || text.includes('kids') || (m.id || '').includes('cartoon');
+                if (g === 'hindi') return text.includes('hindi') || text.includes('dubbed') || text.includes('dub');
+                return text.includes(g);
             });
             renderAnimeGrid(filtered);
         }
@@ -3925,8 +3983,7 @@
             document.getElementById('universal-search-input').value = query;
             executeUniversalSearch(query);
         }
-
-        function executeUniversalSearch(query) {
+        async function executeUniversalSearch(query) {
             const container = document.getElementById('search-results-container');
             const q = (query || '').toLowerCase().trim();
             if (!q) {
@@ -3941,27 +3998,101 @@
 
             container.innerHTML = '<div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>';
 
-            const matchedMovies = allLoadedMovies.filter(m => (m.name || '').toLowerCase().includes(q));
-            const matchedSeries = allLoadedSeries.filter(s => (s.name || '').toLowerCase().includes(q));
-            const matchedAnime = (window.cachedAniKotoMetas || []).filter(a => (a.name || '').toLowerCase().includes(q));
-            const matchedSports = allLoadedSports.filter(s => (s.name || '').toLowerCase().includes(q));
-            const matchedChannels = allLoadedChannels.filter(c => (c.name || '').toLowerCase().includes(q));
-            const matchedPlugins = (allPluginsList || []).filter(p => (p.name || p.internalName || '').toLowerCase().includes(q));
+            // Ensure Gujarati library is initialized
+            if (!dynamicGujaratiMovies || dynamicGujaratiMovies.length === 0) {
+                initGujaratiLibrary();
+            }
 
-            const total = matchedMovies.length + matchedSeries.length + matchedAnime.length + matchedSports.length + matchedChannels.length + matchedPlugins.length;
+            let matchedMovies = (allLoadedMovies || []).filter(m => (m.name || '').toLowerCase().includes(q));
+            let matchedSeries = (allLoadedSeries || []).filter(s => (s.name || '').toLowerCase().includes(q));
+            let matchedGujarati = (dynamicGujaratiMovies || []).filter(g => (g.name || '').toLowerCase().includes(q));
+            let matchedAnime = (window.cachedAniKotoMetas || []).filter(a => (a.name || '').toLowerCase().includes(q));
+            let matchedSports = (allLoadedSports || []).filter(s => (s.name || '').toLowerCase().includes(q));
+            let matchedChannels = (allLoadedChannels.length > 0 ? allLoadedChannels : VERIFIED_LIVE_CHANNELS).filter(c => (c.name || '').toLowerCase().includes(q));
+
+            // Concurrently query native cloud catalogs if local cache has 0 matches
+            const queries = [];
+            if (matchedSeries.length === 0) {
+                queries.push(
+                    fetch(`${API_BASE}/catalog/series/native_web_series/search=${encodeURIComponent(q)}.json`)
+                        .then(r => r.json())
+                        .then(d => { if (Array.isArray(d?.metas)) matchedSeries.push(...d.metas); })
+                        .catch(() => {})
+                );
+            }
+            if (matchedMovies.length === 0) {
+                queries.push(
+                    fetch(`${API_BASE}/catalog/movie/native_hdhub4u_movies/search=${encodeURIComponent(q)}.json`)
+                        .then(r => r.json())
+                        .then(d => { if (Array.isArray(d?.metas)) matchedMovies.push(...d.metas); })
+                        .catch(() => {})
+                );
+                queries.push(
+                    fetch(`${API_BASE}/catalog/movie/cnc_CastleTV_other/search=${encodeURIComponent(q)}.json`)
+                        .then(r => r.json())
+                        .then(d => { if (Array.isArray(d?.metas)) matchedMovies.push(...d.metas); })
+                        .catch(() => {})
+                );
+            }
+            if (matchedSports.length === 0) {
+                queries.push(
+                    fetch(`${API_BASE}/catalog/tv/native_live_sports_tv.json`)
+                        .then(r => r.json())
+                        .then(d => {
+                            if (Array.isArray(d?.metas)) {
+                                const ms = d.metas.filter(s => (s.name || '').toLowerCase().includes(q));
+                                matchedSports.push(...ms);
+                            }
+                        })
+                        .catch(() => {})
+                );
+            }
+
+            if (queries.length > 0) {
+                await Promise.allSettled(queries);
+            }
+
+            const total = matchedMovies.length + matchedSeries.length + matchedGujarati.length + matchedAnime.length + matchedSports.length + matchedChannels.length;
 
             if (total === 0) {
                 container.innerHTML = `
                     <div style="text-align: center; color: var(--text-sub); padding: 40px 20px;">
                         <i class="fas fa-triangle-exclamation" style="font-size: 32px; color: var(--gold); margin-bottom: 12px;"></i>
                         <p style="font-size: 15px; font-weight: 700;">No exact matches found for "${query}"</p>
-                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Try searching for generic keywords like "Action", "Hindi", "Cricket" or explore our dedicated Movies and Series hubs.</p>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">Try searching for popular titles like "Mirzapur", "Panchayat", "Chhello Show", "Cricket" or "ABP Asmita".</p>
                     </div>
                 `;
                 return;
             }
 
-            let html = `<div style="font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 16px;">Found ${total} Results across Cloud Engines:</div>`;
+            let html = `<div style="font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 16px;">Found ${total} Results across Cloud OTT Engines:</div>`;
+
+            if (matchedSeries.length > 0) {
+                html += `
+                    <div class="rail-section">
+                        <div class="rail-title"><i class="fas fa-tv" style="color:var(--cyan);"></i> Web Series (${matchedSeries.length})</div>
+                        <div class="content-grid-wrap" id="search-series-grid"></div>
+                    </div>
+                `;
+            }
+
+            if (matchedMovies.length > 0) {
+                html += `
+                    <div class="rail-section">
+                        <div class="rail-title"><i class="fas fa-film" style="color:var(--gold);"></i> Movies (${matchedMovies.length})</div>
+                        <div class="content-grid-wrap" id="search-movies-grid"></div>
+                    </div>
+                `;
+            }
+
+            if (matchedGujarati.length > 0) {
+                html += `
+                    <div class="rail-section">
+                        <div class="rail-title"><i class="fas fa-masks-theater" style="color:var(--gold);"></i> Gujarati Cinema & Originals (${matchedGujarati.length})</div>
+                        <div class="content-grid-wrap" id="search-gujarati-grid"></div>
+                    </div>
+                `;
+            }
 
             if (matchedAnime.length > 0) {
                 html += `
@@ -3982,41 +4113,6 @@
                                 </div>
                             `).join('')}
                         </div>
-                    </div>
-                `;
-            }
-
-            if (matchedPlugins.length > 0) {
-                html += `
-                    <div class="rail-section">
-                        <div class="rail-title"><i class="fas fa-puzzle-piece" style="color:var(--cyan);"></i> CloudStream Extensions (${matchedPlugins.length})</div>
-                        <div class="rail-track">
-                            ${matchedPlugins.map(p => `
-                                <div class="engine-card focusable" tabindex="0" onclick="openPluginHubModal(); document.getElementById('plugin-search-input').value='${escapeHtml(p.name)}'; filterPluginsList('${escapeHtml(p.name)}');">
-                                    <img class="engine-icon" src="${p.iconUrl || BRAND_LOGO}" onerror="this.src='${BRAND_LOGO}'" alt="${p.name}">
-                                    <div class="engine-name">${p.name || p.internalName}</div>
-                                    <span class="engine-badge badge-cs3">v${p.version || 1} CS3</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            }
-
-            if (matchedMovies.length > 0) {
-                html += `
-                    <div class="rail-section">
-                        <div class="rail-title"><i class="fas fa-film" style="color:var(--gold);"></i> Movies (${matchedMovies.length})</div>
-                        <div class="content-grid-wrap" id="search-movies-grid"></div>
-                    </div>
-                `;
-            }
-
-            if (matchedSeries.length > 0) {
-                html += `
-                    <div class="rail-section">
-                        <div class="rail-title"><i class="fas fa-tv" style="color:var(--cyan);"></i> Web Series & Anime (${matchedSeries.length})</div>
-                        <div class="content-grid-wrap" id="search-series-grid"></div>
                     </div>
                 `;
             }
@@ -4042,8 +4138,9 @@
             container.innerHTML = html;
 
             // Populate child grids
-            if (matchedMovies.length > 0) renderSubGrid('search-movies-grid', matchedMovies, 'movie');
             if (matchedSeries.length > 0) renderSubGrid('search-series-grid', matchedSeries, 'series');
+            if (matchedMovies.length > 0) renderSubGrid('search-movies-grid', matchedMovies, 'movie');
+            if (matchedGujarati.length > 0) renderSubGrid('search-gujarati-grid', matchedGujarati, 'movie');
             if (matchedSports.length > 0) renderSportsSubGrid('search-sports-grid', matchedSports);
             if (matchedChannels.length > 0) renderChannelsSubGrid('search-channels-grid', matchedChannels);
         }
@@ -4551,6 +4648,13 @@
                 currentHlsEngine.on(Hls.Events.MANIFEST_PARSED, () => {
                     applyResume();
                     video.play().catch(() => {});
+                    setupPlayerTrackControls();
+                });
+                currentHlsEngine.on(Hls.Events.AUDIO_TRACKS_UPDATED, () => {
+                    updateAudioTrackButton();
+                });
+                currentHlsEngine.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
+                    updateQualityButtonLabel(data.level);
                 });
                 currentHlsEngine.on(Hls.Events.ERROR, (event, data) => {
                     if (data.fatal) tryNextStreamServer();
@@ -4559,6 +4663,7 @@
                 video.src = url;
                 video.addEventListener('loadedmetadata', applyResume, { once: true });
                 video.play().catch(() => {});
+                resetPlayerTrackControls();
             }
         }
 
@@ -4587,6 +4692,7 @@
                 try { currentShakaPlayer.destroy(); } catch(e) {}
                 currentShakaPlayer = null;
             }
+            resetPlayerTrackControls();
             document.getElementById('player-screen-wrap').innerHTML = '';
 
             // Release orientation lock
@@ -4609,11 +4715,94 @@
             }
         }
 
+        function setupPlayerTrackControls() {
+            const qBtn = document.getElementById('btn-player-quality');
+            const aBtn = document.getElementById('btn-player-audio');
+            const qLabel = document.getElementById('player-quality-label');
+
+            if (currentHlsEngine) {
+                // Quality levels
+                if (currentHlsEngine.levels && currentHlsEngine.levels.length > 1) {
+                    if (qBtn) qBtn.style.display = 'inline-flex';
+                    if (qLabel) qLabel.innerText = 'Auto';
+                } else {
+                    if (qBtn) qBtn.style.display = 'none';
+                }
+
+                // Audio tracks
+                updateAudioTrackButton();
+            } else {
+                if (qBtn) qBtn.style.display = 'none';
+                if (aBtn) aBtn.style.display = 'none';
+            }
+        }
+
+        function updateAudioTrackButton() {
+            const aBtn = document.getElementById('btn-player-audio');
+            const aLabel = document.getElementById('player-audio-label');
+            if (!aBtn) return;
+            if (currentHlsEngine && currentHlsEngine.audioTracks && currentHlsEngine.audioTracks.length > 1) {
+                aBtn.style.display = 'inline-flex';
+                const curr = currentHlsEngine.audioTracks[currentHlsEngine.audioTrack];
+                const lang = curr ? (curr.name || curr.lang || `Track ${currentHlsEngine.audioTrack + 1}`) : 'Audio';
+                if (aLabel) aLabel.innerText = lang;
+            } else {
+                aBtn.style.display = 'none';
+            }
+        }
+
+        function updateQualityButtonLabel(levelIdx) {
+            const qLabel = document.getElementById('player-quality-label');
+            if (!qLabel || !currentHlsEngine) return;
+            if (currentHlsEngine.currentLevel === -1) {
+                if (currentHlsEngine.levels && currentHlsEngine.levels[levelIdx]) {
+                    const h = currentHlsEngine.levels[levelIdx].height;
+                    qLabel.innerText = h ? `Auto (${h}p)` : 'Auto';
+                } else {
+                    qLabel.innerText = 'Auto';
+                }
+            } else if (currentHlsEngine.levels && currentHlsEngine.levels[levelIdx]) {
+                const h = currentHlsEngine.levels[levelIdx].height;
+                qLabel.innerText = h ? `${h}p` : `${Math.round(currentHlsEngine.levels[levelIdx].bitrate / 1000)}k`;
+            }
+        }
+
+        function resetPlayerTrackControls() {
+            const qBtn = document.getElementById('btn-player-quality');
+            const aBtn = document.getElementById('btn-player-audio');
+            if (qBtn) qBtn.style.display = 'none';
+            if (aBtn) aBtn.style.display = 'none';
+        }
+
+        function cycleQualityLevel() {
+            const label = document.getElementById('player-quality-label');
+            if (!currentHlsEngine || !currentHlsEngine.levels || currentHlsEngine.levels.length <= 1) {
+                showToast('Source Quality (Direct Master Feed)', 'fa-sliders');
+                return;
+            }
+            const levels = currentHlsEngine.levels;
+            let nextIdx = currentHlsEngine.currentLevel + 1;
+            if (nextIdx >= levels.length) {
+                nextIdx = -1; // Cycle back to Auto
+            }
+            currentHlsEngine.currentLevel = nextIdx;
+            if (nextIdx === -1) {
+                if (label) label.innerText = 'Auto';
+                showToast('Quality: Auto (Adaptive Bitrate)', 'fa-sliders');
+            } else {
+                const h = levels[nextIdx].height || `${Math.round(levels[nextIdx].bitrate / 1000)}k`;
+                const text = `${h}p`;
+                if (label) label.innerText = text;
+                showToast(`Quality locked: ${text}`, 'fa-sliders');
+            }
+        }
+
         function toggleAudioTrack() {
             if (currentHlsEngine && currentHlsEngine.audioTracks && currentHlsEngine.audioTracks.length > 1) {
                 const nextTrack = (currentHlsEngine.audioTrack + 1) % currentHlsEngine.audioTracks.length;
                 currentHlsEngine.audioTrack = nextTrack;
                 const tName = currentHlsEngine.audioTracks[nextTrack]?.name || `Audio #${nextTrack + 1}`;
+                updateAudioTrackButton();
                 showToast(`Switched Audio: ${tName}`, 'fa-headphones');
             } else {
                 showToast("Single Audio Track: Stream has no alternate languages", 'fa-circle-info');
@@ -4931,10 +5120,69 @@
         // ==========================================
         function initSpatialNavigation() {
             window.addEventListener('keydown', (e) => {
+                if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+                    if (e.key === 'Escape') document.activeElement.blur();
+                    return;
+                }
+                const playerModal = document.getElementById('cinema-player-modal');
+                if (playerModal && playerModal.classList.contains('open')) {
+                    handlePlayerKeyNavigation(e);
+                    return;
+                }
                 if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Escape', 'Backspace'].includes(e.key)) {
                     handleKeyNavigation(e);
                 }
             });
+        }
+
+        function handlePlayerKeyNavigation(e) {
+            const video = document.querySelector('#player-screen-wrap video');
+            if (e.key === 'Escape' || e.key === 'Backspace') {
+                e.preventDefault();
+                closeCinemaPlayer();
+                return;
+            }
+            if (!video) return;
+
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                video.currentTime = Math.max(0, video.currentTime - 10);
+                showSeekFeedback('-10s', 'left');
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                video.currentTime = Math.min((video.duration || 999999), video.currentTime + 10);
+                showSeekFeedback('+10s', 'right');
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                video.volume = Math.min(1, Math.round((video.volume + 0.1) * 10) / 10);
+                showToast(`Volume: ${Math.round(video.volume * 100)}%`, 'fa-volume-high');
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                video.volume = Math.max(0, Math.round((video.volume - 0.1) * 10) / 10);
+                showToast(`Volume: ${Math.round(video.volume * 100)}%`, 'fa-volume-low');
+            } else if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                if (video.paused) {
+                    video.play().catch(() => {});
+                    showToast('Playing', 'fa-play');
+                } else {
+                    video.pause();
+                    showToast('Paused', 'fa-pause');
+                }
+            } else if (e.key === 'f' || e.key === 'F') {
+                e.preventDefault();
+                togglePlayerFullscreen();
+            } else if (e.key === 'm' || e.key === 'M') {
+                e.preventDefault();
+                video.muted = !video.muted;
+                showToast(video.muted ? 'Muted' : 'Unmuted', video.muted ? 'fa-volume-xmark' : 'fa-volume-high');
+            } else if (e.key === 'q' || e.key === 'Q') {
+                e.preventDefault();
+                cycleQualityLevel();
+            } else if (e.key === 'a' || e.key === 'A') {
+                e.preventDefault();
+                toggleAudioTrack();
+            }
         }
 
         function handleKeyNavigation(e) {
@@ -5290,6 +5538,49 @@
                 .replace(/ESub|ESubs/gi, '')
                 .replace(/\s+/g, ' ')
                 .trim();
+        }
+    </script>
+    <!-- 📲 PWA Service Worker & Native Installation Script -->
+    <script>
+        let deferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const btn = document.getElementById('btn-pwa-install');
+            if (btn) btn.style.display = 'inline-flex';
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredPrompt = null;
+            const btn = document.getElementById('btn-pwa-install');
+            if (btn) btn.style.display = 'none';
+            showToast('Yogesh Streamer Installed Successfully!', 'fa-circle-check');
+        });
+
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        showToast('Installing Yogesh Streamer...', 'fa-circle-check');
+                    }
+                    deferredPrompt = null;
+                    const btn = document.getElementById('btn-pwa-install');
+                    if (btn) btn.style.display = 'none';
+                });
+            } else {
+                showToast('To install: open browser menu & select "Add to Home Screen"', 'fa-mobile-screen');
+            }
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then((reg) => {
+                    console.log('PWA ServiceWorker registered with scope:', reg.scope);
+                }).catch((err) => {
+                    console.debug('ServiceWorker registration skipped:', err);
+                });
+            });
         }
     </script>
 </body>

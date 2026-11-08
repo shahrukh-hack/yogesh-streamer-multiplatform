@@ -1,9 +1,9 @@
-const CACHE_NAME = 'yogesh-streamer-v2.2.0-official';
+const CACHE_NAME = 'yogesh-streamer-v2.3.0-pwa';
 const STATIC_ASSETS = [
     '/manifest.webmanifest',
-    '/logo.jpg',
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-    'https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.12/hls.min.js',
+    'https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/logo.jpg',
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
+    'https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.compiled.js'
 ];
 
