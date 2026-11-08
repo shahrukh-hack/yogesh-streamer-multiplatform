@@ -50,6 +50,7 @@ yogesh-streamer-bridge / yogesh-streamer-multiplatform
 │    │    ├── #livetv     -> 800+ Indian Live TV channels with category chips
 │    │    ├── #anime      -> AniKoto Anime + 35+ Hindi Cartoon Classics (Doraemon, Shinchan)
 │    │    └── #gujarati   -> Complete Gujarati Cinema & Natak Vault
+│    ├── Clean Netflix OTT Layout (Brittle category filter chips hidden; 100% titles browsable + Real-time search)
 │    ├── Stream Picker Modal:
 │    │    ├── Auto episode picker schema
 │    │    ├── Tier-based stream badges
