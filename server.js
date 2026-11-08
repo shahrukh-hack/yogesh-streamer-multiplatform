@@ -29,6 +29,23 @@ const MANIFEST_CACHE_TTL = 1800000; // 30 minutes
 const streamCache = new Map();
 const cloudSyncStore = new Map(); // ☁️ In-Memory Cross-Device Progress & Watchlist Sync
 const STREAM_CACHE_TTL = 300000; // 5 minutes
+const MAX_CACHE_CAPACITY = 500; // Cap in-memory entries to eliminate OOM risks on Render free tier
+
+function setStreamCache(key, val) {
+    if (streamCache.size >= MAX_CACHE_CAPACITY) {
+        const oldestKey = streamCache.keys().next().value;
+        if (oldestKey !== undefined) streamCache.delete(oldestKey);
+    }
+    streamCache.set(key, val);
+}
+
+function setCloudSyncStore(key, val) {
+    if (cloudSyncStore.size >= MAX_CACHE_CAPACITY) {
+        const oldestKey = cloudSyncStore.keys().next().value;
+        if (oldestKey !== undefined) cloudSyncStore.delete(oldestKey);
+    }
+    cloudSyncStore.set(key, val);
+}
 
 
 function getDecompressedStream(res) {
@@ -1535,7 +1552,7 @@ const server = http.createServer(async (req, res) => {
                         favorites: Array.isArray(parsed.favorites) ? parsed.favorites : existing.favorites,
                         updatedAt: Date.now()
                     };
-                    cloudSyncStore.set(syncCode, merged);
+                    setCloudSyncStore(syncCode, merged);
                     res.writeHead(200, {
                         'Content-Type': 'application/json; charset=utf-8',
                         'Access-Control-Allow-Origin': '*'
@@ -1683,6 +1700,12 @@ const server = http.createServer(async (req, res) => {
                     }
                     res.writeHead(proxyRes.statusCode || 200, headers);
                     proxyRes.pipe(res);
+                }
+            });
+
+            req.on('close', () => {
+                if (!proxyReq.destroyed) {
+                    proxyReq.destroy();
                 }
             });
 
@@ -1914,11 +1937,11 @@ const server = http.createServer(async (req, res) => {
 
             // Save to in-memory cache if streams found
             if (brandedStreams.length > 0) {
-                streamCache.set(cacheKey, {
+                setStreamCache(cacheKey, {
                     streams: brandedStreams,
                     timestamp: Date.now()
                 });
-                streamCache.set(rawId, {
+                setStreamCache(rawId, {
                     streams: brandedStreams,
                     timestamp: Date.now()
                 });

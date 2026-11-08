@@ -4234,8 +4234,33 @@
 
             document.getElementById('player-title-text').innerText = cleanTitle(title);
             const container = document.getElementById('player-screen-wrap');
-            container.innerHTML = '<video controls autoplay playsinline webkit-playsinline></video>';
+            container.innerHTML = '<video controls autoplay playsinline webkit-playsinline x-webkit-airplay="allow" disablePictureInPicture="false"></video>';
             const video = container.querySelector('video');
+
+            // Mobile YouTube/Netflix style double-tap to seek (10s back / 10s forward)
+            let lastTapTime = 0;
+            let lastTapX = 0;
+            container.addEventListener('touchend', (e) => {
+                if (!e.changedTouches || e.changedTouches.length === 0) return;
+                const touch = e.changedTouches[0];
+                const now = Date.now();
+                const rect = container.getBoundingClientRect();
+                const x = touch.clientX - rect.left;
+                const width = rect.width;
+                if (now - lastTapTime < 320 && Math.abs(x - lastTapX) < 100) {
+                    if (x < width * 0.35) {
+                        video.currentTime = Math.max(0, video.currentTime - 10);
+                        showSeekFeedback('-10s', 'left');
+                    } else if (x > width * 0.65) {
+                        video.currentTime = Math.min((video.duration || 999999), video.currentTime + 10);
+                        showSeekFeedback('+10s', 'right');
+                    }
+                    lastTapTime = 0;
+                } else {
+                    lastTapTime = now;
+                    lastTapX = x;
+                }
+            }, { passive: true });
 
             document.getElementById('cinema-player-modal').classList.add('open');
 
@@ -4393,6 +4418,18 @@
             }
         }
 
+        function showSeekFeedback(text, side) {
+            const container = document.getElementById('player-screen-wrap');
+            if (!container) return;
+            const badge = document.createElement('div');
+            badge.className = `seek-ripple-badge ${side}`;
+            badge.innerHTML = side === 'left' ? `<i class="fas fa-backward"></i> ${text}` : `${text} <i class="fas fa-forward"></i>`;
+            container.appendChild(badge);
+            setTimeout(() => {
+                try { badge.remove(); } catch(e) {}
+            }, 750);
+        }
+
         function closeCinemaPlayer(fromPopstate = false) {
             const modal = document.getElementById('cinema-player-modal');
             modal.classList.remove('open');
@@ -4401,6 +4438,10 @@
             if (currentHlsEngine) {
                 currentHlsEngine.destroy();
                 currentHlsEngine = null;
+            }
+            if (currentShakaPlayer) {
+                try { currentShakaPlayer.destroy(); } catch(e) {}
+                currentShakaPlayer = null;
             }
             document.getElementById('player-screen-wrap').innerHTML = '';
 
@@ -4425,22 +4466,38 @@
         }
 
         function toggleAudioTrack() {
-            if (currentHlsEngine && currentHlsEngine.audioTracks.length > 1) {
+            if (currentHlsEngine && currentHlsEngine.audioTracks && currentHlsEngine.audioTracks.length > 1) {
                 const nextTrack = (currentHlsEngine.audioTrack + 1) % currentHlsEngine.audioTracks.length;
                 currentHlsEngine.audioTrack = nextTrack;
                 const tName = currentHlsEngine.audioTracks[nextTrack]?.name || `Audio #${nextTrack + 1}`;
-                alert(`Switched Audio Track to: ${tName}`);
+                showToast(`Switched Audio: ${tName}`, 'fa-headphones');
             } else {
-                alert("Only 1 audio track detected on this direct stream.");
+                showToast("Single Audio Track: Stream has no alternate languages", 'fa-circle-info');
             }
         }
 
         function togglePlayerFullscreen() {
             const modal = document.getElementById('cinema-player-modal');
-            if (!document.fullscreenElement) {
-                modal.requestFullscreen().catch(() => {});
+            const video = document.querySelector('#player-screen-wrap video');
+            const isFull = document.fullscreenElement || document.webkitFullscreenElement;
+            if (!isFull) {
+                if (modal.requestFullscreen) {
+                    modal.requestFullscreen().catch(() => {
+                        if (video && video.webkitEnterFullscreen) video.webkitEnterFullscreen();
+                    });
+                } else if (modal.webkitRequestFullscreen) {
+                    modal.webkitRequestFullscreen();
+                } else if (video && video.webkitEnterFullscreen) {
+                    video.webkitEnterFullscreen();
+                }
             } else {
-                document.exitFullscreen().catch(() => {});
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().catch(() => {});
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (video && video.webkitExitFullscreen) {
+                    video.webkitExitFullscreen();
+                }
             }
         }
 
@@ -4979,7 +5036,7 @@
         window.addEventListener('keydown', (e) => {
             if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
                 e.preventDefault();
-                switchNavTab('tab-search', 5);
+                switchNavTab('tab-search', 7);
                 setTimeout(() => {
                     const inp = document.getElementById('universal-search-input');
                     if (inp) inp.focus();
