@@ -2434,7 +2434,9 @@
                     <span style="font-size: 12px; font-weight: 700; color: var(--text-sub);">Source Engine:</span>
                     <select id="movies-source-select" class="source-select focusable" tabindex="0" onchange="changeMoviesSource(this.value)">
                         <option value="cnc_CastleTV_other" selected>🏰 Castle Cinema (Instant In-Browser HLS • No VLC Required • 611 Titles)</option>
-                        <option value="ALL">🌐 All Cinema Engines (Castle HLS + HDHub4u + VegaMovies • 1,500+ Titles)</option>
+                        <option value="ALL">🌐 All Cinema Engines (Castle + MoviesDrive + HDHub4u + VegaMovies • 2,000+ Titles)</option>
+                        <option value="native_moviesdrive_movies">💎 Native MoviesDrive (High-Speed Cloud R2 • Dual Audio & Gujarati)</option>
+                        <option value="native_uhdmovies_movies">👑 Native UHDMovies 4K HDR (2160p HEVC Dual-Audio)</option>
                         <option value="native_hdhub4u_movies">💎 Native HDHub4u 4K (Ultra HD MKV • Multi-Audio)</option>
                         <option value="native_vegamovies_movies">🍿 Native VegaMovies 4K HDR (Blu-Ray MKV)</option>
                         <option value="cnc_Rogmovies_other">🚀 RogMovies Cinema (Requires VLC / MX)</option>
@@ -2520,9 +2522,11 @@
                 <div class="source-select-wrap">
                     <span style="font-size: 12px; font-weight: 700; color: var(--text-sub);">Source Engine:</span>
                     <select id="anime-source-select" class="source-select focusable" tabindex="0" onchange="changeAnimeSource(this.value)">
-                        <option value="ALL" selected>🌐 All Anime & Cartoons (AniKoto + Kids Cartoons • 120+ Titles)</option>
+                        <option value="ALL" selected>🌐 All Anime & Cartoons (AniKoto + Toonstream + Kids Cartoons • 200+ Titles)</option>
+                        <option value="native_toonstream_series">🎨 Native Toonstream (Hindi / Tamil / Telugu Dubbed Cartoons)</option>
                         <option value="native_cartoons_series">👶 Kids & Hindi Cartoons (Doraemon, Shinchan, Ben 10)</option>
                         <option value="native_anikoto_series">⚔️ AniKoto HD Anime (Instant 1080p HLS • Sub & Dub)</option>
+                        <option value="cnc_Toonix_other">🎭 Toonix Cartoons Network</option>
                         <option value="cnc_Kisskh_other">🌟 Kisskh Anime & Drama (Instant Web Play • 100+ Titles)</option>
                     </select>
                 </div>
@@ -2633,7 +2637,8 @@
                 <div class="source-select-wrap">
                     <span style="font-size: 12px; font-weight: 700; color: var(--text-sub);">Catalog:</span>
                     <select id="gujarati-source-select" class="source-select focusable" tabindex="0" onchange="changeGujaratiSource(this.value)">
-                        <option value="ALL">🌟 All Sources (380+ Blockbusters & Web Series)</option>
+                        <option value="ALL">🌟 All Sources (450+ Blockbusters & Web Series)</option>
+                        <option value="MDRIVE">💎 MoviesDrive Cloud Gujarati (93+ 2026/2025 Direct R2 Titles)</option>
                         <option value="CASTLE">🍿 Castle TV Gujarati</option>
                         <option value="HDHUB">💎 HDHub4u Gujarati (4K & 1080p)</option>
                         <option value="ROG">🚀 Rogmovies Gujarati</option>
@@ -3599,8 +3604,10 @@
             try {
                 let targets = sourceId === 'ALL'
                     ? [
+                        { type: 'series', id: 'native_toonstream_series' },
                         { type: 'series', id: 'native_cartoons_series' },
                         { type: 'series', id: 'native_anikoto_series' },
+                        { type: 'other', id: 'cnc_Toonix_other' },
                         { type: 'other', id: 'cnc_Kisskh_other' }
                       ]
                     : [{ type: (sourceId.includes('other') ? 'other' : 'series'), id: sourceId }];
@@ -3817,8 +3824,11 @@
                 let targets = sourceId === 'ALL'
                     ? [
                         { type: 'movie', id: 'cnc_CastleTV_other' },
+                        { type: 'movie', id: 'native_moviesdrive_movies' },
+                        { type: 'movie', id: 'native_uhdmovies_movies' },
                         { type: 'movie', id: 'native_hdhub4u_movies' },
                         { type: 'movie', id: 'native_vegamovies_movies' },
+                        { type: 'other', id: 'cnc_4KHDHUB_other' },
                         { type: 'other', id: 'cnc_Rogmovies_other' },
                         { type: 'other', id: 'cnc_VegaMovies_other' },
                         { type: 'other', id: 'cnc_HDHub4U_other' }
@@ -5915,7 +5925,23 @@
             }
         }
         function changeGujaratiSource(val) {
-            loadGujaratiPage(val);
+            if (val === 'ALL') {
+                renderGujaratiGrid(allLoadedGujarati, true);
+            } else if (val === 'MDRIVE') {
+                const filtered = allLoadedGujarati.filter(item => (item.id || '').includes('mdrive') || (item.description || '').includes('MoviesDrive'));
+                renderGujaratiGrid(filtered, true);
+            } else if (val === 'CASTLE') {
+                const filtered = allLoadedGujarati.filter(item => (item.id || '').includes('CastleTV') || (item.id || '').includes('Q2FzdGxlVFY'));
+                renderGujaratiGrid(filtered, true);
+            } else if (val === 'HDHUB') {
+                const filtered = allLoadedGujarati.filter(item => (item.id || '').includes('HDHub4U') || (item.id || '').includes('hdhub'));
+                renderGujaratiGrid(filtered, true);
+            } else if (val === 'ROG') {
+                const filtered = allLoadedGujarati.filter(item => (item.id || '').includes('Rogmovies') || (item.id || '').includes('rog'));
+                renderGujaratiGrid(filtered, true);
+            } else {
+                loadGujaratiPage(val);
+            }
         }
         function filterGujaratiCategory(cat, btn) {
             if (btn) {
@@ -6582,6 +6608,7 @@
             const seenIds = new Set(dynamicGujaratiMovies.map(g => g.id));
             // 2. Concurrently query all 16 Gujarati search endpoints across cloud scrapers
             const endpoints = [
+                `${API_BASE}/catalog/movie/native_moviesdrive_movies/search=gujarati.json`,
                 `${API_BASE}/catalog/other/cnc_HDHub4U_other/search=gujarati.json`,
                 `${API_BASE}/catalog/other/cnc_Rogmovies_other/search=gujarati.json`,
                 `${API_BASE}/catalog/other/cnc_HDHub4U_other/search=gujarati%20series.json`,

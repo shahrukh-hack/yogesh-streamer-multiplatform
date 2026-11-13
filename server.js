@@ -763,6 +763,248 @@ async function getNativeVegaMoviesStreams(slug) {
     }
 }
 
+
+// ========================================================
+// 💎 Native In-House Scraper: MoviesDrive High-Speed Cloud & Gujarati Provider
+// ========================================================
+const cachedMoviesDriveSearch = new Map();
+
+async function getNativeMoviesDriveCatalog(searchQuery = '') {
+    const q = (searchQuery || '2026').trim();
+    const cacheKey = q.toLowerCase();
+    const cached = cachedMoviesDriveSearch.get(cacheKey);
+    if (cached && (Date.now() - cached.timestamp < 600000)) { // 10 mins cache
+        return cached.metas;
+    }
+
+    try {
+        const domains = await getLiveDomains();
+        const baseDomain = domains.moviesdrive || 'https://new3.moviesdrive.cyou';
+        const searchUrl = `${baseDomain}/search.php?q=${encodeURIComponent(q)}&page=1`;
+        const data = await fetchJson(searchUrl, { 'Referer': baseDomain });
+        const hits = Array.isArray(data?.hits) ? data.hits : [];
+        const metas = [];
+        const seenSlugs = new Set();
+
+        for (const h of hits) {
+            const doc = h?.document || {};
+            const rawTitle = doc.post_title || '';
+            const permalink = doc.permalink || '';
+            if (!rawTitle || !permalink) continue;
+
+            const cleanSlug = permalink.replace(/^https?:\/\/[^\/]+/, '').replace(/^\//, '').replace(/\/$/, '');
+            if (!cleanSlug || seenSlugs.has(cleanSlug)) continue;
+            seenSlugs.add(cleanSlug);
+
+            const isSeries = cleanSlug.includes('season') || rawTitle.toLowerCase().includes('season') || rawTitle.toLowerCase().includes('series');
+            const poster = doc.post_thumbnail || 'https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/logo.jpg';
+            const yearMatch = rawTitle.match(/\b(19\d\d|20\d\d)\b/);
+            const year = yearMatch ? yearMatch[1] : '';
+
+            metas.push({
+                id: `native:mdrive:${cleanSlug}`,
+                name: rawTitle,
+                type: isSeries ? 'series' : 'movie',
+                poster: poster,
+                background: poster,
+                year: year,
+                imdb_id: doc.imdb_id || undefined,
+                description: `${rawTitle} • High-speed cloud streaming directly extracted from MoviesDrive. Available in 480p, 720p, 1080p and 4K SDR with multi-audio support.`,
+                genres: Array.isArray(doc.category) ? doc.category : ['Movie', 'Dual Audio']
+            });
+        }
+
+        if (metas.length > 0) {
+            cachedMoviesDriveSearch.set(cacheKey, { timestamp: Date.now(), metas });
+        }
+        return metas;
+    } catch (err) {
+        console.error('Error fetching MoviesDrive catalog:', err.message);
+        return [];
+    }
+}
+
+async function getNativeMoviesDriveStreams(slug) {
+    try {
+        const domains = await getLiveDomains();
+        const baseDomain = domains.moviesdrive || 'https://new3.moviesdrive.cyou';
+        const pageUrl = `${baseDomain}/${slug}/`;
+        const pageHtml = await fetchHtml(pageUrl, { 'Referer': baseDomain }, 6000);
+        const mdriveLinks = pageHtml.match(/https?:\/\/mdrive\.lol\/archive\/\d+\/?/g) || [];
+        const uniqueMdrive = [...new Set(mdriveLinks)];
+        const streams = [];
+
+        for (let i = 0; i < uniqueMdrive.length; i++) {
+            const mUrl = uniqueMdrive[i];
+            let qualityLabel = '1080p Full HD';
+            if (uniqueMdrive.length === 3) {
+                if (i === 0) qualityLabel = '480p SD';
+                else if (i === 1) qualityLabel = '720p HD';
+                else qualityLabel = '1080p Full HD';
+            } else if (uniqueMdrive.length === 2) {
+                if (i === 0) qualityLabel = '720p HD';
+                else qualityLabel = '1080p Full HD';
+            }
+
+            try {
+                const mHtml = await fetchHtml(mUrl, { 'Referer': pageUrl }, 5000);
+                const hubMatch = mHtml.match(/https?:\/\/hubcloud\.[a-z0-9.]+\/drive\/[a-zA-Z0-9]+/i);
+                if (!hubMatch) continue;
+
+                const hubUrl = hubMatch[0];
+                const hubHtml = await fetchHtml(hubUrl, { 'Referer': mUrl }, 5000);
+                const gamerMatch = hubHtml.match(/href="(https?:\/\/gamerxyt\.com\/hubcloud\.php[^"]+)"/i);
+                if (!gamerMatch) continue;
+
+                const gamerUrl = gamerMatch[1].replace(/&amp;/g, '&');
+                const gamerHtml = await fetchHtml(gamerUrl, { 'Referer': hubUrl }, 5000);
+
+                const r2Match = gamerHtml.match(/href="([^"]*r2\.cloudflarestorage\.com[^"]*)"/i);
+                if (r2Match) {
+                    const directR2 = r2Match[1].replace(/&amp;/g, '&');
+                    streams.push({
+                        name: `💎 [Cloudflare R2] ${qualityLabel}`,
+                        title: `MoviesDrive • ${qualityLabel} High-Speed Direct Stream (Multi-Audio)`,
+                        url: directR2,
+                        isWebPlayable: true,
+                        behaviorHints: {
+                            notWebReady: false,
+                            proxyHeaders: {
+                                request: {
+                                    'Referer': 'https://hbplay.pages.dev/',
+                                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+                                }
+                            }
+                        }
+                    });
+                }
+
+                const pxMatch = gamerHtml.match(/href="([^"]*pixeldrain\.dev\/u\/[a-zA-Z0-9]+)"/i);
+                if (pxMatch) {
+                    const pxId = pxMatch[1].split('/u/')[1];
+                    streams.push({
+                        name: `⚡ [PixelDrain CDN] ${qualityLabel}`,
+                        title: `MoviesDrive • ${qualityLabel} PixelDrain Direct CDN`,
+                        url: `https://pixeldrain.com/api/file/${pxId}`,
+                        isWebPlayable: true,
+                        behaviorHints: { notWebReady: false }
+                    });
+                }
+            } catch (e) {}
+        }
+        return { streams };
+    } catch(err) {
+        console.error(`Error resolving MoviesDrive stream for ${slug}:`, err.message);
+        return { streams: [] };
+    }
+}
+
+// ========================================================
+// 👑 Native In-House Scraper: UHDMovies 4K UHD & 2160p HEVC Provider
+// ========================================================
+async function getNativeUHDMoviesCatalog(query = '') {
+    const q = (query || '2026').trim();
+    try {
+        const domains = await getLiveDomains();
+        const baseDomain = domains.UHDMovies || 'https://uhdmovies.beauty';
+        const searchUrl = `${baseDomain}/?s=${encodeURIComponent(q)}`;
+        const html = await fetchHtml(searchUrl, { 'Referer': baseDomain }, 6000);
+
+        const regex = /<a\s+href="([^"]*download-[^"]*)"[^>]*title="([^"]*)"[^>]*>[\s\S]*?<img[^>]+src="([^"]*)"/gi;
+        let match;
+        const metas = [];
+        const seenSlugs = new Set();
+
+        while ((match = regex.exec(html)) !== null) {
+            const href = match[1];
+            const rawTitle = match[2];
+            const poster = match[3];
+
+            if (href && rawTitle && href.includes('/download-')) {
+                const slug = href.replace(/^https?:\/\/[^\/]+/, '').replace(/^\//, '').replace(/\/$/, '');
+                if (slug && !seenSlugs.has(slug)) {
+                    seenSlugs.add(slug);
+                    const cleanTitle = rawTitle.replace(/^Download\s+/i, '').replace(/&#038;/g, '&').trim();
+                    const isSeries = slug.includes('season') || cleanTitle.toLowerCase().includes('season') || cleanTitle.toLowerCase().includes('series');
+                    const fullPoster = poster.startsWith('http') ? poster : `${baseDomain}${poster}`;
+
+                    metas.push({
+                        id: `native:uhd:${slug}`,
+                        name: cleanTitle,
+                        type: isSeries ? 'series' : 'movie',
+                        poster: fullPoster,
+                        background: fullPoster,
+                        description: `${cleanTitle} • Premium 4K UHD, 2160p HEVC, 10Bit HDR & Dual Audio from UHDMovies.`,
+                        genres: isSeries ? ['Web Series', '4K UHD'] : ['Movie', '4K UHD', 'Dual Audio']
+                    });
+                }
+            }
+        }
+        return metas;
+    } catch (err) {
+        console.error('Error fetching UHDMovies catalog:', err.message);
+        return [];
+    }
+}
+
+// ========================================================
+// 🎨 Native In-House Scraper: Toonstream Multi-Language Cartoons & Anime
+// ========================================================
+let cachedToonstreamCatalog = null;
+let lastToonstreamCatalogFetch = 0;
+
+async function getNativeToonstreamCatalog(query = '') {
+    const now = Date.now();
+    if (!query && cachedToonstreamCatalog && (now - lastToonstreamCatalogFetch < 900000)) {
+        return cachedToonstreamCatalog;
+    }
+    try {
+        const domains = await getLiveDomains();
+        const baseDomain = domains.toonstream || 'https://toonstream.us';
+        const targetUrl = query ? `${baseDomain}/?s=${encodeURIComponent(query)}` : `${baseDomain}/category/hindi/`;
+        const html = await fetchHtml(targetUrl, { 'Referer': baseDomain }, 6000);
+
+        const regex = /<article[^>]*>[\s\S]*?<a\s+href="([^"]+)"[^>]*>[\s\S]*?<img[^>]+src="([^"]+)"[^>]*alt="([^"]*)"/gi;
+        let match;
+        const metas = [];
+        const seenSlugs = new Set();
+
+        while ((match = regex.exec(html)) !== null) {
+            const href = match[1];
+            const poster = match[2];
+            const rawTitle = match[3];
+
+            if (href && rawTitle && !href.includes('/category/') && !href.includes('/tag/')) {
+                const slug = href.replace(/^https?:\/\/[^\/]+/, '').replace(/^\//, '').replace(/\/$/, '');
+                if (slug && !seenSlugs.has(slug)) {
+                    seenSlugs.add(slug);
+                    const cleanTitle = rawTitle.replace(/&#038;/g, '&').trim();
+                    const fullPoster = poster.startsWith('http') ? poster : `${baseDomain}${poster}`;
+
+                    metas.push({
+                        id: `native:toonstream:${slug}`,
+                        name: cleanTitle,
+                        type: 'series',
+                        poster: fullPoster,
+                        background: fullPoster,
+                        description: `${cleanTitle} • Classic & Modern Hindi/Tamil/Telugu Dubbed Cartoons & Anime from Toonstream.`,
+                        genres: ['Cartoon', 'Animation', 'Hindi Dubbed']
+                    });
+                }
+            }
+        }
+
+        if (!query && metas.length > 0) {
+            cachedToonstreamCatalog = metas;
+            lastToonstreamCatalogFetch = now;
+        }
+        return metas;
+    } catch (err) {
+        console.error('Error fetching Toonstream catalog:', err.message);
+        return cachedToonstreamCatalog || [];
+    }
+}
+
 // ========================================================
 // ⚔️ Native In-House Scraper: AniKoto Multi-Audio Direct HLS Extractor (Reverse-Engineered from CS3 & MegaPlay AES)
 // ========================================================
@@ -2669,6 +2911,22 @@ const server = http.createServer(async (req, res) => {
             return;
         }
 
+        if (rawId.startsWith('native:mdrive:')) {
+            const slug = rawId.replace('native:mdrive:', '');
+            const result = await getNativeMoviesDriveStreams(slug);
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify(result));
+            return;
+        }
+
+        if (rawId.startsWith('native:uhd:')) {
+            const slug = rawId.replace('native:uhd:', '');
+            const result = await getNativeVegaMoviesStreams(slug);
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify(result));
+            return;
+        }
+
         if (rawId.startsWith('native:vega:')) {
             const slug = rawId.replace('native:vega:', '');
             const result = await getNativeVegaMoviesStreams(slug);
@@ -2955,6 +3213,27 @@ const server = http.createServer(async (req, res) => {
             res.end(JSON.stringify({ metas }));
             return;
         }
+        if (pathname.includes('native_moviesdrive_movies')) {
+            const searchQuery = pathname.includes('search=') ? decodeURIComponent(pathname.split('search=')[1].replace('.json', '')) : '';
+            const metas = await getNativeMoviesDriveCatalog(searchQuery);
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ metas }));
+            return;
+        }
+        if (pathname.includes('native_uhdmovies_movies')) {
+            const searchQuery = pathname.includes('search=') ? decodeURIComponent(pathname.split('search=')[1].replace('.json', '')) : '';
+            const metas = await getNativeUHDMoviesCatalog(searchQuery);
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ metas }));
+            return;
+        }
+        if (pathname.includes('native_toonstream_series')) {
+            const searchQuery = pathname.includes('search=') ? decodeURIComponent(pathname.split('search=')[1].replace('.json', '')) : '';
+            const metas = await getNativeToonstreamCatalog(searchQuery);
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ metas }));
+            return;
+        }
         if (pathname.includes('native_vegamovies_movies')) {
             const rawMetas = await getNativeVegaMoviesCatalog();
             const metas = filterCatalogByQuery(rawMetas, pathname);
@@ -3030,6 +3309,42 @@ const server = http.createServer(async (req, res) => {
             const item = catalog.find(m => m.id === `native:hdhub:${slug}`);
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify({ meta: item || null }));
+            return;
+        }
+        if (pathname.includes('native:mdrive:')) {
+            const slug = pathname.split('native:mdrive:')[1].replace('.json', '');
+            const metas = await getNativeMoviesDriveCatalog(slug);
+            const item = metas.find(m => m.id === `native:mdrive:${slug}`) || {
+                id: `native:mdrive:${slug}`,
+                name: slug.replace(/-/g, ' '),
+                type: 'movie'
+            };
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ meta: item }));
+            return;
+        }
+        if (pathname.includes('native:uhd:')) {
+            const slug = pathname.split('native:uhd:')[1].replace('.json', '');
+            const metas = await getNativeUHDMoviesCatalog(slug);
+            const item = metas.find(m => m.id === `native:uhd:${slug}`) || {
+                id: `native:uhd:${slug}`,
+                name: slug.replace(/-/g, ' '),
+                type: 'movie'
+            };
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ meta: item }));
+            return;
+        }
+        if (pathname.includes('native:toonstream:')) {
+            const slug = pathname.split('native:toonstream:')[1].replace('.json', '');
+            const metas = await getNativeToonstreamCatalog(slug);
+            const item = metas.find(m => m.id === `native:toonstream:${slug}`) || {
+                id: `native:toonstream:${slug}`,
+                name: slug.replace(/-/g, ' '),
+                type: 'series'
+            };
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ meta: item }));
             return;
         }
         if (pathname.includes('native:vega:')) {
