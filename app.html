@@ -91,15 +91,18 @@
             top: 0;
             left: 0;
             right: 0;
-            height: var(--nav-height);
-            background: rgba(7, 10, 18, 0.88);
+            min-height: 68px;
+            height: auto;
+            background: rgba(7, 10, 18, 0.95);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border-subtle);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 24px;
+            padding: 8px 20px;
+            gap: 12px;
+            flex-wrap: nowrap;
             z-index: 1000;
         }
         .brand-container {
@@ -108,6 +111,8 @@
             gap: 12px;
             cursor: pointer;
             text-decoration: none;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
         .brand-logo {
             width: 42px;
@@ -116,28 +121,45 @@
             border: 1.5px solid var(--border-gold);
             object-fit: cover;
             box-shadow: 0 0 15px rgba(229, 169, 59, 0.25);
+            flex-shrink: 0;
+        }
+        .brand-title-wrap {
+            white-space: nowrap;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         .brand-title-wrap h1 {
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 800;
             letter-spacing: 0.8px;
             background: linear-gradient(135deg, #FFFFFF 30%, var(--gold) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin: 0;
-            line-height: 1.2;
+            line-height: 1.1;
+            white-space: nowrap;
         }
         .brand-title-wrap span {
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 700;
             letter-spacing: 1.5px;
             color: var(--cyan);
             text-transform: uppercase;
+            line-height: 1.1;
+            margin-top: 2px;
+            white-space: nowrap;
         }
         .header-nav-pills {
             display: none;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            flex-shrink: 1;
+        }
+        .header-nav-pills::-webkit-scrollbar {
+            display: none;
         }
         @media (min-width: 860px) {
             .header-nav-pills {
@@ -145,19 +167,21 @@
             }
         }
         .nav-pill {
-            padding: 8px 16px;
+            padding: 7px 12px;
             border-radius: 999px;
-            font-size: 13.5px;
+            font-size: 12.5px;
             font-weight: 600;
             color: var(--text-sub);
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             background: transparent;
             border: 1px solid transparent;
             cursor: pointer;
             transition: var(--transition-smooth);
+            white-space: nowrap;
+            flex-shrink: 0;
         }
         .nav-pill:hover {
             color: #FFFFFF;
@@ -5990,16 +6014,30 @@
             if (val === 'ALL') {
                 renderGujaratiGrid(allLoadedGujarati, true);
             } else if (val === 'MDRIVE') {
-                const filtered = allLoadedGujarati.filter(item => (item.id || '').includes('mdrive') || (item.description || '').includes('MoviesDrive'));
+                const filtered = allLoadedGujarati.filter(item => {
+                    const id = (item.id || '').toLowerCase();
+                    const desc = (item.description || '').toLowerCase();
+                    const name = (item.name || '').toLowerCase();
+                    return id.includes('mdrive') || desc.includes('moviesdrive') || id.includes('moviesdrive');
+                });
                 renderGujaratiGrid(filtered, true);
             } else if (val === 'CASTLE') {
-                const filtered = allLoadedGujarati.filter(item => (item.id || '').includes('CastleTV') || (item.id || '').includes('Q2FzdGxlVFY'));
+                const filtered = allLoadedGujarati.filter(item => {
+                    const id = item.id || '';
+                    return id.includes('CastleTV') || id.includes('Q2FzdGxlVFY');
+                });
                 renderGujaratiGrid(filtered, true);
             } else if (val === 'HDHUB') {
-                const filtered = allLoadedGujarati.filter(item => (item.id || '').includes('HDHub4U') || (item.id || '').includes('hdhub'));
+                const filtered = allLoadedGujarati.filter(item => {
+                    const id = item.id || '';
+                    return id.includes('SERIdWI0VT') || id.includes('SERIdWI0VU') || id.toLowerCase().includes('hdhub');
+                });
                 renderGujaratiGrid(filtered, true);
             } else if (val === 'ROG') {
-                const filtered = allLoadedGujarati.filter(item => (item.id || '').includes('Rogmovies') || (item.id || '').includes('rog'));
+                const filtered = allLoadedGujarati.filter(item => {
+                    const id = item.id || '';
+                    return id.includes('Um9nbW92aWVz') || id.toLowerCase().includes('rogmovies') || id.toLowerCase().includes('rog');
+                });
                 renderGujaratiGrid(filtered, true);
             } else {
                 loadGujaratiPage(val);

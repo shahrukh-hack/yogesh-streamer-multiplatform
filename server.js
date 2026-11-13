@@ -780,9 +780,29 @@ async function getNativeMoviesDriveCatalog(searchQuery = '') {
     try {
         const domains = await getLiveDomains();
         const baseDomain = domains.moviesdrive || 'https://new3.moviesdrive.cyou';
-        const searchUrl = `${baseDomain}/search.php?q=${encodeURIComponent(q)}&page=1`;
-        const data = await fetchJson(searchUrl, { 'Referer': baseDomain });
-        const hits = Array.isArray(data?.hits) ? data.hits : [];
+        const page1Url = `${baseDomain}/search.php?q=${encodeURIComponent(q)}&page=1`;
+        const page1Data = await fetchJson(page1Url, { 'Referer': baseDomain });
+        const totalFound = page1Data?.found || 0;
+        let hits = Array.isArray(page1Data?.hits) ? [...page1Data.hits] : [];
+
+        // If more than 15 items exist (e.g. 93 Gujarati movies), fetch all remaining pages concurrently!
+        const totalPages = Math.min(Math.ceil(totalFound / 15), 8);
+        if (totalPages > 1) {
+            const pagePromises = [];
+            for (let p = 2; p <= totalPages; p++) {
+                pagePromises.push(
+                    fetchJson(`${baseDomain}/search.php?q=${encodeURIComponent(q)}&page=${p}`, { 'Referer': baseDomain })
+                        .then(d => Array.isArray(d?.hits) ? d.hits : [])
+                        .catch(() => [])
+                );
+            }
+            const pageResults = await Promise.allSettled(pagePromises);
+            pageResults.forEach(res => {
+                if (res.status === 'fulfilled' && Array.isArray(res.value)) {
+                    hits.push(...res.value);
+                }
+            });
+        }
         const metas = [];
         const seenSlugs = new Set();
 
