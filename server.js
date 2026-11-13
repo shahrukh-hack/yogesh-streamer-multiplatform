@@ -16,7 +16,7 @@ const PLUGINS_MANIFEST_URL = 'https://raw.githubusercontent.com/shahrukh-hack/yo
 const SCRAPERS_MANIFEST_URL = 'https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/scrapers.json';
 const BRAND_LOGO = 'https://raw.githubusercontent.com/shahrukh-hack/yogesh-streamer-plugins/builds/logo.jpg';
 const APP_PIN = process.env.APP_PIN || '778899';
-const ANDROID_APK_URL = 'https://github.com/shahrukh-hack/yogesh-streamer/releases/download/v5.5.0/YogeshStreamer-v5.5.0.apk';
+const ANDROID_APK_URL = 'https://github.com/shahrukh-hack/yogesh-streamer/releases/download/v5.6.1/YogeshStreamer-v5.6.1.apk';
 const ANDROID_RELEASES_URL = 'https://github.com/shahrukh-hack/yogesh-streamer-multiplatform/releases';
 const ANDROID_SHORT_URL = 'tinyurl.com/y-streamer-apk';
 
@@ -2412,7 +2412,7 @@ function renderLandingHtml(host) {
                 ✨ Launch Standalone Web App (No Stremio Needed)
             </a>
             <a class="btn-android" href="${ANDROID_APK_URL}">
-                🤖 Download Native Android App (APK v5.5.0)
+                🤖 Download Native Android App (APK v5.6.1)
             </a>
             <a class="btn-primary" href="${stremioWebUrl}" target="_blank">📱 1-Tap Install in Stremio Web (iOS / Mac / PC)</a>
             <a class="btn-app" href="${stremioProtocolUrl}">🚀 Open in Stremio App (Android / Windows / Linux)</a>
@@ -2424,7 +2424,7 @@ function renderLandingHtml(host) {
             <p style="font-size: 13px; color: #b5b5c0; margin-bottom: 12px;">High-performance native Android app built with Google Media3 ExoPlayer hardware decoding for seamless 4K/1080p playback and live streams.</p>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <a href="${ANDROID_APK_URL}" style="flex: 1; min-width: 170px; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: #fff; text-decoration: none; padding: 12px 16px; border-radius: 10px; font-weight: 700; font-size: 13px; text-align: center; display: inline-block;">
-                    ⬇️ Download APK v5.5.0 (Direct)
+                    ⬇️ Download APK v5.6.1 (Direct)
                 </a>
                 <a href="${ANDROID_RELEASES_URL}" target="_blank" style="flex: 1; min-width: 140px; background: rgba(255,255,255,0.08); color: #fff; text-decoration: none; padding: 12px 16px; border-radius: 10px; font-weight: 600; font-size: 13px; text-align: center; border: 1px solid rgba(255,255,255,0.2); display: inline-block;">
                     📦 GitHub Releases

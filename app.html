@@ -197,6 +197,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-shrink: 0;
         }
         .btn-header-action {
             width: 38px;
@@ -2165,8 +2166,10 @@
         .audio-only-active .audio-only-overlay {
             display: flex;
         }
-        .audio-only-active video {
+        .audio-only-active video,
+        .audio-only-active iframe {
             opacity: 0 !important;
+            pointer-events: none;
         }
         .audio-only-logo {
             width: 110px;
@@ -2255,9 +2258,8 @@
         </div>
         <div class="header-actions">
             <button id="btn-pwa-install" class="btn-header-action focusable" tabindex="0" title="Install Yogesh Streamer Web App" style="display: none; color: var(--gold);" onclick="installPWA()"><i class="fas fa-download"></i></button>
-            <button class="btn-header-action focusable" tabindex="0" onclick="openSpeedTestModal()" title="Network Speed & 4K Stream Test"><i class="fas fa-gauge-high"></i></button>
-            <button class="btn-header-action focusable" tabindex="0" onclick="openShortcutsModal()" title="Keyboard & TV Remote Shortcuts (?)"><i class="fas fa-keyboard"></i></button>
-            <a href="/apk" target="_blank" class="btn-header-action focusable" tabindex="0" title="Download Android TV / Phone APK v5.5.0" style="color: #34d399; text-decoration: none; display: flex; align-items: center; justify-content: center;"><i class="fab fa-android"></i></a>
+
+            <a href="/apk" target="_blank" class="btn-header-action focusable" tabindex="0" title="Download Android TV / Phone APK v5.6.1" style="color: #34d399; text-decoration: none; display: flex; align-items: center; justify-content: center;"><i class="fab fa-android"></i></a>
             <button class="btn-header-action focusable" tabindex="0" onclick="openSyncModal()" title="Cloud Sync"><i class="fas fa-cloud-arrow-up"></i></button>
             <button class="btn-header-action focusable" tabindex="0" onclick="lockApp()" title="PIN Lock"><i class="fas fa-lock"></i></button>
             <button class="btn-header-action focusable" tabindex="0" onclick="openSettingsModal()" title="Settings & Cloud Resolvers"><i class="fas fa-gear"></i></button>
@@ -3073,7 +3075,7 @@
                 <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px; text-align: center;">
                     <div style="font-size: 13px; font-weight: 700; color: #FFFFFF; margin-bottom: 6px;"><i class="fab fa-android" style="color: #34d399;"></i> Yogesh Streamer Android APK</div>
                     <div style="font-size: 11px; color: var(--text-sub); margin-bottom: 12px;">For dedicated Android TV, TV Boxes & Phones (Native .cs3 Engine)</div>
-                    <a href="/apk" target="_blank" class="btn-stream-play focusable" tabindex="0" style="text-decoration: none; display: inline-flex;"><i class="fas fa-download"></i> Download Official APK v5.5.0</a>
+                    <a href="/apk" target="_blank" class="btn-stream-play focusable" tabindex="0" style="text-decoration: none; display: inline-flex;"><i class="fas fa-download"></i> Download Official APK v5.6.1</a>
                 </div>
             </div>
         </div>
@@ -5004,7 +5006,21 @@
                 let ytId = url.replace('yt:', '');
                 const m = url.match(/(?:v=|\/embed\/|youtu\.be\/|\/v\/)([a-zA-Z0-9_-]{11})/);
                 if (m) ytId = m[1];
-                container.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0&modestbranding=1&playsinline=1" style="width:100%; height:100%; border:none;" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>`;
+                container.innerHTML = `
+                    <iframe id="youtube-player-frame" src="https://www.youtube-nocookie.com/embed/${ytId}?enablejsapi=1&autoplay=1&rel=0&modestbranding=1&playsinline=1" style="width:100%; height:100%; border:none;" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>
+                    <div class="audio-only-overlay">
+                        <img class="audio-only-logo" src="/logo.jpg" alt="Logo">
+                        <div style="font-size: 18px; font-weight: 800; color: #FFFFFF; margin-top: 18px;" id="audio-only-title">${cleanTitle(title)}</div>
+                        <div style="font-size: 12px; color: var(--gold); margin-top: 4px; font-weight: 600;">✨ Luxury Hi-Fi Cloud Audio Feed Active</div>
+                        <div class="audio-soundwave" style="margin-top: 20px;">
+                            <div class="soundwave-bar"></div>
+                            <div class="soundwave-bar"></div>
+                            <div class="soundwave-bar"></div>
+                            <div class="soundwave-bar"></div>
+                            <div class="soundwave-bar"></div>
+                        </div>
+                    </div>
+                `;
                 const cinemaModal = document.getElementById('cinema-player-modal');
                 cinemaModal.classList.remove('minimized');
                 cinemaModal.classList.add('open');
@@ -5391,16 +5407,25 @@
             if (modal) modal.classList.remove('minimized');
             if (mini) mini.style.display = 'none';
         }
+        let isMiniYtPlaying = true;
         function toggleMiniPlayPause() {
             const video = document.querySelector('#player-screen-wrap video');
+            const iframe = document.querySelector('#player-screen-wrap iframe');
             const ppBtn = document.getElementById('btn-mini-playpause');
-            if (!video) return;
-            if (video.paused) {
-                video.play().catch(() => {});
-                if (ppBtn) ppBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            } else {
-                video.pause();
-                if (ppBtn) ppBtn.innerHTML = '<i class="fas fa-play"></i>';
+            
+            if (video) {
+                if (video.paused) {
+                    video.play().catch(() => {});
+                    if (ppBtn) ppBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                } else {
+                    video.pause();
+                    if (ppBtn) ppBtn.innerHTML = '<i class="fas fa-play"></i>';
+                }
+            } else if (iframe && iframe.contentWindow) {
+                isMiniYtPlaying = !isMiniYtPlaying;
+                const cmd = isMiniYtPlaying ? 'playVideo' : 'pauseVideo';
+                iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: cmd, args: [] }), '*');
+                if (ppBtn) ppBtn.innerHTML = isMiniYtPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
             }
         }
         function terminatePlayback() {
@@ -5650,20 +5675,49 @@
                 showToast('Audio-Only Mode: OFF (Video Restored)', 'fa-video');
             }
         }
-        function togglePictureInPicture() {
+        async function togglePictureInPicture() {
             const video = document.querySelector('#player-screen-wrap video');
-            if (!video) return;
-            if (document.pictureInPictureElement) {
-                document.exitPictureInPicture().catch(() => {});
-            } else if (document.pictureInPictureEnabled && video.requestPictureInPicture) {
-                video.requestPictureInPicture().then(() => {
-                    showToast('Picture-in-Picture Activated', 'fa-clone');
-                }).catch(() => {
-                    showToast('PiP not available for this stream', 'fa-circle-exclamation');
-                });
-            } else {
-                showToast('PiP not supported on this device', 'fa-circle-exclamation');
+            const iframe = document.querySelector('#player-screen-wrap iframe');
+            
+            // 1. Native HTML5 Video Picture-in-Picture
+            if (video) {
+                if (document.pictureInPictureElement) {
+                    document.exitPictureInPicture().catch(() => {});
+                    return;
+                } else if (document.pictureInPictureEnabled && video.requestPictureInPicture) {
+                    try {
+                        await video.requestPictureInPicture();
+                        showToast('Picture-in-Picture Activated', 'fa-clone');
+                        return;
+                    } catch(e) {}
+                }
             }
+            
+            // 2. Modern Document Picture-in-Picture (Allows floating any window/iframe!)
+            if (window.documentPictureInPicture && window.documentPictureInPicture.requestWindow) {
+                try {
+                    const pipWindow = await window.documentPictureInPicture.requestWindow({
+                        width: 480,
+                        height: 270
+                    });
+                    const playerWrap = document.getElementById('player-screen-wrap');
+                    if (playerWrap) {
+                        pipWindow.document.body.style.margin = '0';
+                        pipWindow.document.body.style.backgroundColor = '#000';
+                        pipWindow.document.body.appendChild(playerWrap);
+                        pipWindow.addEventListener('pagehide', () => {
+                            const cinema = document.getElementById('cinema-player-modal');
+                            if (cinema) cinema.insertBefore(playerWrap, cinema.querySelector('.player-controls-bottom'));
+                        });
+                        showToast('Floating PiP Window Activated', 'fa-clone');
+                        return;
+                    }
+                } catch(e) {}
+            }
+            
+            // 3. Universal Floating Mini-Player for YouTube & Mobile
+            minimizeCinemaPlayer();
+            showToast('Floating Mini-Player Activated', 'fa-clone');
         }
         // ==========================================
         // ⏩ PLAYBACK SPEED CONTROLS
@@ -5671,11 +5725,23 @@
         const PLAYBACK_SPEEDS = [1, 1.25, 1.5, 2, 0.75];
         let currentSpeedIdx = 0;
         function cyclePlaybackSpeed() {
-            const video = document.querySelector('#player-screen-wrap video');
-            if (!video) return;
             currentSpeedIdx = (currentSpeedIdx + 1) % PLAYBACK_SPEEDS.length;
             const newSpeed = PLAYBACK_SPEEDS[currentSpeedIdx];
-            video.playbackRate = newSpeed;
+            
+            const video = document.querySelector('#player-screen-wrap video');
+            if (video) {
+                video.playbackRate = newSpeed;
+            }
+            
+            const iframe = document.querySelector('#player-screen-wrap iframe');
+            if (iframe && iframe.contentWindow) {
+                iframe.contentWindow.postMessage(JSON.stringify({
+                    event: 'command',
+                    func: 'setPlaybackRate',
+                    args: [newSpeed]
+                }), '*');
+            }
+            
             const label = document.getElementById('player-speed-label');
             if (label) label.innerText = `${newSpeed}x`;
             showToast(`Playback Speed: ${newSpeed}x`, 'fa-gauge-high');
@@ -5686,6 +5752,14 @@
             if (label) label.innerText = '1x';
             const video = document.querySelector('#player-screen-wrap video');
             if (video) video.playbackRate = 1;
+            const iframe = document.querySelector('#player-screen-wrap iframe');
+            if (iframe && iframe.contentWindow) {
+                iframe.contentWindow.postMessage(JSON.stringify({
+                    event: 'command',
+                    func: 'setPlaybackRate',
+                    args: [1]
+                }), '*');
+            }
         }
         // ==========================================
         // 🌙 SLEEP TIMER SYSTEM
