@@ -2226,7 +2226,8 @@
             <button class="nav-pill focusable" tabindex="0" onclick="switchNavTab('tab-sports', 4)"><i class="fas fa-baseball-bat-ball"></i> Sports</button>
             <button class="nav-pill focusable" tabindex="0" onclick="switchNavTab('tab-livetv', 5)"><i class="fas fa-satellite-dish"></i> Live TV</button>
             <button class="nav-pill focusable" tabindex="0" onclick="switchNavTab('tab-gujarati', 6)" style="border-color: rgba(229,169,59,0.45);"><i class="fas fa-masks-theater" style="color: var(--gold);"></i> Gujarati</button>
-            <button class="nav-pill focusable" tabindex="0" onclick="switchNavTab('tab-search', 7)"><i class="fas fa-search"></i> Search</button>
+            <button class="nav-pill focusable" tabindex="0" onclick="switchNavTab('tab-yogtube', 7)" style="border-color: rgba(255,0,51,0.45);"><i class="fab fa-youtube" style="color: #ff0033;"></i> YogTube</button>
+            <button class="nav-pill focusable" tabindex="0" onclick="switchNavTab('tab-search', 8)"><i class="fas fa-search"></i> Search</button>
         </div>
         <div class="header-actions">
             <button id="btn-pwa-install" class="btn-header-action focusable" tabindex="0" title="Install Yogesh Streamer Web App" style="display: none; color: var(--gold);" onclick="installPWA()"><i class="fas fa-download"></i></button>
@@ -2267,6 +2268,7 @@
             <button class="quick-chip focusable" tabindex="0" onclick="switchNavTab('tab-movies', 1)"><i class="fas fa-film" style="color:#60a5fa"></i> Blockbuster Movies</button>
             <button class="quick-chip focusable" tabindex="0" onclick="switchNavTab('tab-series', 2)"><i class="fas fa-tv" style="color:#c084fc"></i> Web Series</button>
             <button class="quick-chip focusable" tabindex="0" onclick="switchNavTab('tab-gujarati', 6)"><i class="fas fa-masks-theater" style="color:var(--gold)"></i> Gujarati Vault</button>
+            <button class="quick-chip focusable" tabindex="0" onclick="switchNavTab('tab-yogtube', 7)"><i class="fab fa-youtube" style="color:#ff0033"></i> YogTube 4K</button>
             <button class="quick-chip focusable" tabindex="0" onclick="switchNavTab('tab-sports', 4)"><i class="fas fa-baseball-bat-ball" style="color:#ef4444"></i> Live Match Center</button>
             <button class="quick-chip focusable" tabindex="0" onclick="switchNavTab('tab-livetv', 5)"><i class="fas fa-satellite-dish" style="color:#34d399"></i> 24/7 Live TV</button>
             <button class="quick-chip focusable" tabindex="0" onclick="switchNavTab('tab-anime', 3)"><i class="fas fa-dragon" style="color:#ec4899"></i> Anime Universe</button>
@@ -2669,6 +2671,45 @@
     <!-- ========================================== -->
     <!-- 🔍 6. INSTANT UNIVERSAL SEARCH (PAGE 6)    -->
     <!-- ========================================== -->
+        <!-- ========================================== -->
+    <!-- 🔴 7. YOGTUBE 4K (SMARTTUBE YOUTUBE HUB)  -->
+    <!-- ========================================== -->
+    <div id="tab-yogtube" class="tab-view">
+        <div class="page-header-bar">
+            <div class="page-title-row">
+                <h2 class="page-headline"><i class="fab fa-youtube" style="color:#ff0033;"></i> YogTube 4K • Ad-Free YouTube & Regional Hub</h2>
+                <div class="source-select-wrap">
+                    <span style="font-size: 12px; font-weight: 700; color: var(--text-sub);">Source:</span>
+                    <select id="yogtube-source-select" class="source-select focusable" tabindex="0" onchange="changeYogTubeSource(this.value)">
+                        <option value="TRENDING" selected>🔴 SmartTube / NewPipe Cloud Engine (Ad-Free)</option>
+                        <option value="GUJARATI">🦁 Gujarati Full Movies & Natak</option>
+                        <option value="CARTOONS">👶 Kids Hindi Cartoons</option>
+                        <option value="MOVIES">🍿 Full Bollywood & Regional Movies</option>
+                        <option value="NEWS">📡 24/7 Live News Feeds</option>
+                        <option value="MUSIC">🎧 Non-Stop Music Hits</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Category Chips -->
+            <div class="chips-bar" id="yogtube-chips">
+                <button class="chip-pill active focusable" tabindex="0" onclick="filterYogTubeCategory('TRENDING', this)">🔥 Trending Now</button>
+                <button class="chip-pill focusable" tabindex="0" onclick="filterYogTubeCategory('GUJARATI', this)">🦁 Gujarati Movies & Natak</button>
+                <button class="chip-pill focusable" tabindex="0" onclick="filterYogTubeCategory('CARTOONS', this)">👶 Hindi Cartoons</button>
+                <button class="chip-pill focusable" tabindex="0" onclick="filterYogTubeCategory('MOVIES', this)">🍿 Full Movies 1080p</button>
+                <button class="chip-pill focusable" tabindex="0" onclick="filterYogTubeCategory('NEWS', this)">📡 24/7 Live News</button>
+                <button class="chip-pill focusable" tabindex="0" onclick="filterYogTubeCategory('MUSIC', this)">🎧 Non-Stop Music</button>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 6px;">
+                <div class="search-inline-bar">
+                    <i class="fab fa-youtube" style="color: #ff0033;"></i>
+                    <input type="text" id="yogtube-search-input" placeholder="Search any YouTube video, song, channel or movie..." oninput="handleYogTubeSearchInput(this.value)">
+                </div>
+                <div id="yogtube-count-badge" style="font-size: 12px; font-weight: 700; color: #ff0033; white-space: nowrap;">Loading YogTube...</div>
+            </div>
+        </div>
+        <div class="video-grid" id="yogtube-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; padding: 20px 0;"></div>
+    </div>
+
     <div id="tab-search" class="tab-view">
         <div style="padding: 24px 0 14px 0;">
             <div style="display: flex; align-items: center; gap: 14px; background: var(--bg-card); border: 1.5px solid var(--border-gold); border-radius: 999px; padding: 12px 22px; box-shadow: 0 4px 25px rgba(0,0,0,0.4);">
@@ -2729,7 +2770,11 @@
             <i class="fas fa-masks-theater" style="color: var(--gold);"></i>
             <span>Gujarati</span>
         </a>
-        <a class="bottom-nav-item focusable" tabindex="0" role="button" onclick="switchNavTab('tab-search', 7)">
+        <a class="bottom-nav-item focusable" tabindex="0" role="button" onclick="switchNavTab('tab-yogtube', 7)">
+            <i class="fab fa-youtube" style="color: #ff0033;"></i>
+            <span>YogTube</span>
+        </a>
+        <a class="bottom-nav-item focusable" tabindex="0" role="button" onclick="switchNavTab('tab-search', 8)">
             <i class="fas fa-search"></i>
             <span>Search</span>
         </a>
@@ -3360,6 +3405,9 @@
             } else if (tabId === 'tab-gujarati') {
                 const g = document.getElementById('gujarati-grid');
                 if (!g || g.querySelectorAll('.poster-card').length === 0) loadGujaratiPage();
+            } else if (tabId === 'tab-yogtube') {
+                const g = document.getElementById('yogtube-grid');
+                if (!g || g.querySelectorAll('.yogtube-card').length === 0) loadYogTubePage('TRENDING');
             }
         }
         // ==========================================
@@ -4927,6 +4975,20 @@
             if (upNextEl) upNextEl.style.display = 'none';
             document.getElementById('player-title-text').innerText = cleanTitle(title);
             const container = document.getElementById('player-screen-wrap');
+            // Handle YouTube URLs or Video IDs
+            if (url.includes('youtube.com') || url.includes('youtu.be') || url.startsWith('yt:')) {
+                let ytId = url.replace('yt:', '');
+                const m = url.match(/(?:v=|\/embed\/|youtu\.be\/|\/v\/)([a-zA-Z0-9_-]{11})/);
+                if (m) ytId = m[1];
+                container.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0&modestbranding=1&playsinline=1" style="width:100%; height:100%; border:none;" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>`;
+                const cinemaModal = document.getElementById('cinema-player-modal');
+                cinemaModal.classList.remove('minimized');
+                cinemaModal.classList.add('open');
+                const activeMini = document.getElementById('mini-player-bar');
+                if (activeMini) activeMini.style.display = 'none';
+                return;
+            }
+
             // Handle Web Player Iframe Embeds
             if ((url.includes('/stream/') || url.includes('/embed/') || url.includes('megaplay')) && !url.includes('.m3u8') && !url.includes('.mpd') && !url.includes('.mp4') && !url.includes('proxy/stream')) {
                 container.innerHTML = `<iframe src="${url}" style="width:100%; height:100%; border:none;" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>`;
@@ -6601,6 +6663,121 @@
         // ==========================================
         // 🦁 DYNAMIC GUJARATI HARVESTING
         // ==========================================
+        // ==========================================
+        // 🔴 YOGTUBE 4K JAVASCRIPT CONTROLLER
+        // ==========================================
+        let currentYogTubeItems = [];
+        let yogtubeSearchDebounceTimer = null;
+
+        async function loadYogTubePage(category = 'TRENDING') {
+            const grid = document.getElementById('yogtube-grid');
+            if (grid) grid.innerHTML = '<div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>';
+            const badge = document.getElementById('yogtube-count-badge');
+            if (badge) badge.innerText = 'Connecting to SmartTube Engine...';
+
+            let endpoint = `${API_BASE}/api/yogtube/trending`;
+            if (category === 'GUJARATI') {
+                endpoint = `${API_BASE}/api/yogtube/search?q=${encodeURIComponent('gujarati full movie natak 1080p')}`;
+            } else if (category === 'CARTOONS') {
+                endpoint = `${API_BASE}/api/yogtube/search?q=${encodeURIComponent('doraemon shinchan hindi full episode')}`;
+            } else if (category === 'MOVIES') {
+                endpoint = `${API_BASE}/api/yogtube/search?q=${encodeURIComponent('hindi full movie 1080p bollywood south')}`;
+            } else if (category === 'NEWS') {
+                endpoint = `${API_BASE}/api/yogtube/search?q=${encodeURIComponent('live news hindi gujarati 24/7')}`;
+            } else if (category === 'MUSIC') {
+                endpoint = `${API_BASE}/api/yogtube/search?q=${encodeURIComponent('latest bollywood hindi songs 2026')}`;
+            }
+
+            try {
+                const res = await fetch(endpoint);
+                const data = await res.json();
+                currentYogTubeItems = Array.isArray(data?.items) ? data.items : [];
+                if (badge) badge.innerText = `${currentYogTubeItems.length} Videos Available`;
+                renderYogTubeGrid(currentYogTubeItems);
+            } catch(e) {
+                if (grid) grid.innerHTML = '<div style="color:var(--text-muted); padding:30px; text-align:center; grid-column:1/-1;">Could not connect to YouTube stream server. Please try again.</div>';
+            }
+        }
+
+        function filterYogTubeCategory(cat, btn) {
+            if (btn) {
+                document.querySelectorAll('#yogtube-chips .chip-pill').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
+            loadYogTubePage(cat);
+        }
+
+        function changeYogTubeSource(val) {
+            loadYogTubePage(val);
+        }
+
+        function handleYogTubeSearchInput(val) {
+            if (yogtubeSearchDebounceTimer) clearTimeout(yogtubeSearchDebounceTimer);
+            yogtubeSearchDebounceTimer = setTimeout(async () => {
+                const q = (val || '').trim();
+                if (!q) {
+                    loadYogTubePage('TRENDING');
+                    return;
+                }
+                const grid = document.getElementById('yogtube-grid');
+                if (grid) grid.innerHTML = '<div class="spinner-gold"><i class="fas fa-spinner fa-spin"></i></div>';
+                const badge = document.getElementById('yogtube-count-badge');
+                if (badge) badge.innerText = `Searching YouTube for "${q}"...`;
+                try {
+                    const res = await fetch(`${API_BASE}/api/yogtube/search?q=${encodeURIComponent(q)}`);
+                    const data = await res.json();
+                    currentYogTubeItems = Array.isArray(data?.items) ? data.items : [];
+                    if (badge) badge.innerText = `${currentYogTubeItems.length} Search Results`;
+                    renderYogTubeGrid(currentYogTubeItems);
+                } catch(e) {}
+            }, 400);
+        }
+
+        function renderYogTubeGrid(items) {
+            const grid = document.getElementById('yogtube-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            if (!items || items.length === 0) {
+                grid.innerHTML = '<div style="color:var(--text-muted); padding:40px; text-align:center; grid-column:1/-1;">No YouTube videos found.</div>';
+                return;
+            }
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'yogtube-card focusable';
+                card.tabIndex = 0;
+                card.style.cssText = 'background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;';
+                card.innerHTML = `
+                    <div style="position: relative; width: 100%; aspect-ratio: 16/9; background: #000; overflow: hidden;">
+                        <img src="${item.thumbnail}" alt="${cleanTitle(item.title)}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
+                        <span style="position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.85); color: #fff; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">${item.duration || 'HD'}</span>
+                        <span style="position: absolute; top: 8px; left: 8px; background: rgba(255,0,51,0.9); color: #fff; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.5px;"><i class="fab fa-youtube"></i> 4K</span>
+                    </div>
+                    <div style="padding: 12px;">
+                        <div style="font-size: 13.5px; font-weight: 700; color: #fff; line-height: 1.35; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${cleanTitle(item.title)}</div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11.5px; color: var(--text-muted);">
+                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 65%;"><i class="fas fa-circle-check" style="color: var(--gold); font-size: 10px;"></i> ${item.uploader}</span>
+                            <span>${item.views || ''}</span>
+                        </div>
+                    </div>
+                `;
+                card.onmouseenter = () => {
+                    card.style.transform = 'translateY(-4px)';
+                    card.style.borderColor = 'rgba(255,0,51,0.5)';
+                    card.style.boxShadow = '0 8px 24px rgba(255,0,51,0.2)';
+                };
+                card.onmouseleave = () => {
+                    card.style.transform = 'none';
+                    card.style.borderColor = 'rgba(255,255,255,0.08)';
+                    card.style.boxShadow = 'none';
+                };
+                card.onclick = () => {
+                    const ytUrl = `https://www.youtube.com/watch?v=${item.id}`;
+                    launchCinemaPlayer(ytUrl, item.title, [{ name: '🔴 YogTube 4K (Ad-Free)', url: ytUrl, isWebPlayable: true }], 0);
+                };
+                grid.appendChild(card);
+            });
+        }
+
         async function harvestGujaratiFromCloud() {
             if (!dynamicGujaratiMovies || dynamicGujaratiMovies.length === 0) {
                 initGujaratiLibrary();

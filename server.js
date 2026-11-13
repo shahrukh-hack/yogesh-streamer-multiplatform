@@ -1005,6 +1005,87 @@ async function getNativeToonstreamCatalog(query = '') {
     }
 }
 
+
+// ========================================================
+// 🔴 YogTube: Ad-Free SmartTube & YouTube Streaming Engine
+// ========================================================
+const PIPED_INSTANCES = [
+    'https://api.piped.private.coffee',
+    'https://pipedapi.leptons.xyz',
+    'https://piped-api.garudalinux.org'
+];
+
+let cachedYogTubeTrending = { data: null, timestamp: 0 };
+const cachedYogTubeSearch = new Map();
+
+async function getPipedTrending() {
+    const now = Date.now();
+    if (cachedYogTubeTrending.data && (now - cachedYogTubeTrending.timestamp < 300000)) { // 5 mins
+        return cachedYogTubeTrending.data;
+    }
+
+    for (const base of PIPED_INSTANCES) {
+        try {
+            const url = `${base}/trending?region=IN`;
+            const data = await fetchJson(url, { 'User-Agent': 'Mozilla/5.0' });
+            if (Array.isArray(data) && data.length > 0) {
+                const items = data.slice(0, 30).map(i => {
+                    const videoId = (i.url || '').replace('/watch?v=', '');
+                    return {
+                        id: videoId,
+                        title: i.title || 'YouTube Video',
+                        uploader: i.uploaderName || '',
+                        uploaderAvatar: i.uploaderAvatar || '',
+                        thumbnail: i.thumbnail || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+                        duration: i.duration ? Math.floor(i.duration / 60) + ' min' : 'Video',
+                        views: i.views ? (i.views > 1000000 ? (i.views / 1000000).toFixed(1) + 'M' : (i.views / 1000).toFixed(0) + 'K') : ''
+                    };
+                });
+                cachedYogTubeTrending.data = items;
+                cachedYogTubeTrending.timestamp = now;
+                return items;
+            }
+        } catch (e) {}
+    }
+    return cachedYogTubeTrending.data || [];
+}
+
+async function getPipedSearch(query) {
+    const q = (query || '').trim();
+    if (!q) return getPipedTrending();
+
+    const cacheKey = q.toLowerCase();
+    const cached = cachedYogTubeSearch.get(cacheKey);
+    if (cached && (Date.now() - cached.timestamp < 600000)) { // 10 mins
+        return cached.items;
+    }
+
+    for (const base of PIPED_INSTANCES) {
+        try {
+            const url = `${base}/search?q=${encodeURIComponent(q)}&filter=all`;
+            const data = await fetchJson(url, { 'User-Agent': 'Mozilla/5.0' });
+            const rawItems = (data.items || []).filter(i => i.type === 'stream' || (i.url && i.url.includes('/watch?v=')));
+            if (rawItems.length > 0) {
+                const items = rawItems.slice(0, 30).map(i => {
+                    const videoId = (i.url || '').replace('/watch?v=', '');
+                    return {
+                        id: videoId,
+                        title: i.title || 'YouTube Video',
+                        uploader: i.uploaderName || '',
+                        uploaderAvatar: i.uploaderAvatar || '',
+                        thumbnail: i.thumbnail || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+                        duration: i.duration ? Math.floor(i.duration / 60) + ' min' : 'Video',
+                        views: i.views ? (i.views > 1000000 ? (i.views / 1000000).toFixed(1) + 'M' : (i.views / 1000).toFixed(0) + 'K') : ''
+                    };
+                });
+                cachedYogTubeSearch.set(cacheKey, { timestamp: Date.now(), items });
+                return items;
+            }
+        } catch (e) {}
+    }
+    return [];
+}
+
 // ========================================================
 // ⚔️ Native In-House Scraper: AniKoto Multi-Audio Direct HLS Extractor (Reverse-Engineered from CS3 & MegaPlay AES)
 // ========================================================
@@ -2687,6 +2768,32 @@ const server = http.createServer(async (req, res) => {
     }
 
     // Stremio Addon Manifest
+        // 🔴 YogTube (Ad-Free SmartTube & YouTube Streaming Engine)
+    if (pathname === '/api/yogtube/trending') {
+        try {
+            const data = await getPipedTrending();
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ items: data }));
+        } catch (e) {
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ items: [] }));
+        }
+        return;
+    }
+
+    if (pathname === '/api/yogtube/search') {
+        try {
+            const q = parsedUrl.query.q || '';
+            const data = await getPipedSearch(q);
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ items: data }));
+        } catch (e) {
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ items: [] }));
+        }
+        return;
+    }
+
     if (pathname === '/manifest.json') {
         try {
             const manifest = await getRebrandedManifest();
