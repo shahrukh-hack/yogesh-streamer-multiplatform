@@ -2596,6 +2596,8 @@
                         <option value="cnc_PlayZTVLiveEvents_tv">🌟 PlayZTV Live Events (116 Feeds • Ten Sports & PTV)</option>
                         <option value="cnc_LivXowLiveEvents_tv">🌟 LivXow Live Events (Multi-Feed HD)</option>
                         <option value="cnc_SKTechLiveEvents_tv">🌟 SKTech Live Events (Regional Cricket & Football)</option>
+                        <option value="cnc_SportzXHighlights_tv">🎬 SportzX Highlights (WWE, Cricket & Matches)</option>
+                        <option value="cnc_PlayFyHighlights_tv">🎬 PlayFy Highlights & Replays</option>
                     </select>
                 </div>
             </div>
@@ -4248,12 +4250,27 @@
                       ]
                     : [sourceId];
                 allLoadedSports = [];
-                const fetchPromises = targets.map(catId => 
-                    fetch(`${API_BASE}/catalog/tv/${catId}.json`)
-                        .then(r => r.json())
-                        .then(d => Array.isArray(d?.metas) ? d.metas : [])
-                        .catch(() => [])
-                );
+                const fetchPromises = targets.map(async catId => {
+                    const eps = [
+                        `${API_BASE}/catalog/tv/${catId}.json`,
+                        `https://cncverse.dpdns.org/catalog/tv/${catId}.json`
+                    ];
+                    for (const u of eps) {
+                        try {
+                            const controller = new AbortController();
+                            const tId = setTimeout(() => controller.abort(), 6000);
+                            const r = await fetch(u, { signal: controller.signal });
+                            clearTimeout(tId);
+                            if (r.ok) {
+                                const d = await r.json();
+                                if (Array.isArray(d?.metas) && d.metas.length > 0) {
+                                    return d.metas;
+                                }
+                            }
+                        } catch(e) {}
+                    }
+                    return [];
+                });
                 const results = await Promise.allSettled(fetchPromises);
                 results.forEach(res => {
                     if (res.status === 'fulfilled' && Array.isArray(res.value)) {
@@ -4673,6 +4690,52 @@
         // 📋 STREAM PICKER & CINEMA PLAYER
         // ==========================================
         let currentSeriesContext = null;
+                // ==========================================
+        // 🛡️ INTELLIGENT STREAM PROXY RESOLVER
+        // ==========================================
+        function getPlayableStreamUrl(stream) {
+            if (!stream) return '';
+            let targetUrl = typeof stream === 'string' ? stream : (stream.url || '');
+            if (!targetUrl) return '';
+
+            // Already proxied or YouTube
+            if (targetUrl.includes('/proxy/stream') || targetUrl.includes('youtube.com') || targetUrl.includes('youtu.be') || targetUrl.startsWith('yt:')) {
+                return targetUrl;
+            }
+
+            const hints = (typeof stream === 'object' && stream.behaviorHints) ? stream.behaviorHints : {};
+            const proxyHeaders = hints.proxyHeaders?.request || hints.headers || {};
+            let ref = proxyHeaders.Referer || proxyHeaders.referer || '';
+            let ua = proxyHeaders['User-Agent'] || proxyHeaders['user-agent'] || '';
+
+            const uLow = targetUrl.toLowerCase();
+            // Auto-detect domain referers if missing
+            if (!ref) {
+                if (uLow.includes('liveland.af')) ref = 'https://liveland.af/';
+                else if (uLow.includes('tapmad.com')) ref = 'https://tapmad.com/';
+                else if (uLow.includes('tamashaweb.com')) ref = 'https://tamashaweb.com/';
+                else if (uLow.includes('fancode.com')) ref = 'https://fancode.com/';
+                else if (uLow.includes('hscow.com') || uLow.includes('hlowb.com')) ref = 'https://api.hlowb.com/';
+                else if (uLow.includes('kisskh')) ref = 'https://kisskh.is/';
+                else if (uLow.includes('toonix')) ref = 'https://toonix.bond/';
+                else if (uLow.includes('movie-box.co')) ref = 'https://movie-box.co/';
+            }
+
+            const notWebReady = hints.notWebReady === true;
+            const isHttp = targetUrl.startsWith('http://');
+
+            // If stream requires headers, is notWebReady, or is insecure http on https origin:
+            if (ref || ua || notWebReady || isHttp) {
+                const isM3u8 = uLow.includes('.m3u8');
+                const proxyPath = isM3u8 ? '/proxy/stream/playlist.m3u8' : '/proxy/stream';
+                let q = `?url=${encodeURIComponent(targetUrl)}`;
+                if (ref) q += `&referer=${encodeURIComponent(ref)}`;
+                if (ua) q += `&ua=${encodeURIComponent(ua)}`;
+                return `${API_BASE}${proxyPath}${q}`;
+            }
+
+            return targetUrl;
+        }
         async function openStreamPicker(type, id, title, episodeNum = 1, autoPlay = false, poster = null) {
             if (type === 'series') {
                 const parts = id.split(':');
@@ -4717,14 +4780,26 @@
                     effectiveType = 'series';
                 }
                 let streams = [];
-                // 1. Primary Query with intelligent series auto-detection
-                try {
-                    const res = await fetch(`${API_BASE}/stream/${effectiveType}/${encodeURIComponent(id)}.json`);
-                    const data = await res.json();
-                    if (Array.isArray(data?.streams) && data.streams.length > 0) {
-                        streams = data.streams;
-                    }
-                } catch(e) {}
+                // 1. Primary Query with upstream failover & series/tv auto-detection
+                const streamEndpoints = [
+                    `${API_BASE}/stream/${effectiveType}/${encodeURIComponent(id)}.json`,
+                    `https://cncverse.dpdns.org/stream/${effectiveType}/${encodeURIComponent(id)}.json`
+                ];
+                for (const ep of streamEndpoints) {
+                    try {
+                        const controller = new AbortController();
+                        const tId = setTimeout(() => controller.abort(), 6000);
+                        const res = await fetch(ep, { signal: controller.signal });
+                        clearTimeout(tId);
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (Array.isArray(data?.streams) && data.streams.length > 0) {
+                                streams = data.streams;
+                                break;
+                            }
+                        }
+                    } catch(e) {}
+                }
                 // 2. Intelligent Auto-Fallback: Query other candidate types if 0 streams returned
                 if (streams.length === 0) {
                     const fallbackTypes = (effectiveType === 'series') ? ['series', 'other', 'movie'] : ['movie', 'other', 'series'];
@@ -4855,7 +4930,8 @@
                         playBtn.addEventListener('click', (e) => {
                             e.stopPropagation();
                             closeStreamPicker(true);
-                            launchCinemaPlayer(s.url, title, streams, idx);
+                            const playableUrl = getPlayableStreamUrl(s);
+                            launchCinemaPlayer(playableUrl, title, streams, idx);
                         });
                     }
                     const extBtn = card.querySelector('.btn-stream-ext');
@@ -4990,6 +5066,11 @@
             activeStreamList = streamList;
             activeStreamIndex = streamIndex;
             activeStreamTitle = title;
+            if (activeStreamList && activeStreamList[activeStreamIndex]) {
+                url = getPlayableStreamUrl(activeStreamList[activeStreamIndex]);
+            } else {
+                url = getPlayableStreamUrl(url);
+            }
             currentPlayingUrl = url;
             // Reset Up Next countdown
             upNextDismissedForCurrentEp = false;

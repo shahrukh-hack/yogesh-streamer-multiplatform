@@ -3140,7 +3140,7 @@ const server = http.createServer(async (req, res) => {
             // Filter out known dead CDN hosts (return 404 upstream), dead CF workers (400), and dead sports proxies
             streams = streams.filter(s => {
                 const u = (s.url || '').toLowerCase();
-                if (u.includes('nm-cdn23.top') || u.includes('freecdn4.top') || u.includes('140.238.244.130/proxy/mpd') || u.includes('129.225.106.195/proxy/mpd') || u.includes('rohitkiskk.workers.dev') || u.includes('tencent-cdn.tapmad.com') || u.includes('dai-fancode.pages.dev')) {
+                if (u.includes('nm-cdn23.top') || u.includes('freecdn4.top') || u.includes('140.238.244.130/proxy/mpd') || u.includes('129.225.106.195/proxy/mpd') || u.includes('rohitkiskk.workers.dev') || u.includes('tencent-cdn.tapmad.com') || u.includes('multiregion-asia-cdn.tapmad.com') || u.includes('cdn09khi-n.tamashaweb.com') || u.includes('dai-fancode.pages.dev')) {
                     return false;
                 }
                 return true;
@@ -3150,8 +3150,8 @@ const server = http.createServer(async (req, res) => {
             streams.sort((a, b) => {
                 const uA = (a.url || '').toLowerCase();
                 const uB = (b.url || '').toLowerCase();
-                const isReliableA = uA.includes('pixeldrain') || uA.includes('r2.dev') || uA.includes('cloudflarestorage') || uA.includes('googleusercontent') || uA.includes('fancode.com') || uA.includes('cloudfront.net') || uA.includes('msnetworks.net') || uA.includes('castle');
-                const isReliableB = uB.includes('pixeldrain') || uB.includes('r2.dev') || uB.includes('cloudflarestorage') || uB.includes('googleusercontent') || uB.includes('fancode.com') || uB.includes('cloudfront.net') || uB.includes('msnetworks.net') || uB.includes('castle');
+                const isReliableA = uA.includes('msnetworks.net') || uA.includes('cloudfront.net') || uA.includes('liveland.af') || uA.includes('pixeldrain') || uA.includes('r2.dev') || uA.includes('cloudflarestorage') || uA.includes('googleusercontent') || uA.includes('fancode.com') || uA.includes('castle');
+                const isReliableB = uB.includes('msnetworks.net') || uB.includes('cloudfront.net') || uB.includes('liveland.af') || uB.includes('pixeldrain') || uB.includes('r2.dev') || uB.includes('cloudflarestorage') || uB.includes('googleusercontent') || uB.includes('fancode.com') || uB.includes('castle');
                 if (isReliableA && !isReliableB) return -1;
                 if (!isReliableA && isReliableB) return 1;
 
